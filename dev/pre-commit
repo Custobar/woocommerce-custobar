@@ -1,0 +1,13 @@
+#!/usr/bin/env php
+<?php
+
+/**
+ * pre-commit
+ *
+ * Git hook which is run before a commit is created.
+ *
+ * Exit with status `0` to make the commit, exit with `1` to prevent making the
+ * commit. Use `echo` to send messages to the committer if needed.
+ */
+
+exit(0);

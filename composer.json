@@ -1,0 +1,33 @@
+{
+    "name": "sofokus/woocommerce-custobar",
+    "description": "WordPress plugin for integrating WooCommerce to Custobar",
+    "type": "wordpress-plugin",
+    "authors": [
+        {
+            "name": "Erkki Esimerkki",
+            "email": "esim.erkki@example.com",
+            "role": "Developer"
+        }
+    ],
+
+    "autoload": {
+        "psr-4": {
+            "Sofokus\\WooCommerceCustobar\\": "classes/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Sofokus\\WooCommerceCustobar\\Tests\\": "tests/"
+        }
+    },
+
+    "minimum-stability": "stable",
+
+    "require": {
+        "techcrunch/wp-async-task": "dev-master"
+    },
+
+    "require-dev": {
+        "phpunit/phpunit": "5.*"
+    }
+}
