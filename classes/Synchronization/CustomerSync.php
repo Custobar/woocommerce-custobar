@@ -28,7 +28,7 @@ class CustomerSync extends AbstractDataSync
 
     public static function singleUpdate($args)
     {
-        $order = wc_get_order($args[0]);
+        $order = \wc_get_order($args[0]);
         if ($order && get_class($order) === 'WC_Order') {
             $properties = self::formatSingleItem($order);
             self::uploadDataTypeData($properties, true);
@@ -37,7 +37,7 @@ class CustomerSync extends AbstractDataSync
 
     public static function batchUpdate()
     {
-        $orders = wc_get_orders(array(
+        $orders = \wc_get_orders(array(
             'posts_per_page' => -1,
             'orderby'        => 'date',
             'order'          => 'DESC',

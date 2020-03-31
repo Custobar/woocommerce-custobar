@@ -33,11 +33,21 @@ class Plugin
      */
     public function initialize()
     {
+
+
+
         if ($this->initialized) {
             return;
         }
 
         $this->initialized = true;
+
+        print "is WC active: <br />";
+        var_dump( self::isWooCommerceActived() );
+
+        print "is WC active: <br />";
+        var_dump( self::hasAllSettingsDefined() );
+
 
         if (self::isWooCommerceActived() && self::hasAllSettingsDefined()) {
             // Data type hooks
@@ -48,6 +58,15 @@ class Plugin
             // Add other
             add_action('woocommerce_after_checkout_registration_form', [__CLASS__, 'askPermissionForMarketing']);
             add_action('woocommerce_checkout_update_order_meta', [__CLASS__, 'savePermissionForMarketing']);
+
+            print 'hooks were added...';
+
+            add_action( 'woocommerce_init', function() {
+              self::activate();
+            });
+
+
+
         }
     }
 
@@ -110,6 +129,7 @@ class Plugin
      */
     protected static function runBatchUploadForAllDataTypes()
     {
+
         if (self::isWooCommerceActived() && self::hasAllSettingsDefined()) {
             CustomerSync::batchUpdate();
             ProductSync::batchUpdate();
@@ -124,6 +144,7 @@ class Plugin
      */
     public static function activate()
     {
+      print 'activate running...';
         self::runBatchUploadForAllDataTypes();
     }
 

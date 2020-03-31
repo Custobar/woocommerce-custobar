@@ -23,3 +23,31 @@ register_activation_hook(__FILE__, [\Sofokus\WooCommerceCustobar\Plugin::class, 
 register_deactivation_hook(__FILE__, [\Sofokus\WooCommerceCustobar\Plugin::class, 'deactivate']);
 
 \Sofokus\WooCommerceCustobar\plugin()->initialize();
+
+
+/*
+$customerArray = [
+  'customers' => [
+    [
+      "external_id" => "3619490226",
+      "first_name" => "James",
+      "last_name" => "Carroll",
+      "email": "james.carroll@example.org",
+      "phone_number": "+447757138957"
+    ]
+  ]
+];
+$customers = json_encode( $customerArray );
+$response = wp_remote_request('https://woocomtest.custobar.com/api/customers/upload/', array(
+  'method' => 'PUT',
+  'headers' => array(
+    'Content-Type'  => 'application/json',
+    'Authorization' => 'Basic ' . base64_encode(WOOCOMMERCE_CUSTOBAR_USERNAME . ':' . WOOCOMMERCE_CUSTOBAR_PASSWORD)
+  ),
+  'body' => $customers
+));
+
+print '<pre>';
+var_dump( $response );
+print '</pre>';
+*/
