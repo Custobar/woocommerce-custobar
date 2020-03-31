@@ -1,9 +1,9 @@
 <?php
 
 /**
- * Plugin name: woocommerce-custobar
- * Description: Syncs relevant WooCommerce data to Custobar CRM.
- * Author: Sofokus
+ * Plugin name: WooCommerce Custobar
+ * Description: Syncs your WooCommerce data with Custobar CRM.
+ * Author: Eat/Build/Play
  * Text Domain: woocommerce-custobar
  * Domain Path: /languages
  * WC requires at least: 3.0

@@ -42,13 +42,6 @@ class Plugin
 
         $this->initialized = true;
 
-        print "is WC active: <br />";
-        var_dump( self::isWooCommerceActived() );
-
-        print "is WC active: <br />";
-        var_dump( self::hasAllSettingsDefined() );
-
-
         if (self::isWooCommerceActived() && self::hasAllSettingsDefined()) {
             // Data type hooks
             ProductSync::addHooks();
@@ -142,10 +135,8 @@ class Plugin
      *
      * @return void
      */
-    public static function activate()
-    {
-      print 'activate running...';
-        self::runBatchUploadForAllDataTypes();
+    public static function activate() {
+      self::runBatchUploadForAllDataTypes();
     }
 
     /**
