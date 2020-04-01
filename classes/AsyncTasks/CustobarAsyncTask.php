@@ -1,13 +1,13 @@
 <?php
 
-namespace Sofokus\WooCommerceCustobar\AsyncTasks;
+namespace WooCommerceCustobar\AsyncTasks;
 
 defined('ABSPATH') or exit;
 
 /**
  * Class CustobarAsyncTask
  *
- * @package Sofokus\WooCommerceCustobar\AsyncTasks
+ * @package WooCommerceCustobar\AsyncTasks
  */
 class CustobarAsyncTask extends \WP_Async_Task
 {

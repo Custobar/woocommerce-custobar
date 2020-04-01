@@ -1,16 +1,16 @@
 <?php
 
-namespace Sofokus\WooCommerceCustobar\Synchronization;
+namespace WooCommerceCustobar\Synchronization;
 
 defined('ABSPATH') or exit;
 
-use Sofokus\WooCommerceCustobar\DataType\CustobarCustomer;
-use Sofokus\WooCommerceCustobar\AsyncTasks\CustobarAsyncTask;
+use WooCommerceCustobar\DataType\CustobarCustomer;
+use WooCommerceCustobar\AsyncTasks\CustobarAsyncTask;
 
 /**
  * Class CustomerSync
  *
- * @package Sofokus\WooCommerceCustobar\Synchronization
+ * @package WooCommerceCustobar\Synchronization
  */
 class CustomerSync extends AbstractDataSync
 {

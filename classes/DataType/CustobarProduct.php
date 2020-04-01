@@ -1,6 +1,6 @@
 <?php
 
-namespace Sofokus\WooCommerceCustobar\DataType;
+namespace WooCommerceCustobar\DataType;
 
 defined('ABSPATH') or exit;
 
@@ -9,7 +9,7 @@ defined('ABSPATH') or exit;
  *
  * Check field descriptions here: https://www.custobar.com/api/docs/products/
  *
- * @package Sofokus\WooCommerceCustobar\DataType
+ * @package WooCommerceCustobar\DataType
  */
 class CustobarProduct extends AbstractCustobarDataType
 {

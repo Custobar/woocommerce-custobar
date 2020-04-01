@@ -1,15 +1,15 @@
 <?php
 
-namespace Sofokus\WooCommerceCustobar;
+namespace WooCommerceCustobar;
 
 defined('ABSPATH') or exit;
 
-use Sofokus\WooCommerceCustobar\DataUpload;
+use WooCommerceCustobar\DataUpload;
 
 /**
  * Class API
  *
- * @package Sofokus\WooCommerceCustobar
+ * @package WooCommerceCustobar
  */
 class API
 {

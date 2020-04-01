@@ -1,17 +1,17 @@
 <?php
 
-namespace Sofokus\WooCommerceCustobar;
+namespace WooCommerceCustobar;
 
 defined('ABSPATH') or exit;
 
-use Sofokus\WooCommerceCustobar\Synchronization\ProductSync;
-use Sofokus\WooCommerceCustobar\Synchronization\CustomerSync;
-use Sofokus\WooCommerceCustobar\Synchronization\SaleSync;
+use WooCommerceCustobar\Synchronization\ProductSync;
+use WooCommerceCustobar\Synchronization\CustomerSync;
+use WooCommerceCustobar\Synchronization\SaleSync;
 
 /**
  * Class Plugin
  *
- * @package Sofokus\WooCommerceCustobar
+ * @package WooCommerceCustobar
  */
 class Plugin
 {

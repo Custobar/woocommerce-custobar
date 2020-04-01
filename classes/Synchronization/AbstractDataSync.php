@@ -1,15 +1,15 @@
 <?php
 
-namespace Sofokus\WooCommerceCustobar\Synchronization;
+namespace WooCommerceCustobar\Synchronization;
 
 defined('ABSPATH') or exit;
 
-use Sofokus\WooCommerceCustobar\DataUpload;
+use WooCommerceCustobar\DataUpload;
 
 /**
  * Class AbstractDataSync
  *
- * @package Sofokus\WooCommerceCustobar\Synchronization
+ * @package WooCommerceCustobar\Synchronization
  */
 abstract class AbstractDataSync
 {
