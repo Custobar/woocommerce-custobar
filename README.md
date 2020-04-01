@@ -1,4 +1,4 @@
-# sofokus/woocommerce-custobar
+# Woocommerce Custobar
 
 This WordPress plugin is used to send usage statistics from the WooCommerce installation to the Custobar API.
 
@@ -17,8 +17,7 @@ https://www.custobar.com/api/docs/
 
 ## Installation
 
-1. Clone this repository to the plugins folder of the WordPress installation
-1. `composer install`
+@TODO
 
 ## Requires
 
@@ -32,22 +31,3 @@ https://www.custobar.com/api/docs/
 - Permission for marketing is asked in the checkout phase only for unauthenticated users. Usually customer do not register before the first order so practically this is rarely a problem. Permission is not given if it's not asked. This functionality might have to be changed if you offer a path to registration without purchase.
 - Permission for marketing sets _email_ and _sms_ permissions if selected. No functionality to edit this through filters at this point.
 - Custobar API often responds with _200 OK_ even when the data does not get uploaded, so do not trust the API response!
-
-## Steps to productized plugin
-
-1. Replace Composer autoloader and bundle external libraries so that the Composer installation is not required
-1. Settings panel in WooCommerce admin section for easy handling of the API credentials (https://docs.woocommerce.com/document/implementing-wc-integration/)
-1. Functionality for manual batch runs after (or instead of) the plugin activation
-1. Support for translatable fields (compatibility with Polylang and/or WPML plugins)
-1. WordPress Multisite (multiple separate WooCommerce shops) support
-1. Add support for _Variable_ and _Grouped_ WooCommerce product types
-1. Support for Custobar Tracking script functionality
-1. Support for Custobar _Event_ data type
-1. Support for Custobar _Shop_ data type
-1. Customer deletion (`is_deleted` field in Custobar) is not synced
-1. Unit tests
-1. Take sale state statuses into account
-1. Formatting of phone number field
-1. Mailing list functionality
-1. Clarify the need for VAT or non-VAT price values
-1. Functionality for asking _post_ and _profile_ permissions

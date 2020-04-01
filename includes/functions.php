@@ -1,6 +1,6 @@
 <?php
 
-namespace Sofokus\WooCommerceCustobar;
+namespace WooCommerceCustobar;
 
 /**
  * functions.php
