@@ -34,8 +34,6 @@ class Plugin
     public function initialize()
     {
 
-
-
         if ($this->initialized) {
             return;
         }
@@ -43,19 +41,15 @@ class Plugin
         $this->initialized = true;
 
         if (self::isWooCommerceActived() && self::hasAllSettingsDefined()) {
-            // Data type hooks
-            ProductSync::addHooks();
-            CustomerSync::addHooks();
-            SaleSync::addHooks();
 
-            // Add other
-            add_action('woocommerce_after_checkout_registration_form', [__CLASS__, 'askPermissionForMarketing']);
-            add_action('woocommerce_checkout_update_order_meta', [__CLASS__, 'savePermissionForMarketing']);
-            add_action( 'woocommerce_init', function() {
-              self::activate();
-            });
+          // Data type hooks
+          ProductSync::addHooks();
+          CustomerSync::addHooks();
+          SaleSync::addHooks();
 
-
+          // Add other
+          add_action('woocommerce_after_checkout_registration_form', [__CLASS__, 'askPermissionForMarketing']);
+          add_action('woocommerce_checkout_update_order_meta', [__CLASS__, 'savePermissionForMarketing']);
 
         }
     }
