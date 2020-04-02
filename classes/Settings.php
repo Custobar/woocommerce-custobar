@@ -17,8 +17,8 @@ class Settings {
    */
   public static function init() {
     add_filter( 'woocommerce_settings_tabs_array', __CLASS__ . '::add_settings_tab', 50 );
-    add_action( 'woocommerce_settings_tabs_settings_tab_demo', __CLASS__ . '::settings_tab' );
-    add_action( 'woocommerce_update_options_settings_tab_demo', __CLASS__ . '::update_settings' );
+    add_action( 'woocommerce_settings_tabs_custobar_settings', __CLASS__ . '::settings_tab' );
+    add_action( 'woocommerce_update_options_custobar_settings', __CLASS__ . '::update_settings' );
   }
 
 
@@ -29,7 +29,7 @@ class Settings {
    * @return array $settings_tabs Array of WooCommerce setting tabs & their labels, including the Subscription tab.
    */
   public static function add_settings_tab( $settings_tabs ) {
-    $settings_tabs['settings_tab_demo'] = __( 'Custobar', 'woocommerce-custobar' );
+    $settings_tabs['custobar_settings'] = __( 'Custobar', 'woocommerce-custobar' );
     return $settings_tabs;
   }
 
@@ -73,13 +73,13 @@ class Settings {
         'name' => __( 'API Token', 'woocommerce-custobar' ),
         'type' => 'password',
         'desc' => __( 'This is some helper text', 'woocommerce-custobar' ),
-        'id'   => 'wc_settings_tab_demo_title'
+        'id'   => 'custobar_api_setting_token'
       ),
       'custobar_api_company' => array(
         'name' => __( 'Company Domain', 'woocommerce-custobar' ),
         'type' => 'text',
         'desc' => __( 'Enter the unique domain prefix for your Custobar account, for example if your Custobar account is at acme123.custobar.com then enter only acme123.', 'woocommerce-custobar' ),
-        'id'   => 'wc_settings_tab_demo_title'
+        'id'   => 'custobar_api_setting_company'
       ),
       'section_end' => array(
         'type' => 'sectionend',
