@@ -72,7 +72,7 @@ class Settings {
       'custobar_api_token' => array(
         'name' => __( 'API Token', 'woocommerce-custobar' ),
         'type' => 'password',
-        'desc' => __( 'This is some helper text', 'woocommerce-custobar' ),
+        'desc' => __( 'Enter your Custobar API token.', 'woocommerce-custobar' ),
         'id'   => 'custobar_api_setting_token'
       ),
       'custobar_api_company' => array(

@@ -22,3 +22,25 @@ register_activation_hook(__FILE__, [\WooCommerceCustobar\Plugin::class, 'activat
 register_deactivation_hook(__FILE__, [\WooCommerceCustobar\Plugin::class, 'deactivate']);
 
 \WooCommerceCustobar\plugin()->initialize();
+
+/*
+ * API test call
+ */
+function testCall() {
+
+  $endpoint = '/customers/upload/';
+  $data = array(
+    'customers' => array(
+      array(
+        "first_name" => "Sengridita",
+        "last_name" => "Gue",
+        "email" => "seng.gue@gmail.com",
+        "phone_number" => "+9382718374",
+      )
+    )
+  );
+  \WooCommerceCustobar\DataUpload::uploadCustobarData($endpoint, $data);
+
+}
+
+add_action('init', 'testCall', 50000);

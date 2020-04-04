@@ -14,7 +14,7 @@ use WooCommerceCustobar\AsyncTasks\CustobarAsyncTask;
  */
 class ProductSync extends AbstractDataSync
 {
-    protected static $endpoint = 'https://%s.custobar.com/api/products/upload/';
+    protected static $endpoint = '/products/upload/';
 
     public static function addHooks()
     {

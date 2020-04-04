@@ -11,17 +11,21 @@ defined('ABSPATH') or exit;
  */
 class DataUpload
 {
-    public static function uploadCustobarData($url, $data)
+    public static function uploadCustobarData($endpoint, $data)
     {
+
         $body = json_encode($data);
+        $apiToken = \WC_Admin_Settings::get_option( 'custobar_api_setting_token', false );
+        $companyDomain = \WC_Admin_Settings::get_option( 'custobar_api_setting_company', false );
+        $url = sprintf('https://%s.custobar.com/api', $companyDomain) . $endpoint;
 
         $response = wp_remote_request($url, array(
-            'method' => 'PUT',
-            'headers' => array(
-                'Content-Type'  => 'application/json',
-                'Authorization' => 'Basic ' . base64_encode(WOOCOMMERCE_CUSTOBAR_USERNAME . ':' . WOOCOMMERCE_CUSTOBAR_PASSWORD)
-            ),
-            'body' => $body
+          'method' => 'PUT',
+          'headers' => array(
+            'Content-Type'  => 'application/json',
+            'Authorization' => 'Token ' . $apiToken
+          ),
+          'body' => $body
         ));
 
         $response_code = wp_remote_retrieve_response_code($response);

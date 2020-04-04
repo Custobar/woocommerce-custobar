@@ -20,7 +20,7 @@ abstract class AbstractDataSync
 
     protected static function uploadCustobarData($data)
     {
-        $url = sprintf(static::$endpoint, WOOCOMMERCE_CUSTOBAR_API_PREFIX);
-        DataUpload::uploadCustobarData($url, $data);
+      $endpoint = static::$endpoint;
+      DataUpload::uploadCustobarData($endpoint, $data);
     }
 }
