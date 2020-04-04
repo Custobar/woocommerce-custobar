@@ -127,7 +127,7 @@ class Plugin
      * @return void
      */
     public static function activate() {
-      self::runBatchUploadForAllDataTypes();
+      // self::runBatchUploadForAllDataTypes();
     }
 
     /**
