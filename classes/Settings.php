@@ -47,11 +47,16 @@ class Settings {
    */
   public static function settings_tab() {
 
-    woocommerce_admin_fields( self::get_settings() );
 
-    print '<div>';
-    print '<button id="custobar-api-connection-test">Test API Connection</button>';
+
+    print '<div id="custobar-api-connection-test-wrap" style="margin:25px 0 45px;">';
+    print '<h2>Test Custobar API Connection</h2>';
+    print '<p>Test uses the credentials you have already saved, if you are making changes press the save changes button before running this test.</p>';
+    print '<button style="font-size:18px; padding: 16px;" id="custobar-api-connection-test">Test API Connection</button>';
     print '</div>';
+    print '<hr style="margin-bottom:45px;" />';
+
+    woocommerce_admin_fields( self::get_settings() );
 
   }
 
@@ -116,11 +121,35 @@ class Settings {
 
   public static function apiTest() {
 
+    $apiToken = \WC_Admin_Settings::get_option( 'custobar_api_setting_token', false );
+    $companyDomain = \WC_Admin_Settings::get_option( 'custobar_api_setting_company', false );
+    $url = sprintf('https://%s.custobar.com/api', $companyDomain) . '/data/customers/';
+
+    $response = wp_remote_request($url, array(
+      'method' => 'GET',
+      'headers' => array(
+        'Content-Type'  => 'application/json',
+        'Authorization' => 'Token ' . $apiToken
+      )
+    ));
+
+    $response_code = wp_remote_retrieve_response_code($response);
+    $response_body = wp_remote_retrieve_body($response);
+
+    if( $response_code == 200 ) {
+      $message = "Successful test, your site is connected to Custobar.";
+    } else {
+      $message = "Sorry the test failed, please check your API token and domain and try again. If the problems persists please contact Custobar support.";
+    }
+
     $response = array(
-      'message' => 'This response message will become vailable in the return in your JS ajax call'
+      'url'     => $url,
+      'code'    => $response_code,
+      'body'    => $response_body,
+      'message' => $message
     );
     print json_encode( $response );
-  
+
     wp_die();
 
   }

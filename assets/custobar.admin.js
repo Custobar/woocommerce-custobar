@@ -9,14 +9,7 @@
      }
      $.post( ajaxurl, data, function( response ) {
        response = JSON.parse( response )
-
-       console.log( response )
-
-       if ( response.status == 'success' ) {
-
-       } else {
-
-       }
+       $('#custobar-api-connection-test-wrap').append('<p>' + response.message + '</p>')
      });
 
 
