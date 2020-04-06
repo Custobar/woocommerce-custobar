@@ -16,9 +16,14 @@ class Settings {
    *
    */
   public static function init() {
+
     add_filter( 'woocommerce_settings_tabs_array', __CLASS__ . '::add_settings_tab', 50 );
     add_action( 'woocommerce_settings_tabs_custobar_settings', __CLASS__ . '::settings_tab' );
     add_action( 'woocommerce_update_options_custobar_settings', __CLASS__ . '::update_settings' );
+
+    add_action( 'admin_enqueue_scripts', __CLASS__ . '::scripts' );
+    add_action( 'wp_ajax_custobar_api_test', __CLASS__ . '::apiTest' );
+
   }
 
 
@@ -41,7 +46,13 @@ class Settings {
    * @uses self::get_settings()
    */
   public static function settings_tab() {
+
     woocommerce_admin_fields( self::get_settings() );
+
+    print '<div>';
+    print '<button id="custobar-api-connection-test">Test API Connection</button>';
+    print '</div>';
+
   }
 
   /**
@@ -87,7 +98,31 @@ class Settings {
       )
     );
 
-    return apply_filters( 'wc_settings_tab_demo_settings', $settings );
+    return $settings;
+
+  }
+
+  public static function scripts() {
+
+    wp_enqueue_script(
+      'custobar-admin-js',
+      WOOCOMMERCE_CUSTOBAR_URL . 'assets/custobar.admin.js',
+      array( 'jquery' ),
+      '1.0.0',
+      true
+    );
+
+  }
+
+  public static function apiTest() {
+
+    $response = array(
+      'message' => 'This response message will become vailable in the return in your JS ajax call'
+    );
+    print json_encode( $response );
+  
+    wp_die();
+
   }
 
 }
