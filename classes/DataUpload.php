@@ -4,6 +4,10 @@ namespace WooCommerceCustobar;
 
 defined('ABSPATH') or exit;
 
+use WooCommerceCustobar\Synchronization\ProductSync;
+use WooCommerceCustobar\Synchronization\CustomerSync;
+use WooCommerceCustobar\Synchronization\SaleSync;
+
 /**
  * Class DataUpload
  *
@@ -52,14 +56,14 @@ class DataUpload {
   public static function jxExport() {
 
     // change to public functions (self::)
-    if (self::isWooCommerceActived() && self::hasAllSettingsDefined()) {
+
+    $plugin = new Plugin();
+
+    if ($plugin::isWooCommerceActived() && $plugin::hasAllSettingsDefined()) {
       CustomerSync::batchUpdate();
       ProductSync::batchUpdate();
       SaleSync::batchUpdate();
     }
-
-    $response_code = wp_remote_retrieve_response_code($response);
-    $response_body = wp_remote_retrieve_body($response);
 
     if( $response_code == 200 ) {
       $message = "Successful test, your site is connected to Custobar.";

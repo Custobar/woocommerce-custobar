@@ -86,7 +86,7 @@ class Plugin
      *
      * @return boolean
      */
-    protected static function isWooCommerceActived()
+    public static function isWooCommerceActived()
     {
         if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) {
             return true;
@@ -99,7 +99,7 @@ class Plugin
      *
      * @return boolean
      */
-    protected static function hasAllSettingsDefined()
+    public static function hasAllSettingsDefined()
     {
         if (defined('WOOCOMMERCE_CUSTOBAR_USERNAME') &&
             defined('WOOCOMMERCE_CUSTOBAR_PASSWORD') &&
