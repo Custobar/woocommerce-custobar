@@ -46,10 +46,13 @@ class Plugin
           ProductSync::addHooks();
           CustomerSync::addHooks();
           SaleSync::addHooks();
+          DataUpload::addHooks();
 
           // Add other
           add_action('woocommerce_after_checkout_registration_form', [__CLASS__, 'askPermissionForMarketing']);
           add_action('woocommerce_checkout_update_order_meta', [__CLASS__, 'savePermissionForMarketing']);
+
+
 
         }
     }

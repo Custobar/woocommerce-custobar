@@ -47,7 +47,12 @@ class Settings {
    */
   public static function settings_tab() {
 
-
+    print '<div id="custobar-export-wrap" style="margin:25px 0 45px;">';
+    print '<h2>Export Existing Data</h2>';
+    print '<p>Export your existing WooCommerce data to Custobar.</p>';
+    print '<button style="font-size:18px; padding: 16px;" id="custobar-export">Run Export</button>';
+    print '</div>';
+    print '<hr style="margin-bottom:45px;" />';
 
     print '<div id="custobar-api-connection-test-wrap" style="margin:25px 0 45px;">';
     print '<h2>Test Custobar API Connection</h2>';
