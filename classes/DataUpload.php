@@ -61,8 +61,8 @@ class DataUpload {
 
     if ($plugin::isWooCommerceActived() && $plugin::hasAllSettingsDefined()) {
       CustomerSync::batchUpdate();
-      ProductSync::batchUpdate();
-      SaleSync::batchUpdate();
+      // ProductSync::batchUpdate();
+      // SaleSync::batchUpdate();
     }
 
     if( $response_code == 200 ) {
