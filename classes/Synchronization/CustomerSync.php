@@ -35,20 +35,31 @@ class CustomerSync extends AbstractDataSync
         }
     }
 
-    public static function batchUpdate()
-    {
-        $orders = \wc_get_orders(array(
-            'posts_per_page' => -1,
-            'orderby'        => 'date',
-            'order'          => 'DESC',
-        ));
-        $data = [];
-        foreach ($orders as $order) {
-            if (!self::customerAlreadyAdded($data, $order)) {
-                $data[] = self::formatSingleItem($order);
-            }
+    public static function batchUpdate() {
+
+      /*
+       * Fetch orders
+       * Add check for is_processed
+       * Meta data custobar_processed = 1 means we can skip it
+       */
+      $orders = \wc_get_orders(array(
+        'posts_per_page' => -1,
+        'orderby'        => 'date',
+        'order'          => 'DESC',
+      ));
+
+      // loop over orders to find unique customers
+      // customer data organized into $data
+      $data = [];
+      foreach ($orders as $order) {
+        if (!self::customerAlreadyAdded($data, $order)) {
+          $data[] = self::formatSingleItem($order);
         }
-        self::uploadDataTypeData($data);
+      }
+
+      // do upload to custobar API
+      self::uploadDataTypeData($data);
+
     }
 
     protected static function customerAlreadyAdded($already_looped_data, $order)
