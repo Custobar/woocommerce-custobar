@@ -58,7 +58,9 @@ class CustomerSync extends AbstractDataSync
       }
 
       // do upload to custobar API
-      self::uploadDataTypeData($data);
+      $response = self::uploadDataTypeData($data);
+
+      var_dump( $response );
 
     }
 
@@ -86,16 +88,18 @@ class CustomerSync extends AbstractDataSync
         return apply_filters('woocommerce_custobar_customer_properties', $properties, $order);
     }
 
-    protected static function uploadDataTypeData($data, $single = false)
-    {
-        $formatted_data = array(
-            'customers' => array()
-        );
-        if ($single) {
-            $formatted_data['customers'][] = $data;
-        } else {
-            $formatted_data['customers'] = $data;
-        }
-        self::uploadCustobarData($formatted_data);
+    protected static function uploadDataTypeData($data, $single = false) {
+
+      $formatted_data = array(
+          'customers' => array()
+      );
+      if ($single) {
+          $formatted_data['customers'][] = $data;
+      } else {
+          $formatted_data['customers'] = $data;
+      }
+
+      return self::uploadCustobarData($formatted_data);
+
     }
 }

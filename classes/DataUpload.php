@@ -17,6 +17,8 @@ class DataUpload {
 
   public static function uploadCustobarData($endpoint, $data) {
 
+    $responseData = new \stdClass;
+
     $body = json_encode($data);
     $apiToken = \WC_Admin_Settings::get_option( 'custobar_api_setting_token', false );
     $companyDomain = \WC_Admin_Settings::get_option( 'custobar_api_setting_company', false );
@@ -34,19 +36,28 @@ class DataUpload {
     $response_code = wp_remote_retrieve_response_code($response);
     $response_body = wp_remote_retrieve_body($response);
 
+    // form response data
+    $responseData->code = $response_code;
+    $responseData->body = $response_body;
+
+    // do wc logging
     if (!in_array($response_code, array(200, 201)) || is_wp_error($response_body)) {
       wc_get_logger()->warning('Custobar data upload failed', array(
-          'source'        => 'woocommerce-custobar',
-          'response_code' => $response_code,
-          'response_body' => $response_body,
+        'source'        => 'woocommerce-custobar',
+        'response_code' => $response_code,
+        'response_body' => $response_body,
       ));
     } else {
       wc_get_logger()->info('Sent request to Custobar API', array(
-          'source'        => 'woocommerce-custobar',
-          'response_code' => $response_code,
-          'response_body' => $response_body,
+        'source'        => 'woocommerce-custobar',
+        'response_code' => $response_code,
+        'response_body' => $response_body,
       ));
     }
+
+    // return response
+    return $responseData;
+
   }
 
   public static function addHooks() {

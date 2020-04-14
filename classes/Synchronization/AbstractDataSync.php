@@ -18,9 +18,8 @@ abstract class AbstractDataSync
     abstract protected static function formatSingleItem($item);
     abstract protected static function uploadDataTypeData($data);
 
-    protected static function uploadCustobarData($data)
-    {
+    protected static function uploadCustobarData($data) {
       $endpoint = static::$endpoint;
-      DataUpload::uploadCustobarData($endpoint, $data);
+      return DataUpload::uploadCustobarData($endpoint, $data);
     }
 }
