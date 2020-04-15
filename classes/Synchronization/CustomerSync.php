@@ -47,45 +47,75 @@ class CustomerSync extends AbstractDataSync
         'orderby'        => 'date',
         'order'          => 'DESC',
       ));
+      if( empty( $orders )) {
+        return false;
+      }
+
+      $trackerKey = 'custobar_export_customer';
+      $custobarExportTracker = get_option($trackerKey, []);
 
       // loop over orders to find unique customers
       // customer data organized into $data
       $data = [];
       foreach ($orders as $order) {
-        if (!self::customerAlreadyAdded($data, $order)) {
+        if (!self::customerAlreadyAdded($data, $order, $custobarExportTracker)) {
           $data[] = self::formatSingleItem($order);
         }
       }
 
+      // no data
+      if( !empty( $data )) {
+        return false;
+      }
+
+      $customerIds = [];
+      foreach( $data as $customerData ) {
+        $uid = $customerData['external_id'];
+        $customerIds[] = $uid;
+      }
+
+      // track the export
+      $custobarExportTracker = array_merge($custobarExportTracker, $customerIds);
+      $custobarExportTracker = array_unique($custobarExportTracker);
+      update_option($trackerKey, $custobarExportTracker);
+
       // do upload to custobar API
       $response = self::uploadDataTypeData($data);
-
-      var_dump( $response );
+      return $response;
 
     }
 
-    protected static function customerAlreadyAdded($already_looped_data, $order)
-    {
-        $identifier_keys = array(
-            'external_id'  => $order->get_user_id(),
-            'phone_number' => $order->get_billing_phone(),
-            'email'        => $order->get_billing_email()
-        );
-        foreach ($already_looped_data as $item) {
-            foreach ($identifier_keys as $key => $value) {
-                if (isset($item[$key]) && $item[$key] && $item[$key] == $identifier_keys[$key]) {
-                    return true;
-                }
-            }
+    protected static function customerAlreadyAdded( $already_looped_data, $order, $custobarExportTracker ) {
+
+      // check for already exported
+      $uid = $order->get_user_id();
+      if( in_array( $uid, $custobarExportTracker )) {
+        return true;
+      }
+
+      // check for already in this batch
+      $identifier_keys = array(
+        'external_id'  => $order->get_user_id(),
+        'phone_number' => $order->get_billing_phone(),
+        'email'        => $order->get_billing_email()
+      );
+
+      foreach ( $already_looped_data as $item ) {
+        foreach ($identifier_keys as $key => $value) {
+          if (isset($item[$key]) && $item[$key] && $item[$key] == $identifier_keys[$key]) {
+            return true;
+          }
         }
-        return false;
+      }
+
+      return false;
+
     }
 
-    protected static function formatSingleItem($order)
-    {
-        $custobar_customer = new CustobarCustomer($order);
-        $properties = $custobar_customer->getAssignedProperties();
-        return apply_filters('woocommerce_custobar_customer_properties', $properties, $order);
+    protected static function formatSingleItem($order) {
+      $custobar_customer = new CustobarCustomer($order);
+      $properties = $custobar_customer->getAssignedProperties();
+      return apply_filters('woocommerce_custobar_customer_properties', $properties, $order);
     }
 
     protected static function uploadDataTypeData($data, $single = false) {

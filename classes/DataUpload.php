@@ -71,7 +71,7 @@ class DataUpload {
     $plugin = new Plugin();
 
     if ($plugin::isWooCommerceActived() && $plugin::hasAllSettingsDefined()) {
-      CustomerSync::batchUpdate();
+      $response = CustomerSync::batchUpdate();
       // ProductSync::batchUpdate();
       // SaleSync::batchUpdate();
     }
