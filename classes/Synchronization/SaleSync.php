@@ -67,19 +67,33 @@ class SaleSync extends AbstractDataSync
         }
     }
 
-    public static function batchUpdate()
-    {
-        $orders = wc_get_orders(array('posts_per_page' => -1));
-        $data = [];
-        foreach ($orders as $order) {
-            foreach ($order->get_items() as $order_item) {
-                $data[] = self::formatSingleItem(array(
-                    'order'      => $order,
-                    'order_item' => $order_item
-                ));
-            }
+    public static function batchUpdate() {
+
+      $orders = \wc_get_orders(array(
+        'posts_per_page' => -1,
+        'orderby'        => 'date',
+        'order'          => 'ASC',
+      ));
+
+      $trackerKey = 'custobar_export_sale';
+      $custobarExportTracker = get_option($trackerKey, []);
+
+      $data = [];
+      foreach ($orders as $order) {
+        foreach ($order->get_items() as $order_item) {
+          $data[] = self::formatSingleItem(array(
+            'order'      => $order,
+            'order_item' => $order_item
+          ));
         }
-        self::uploadDataTypeData($data);
+      }
+
+      if( empty( $data )) {
+        return;
+      }
+
+      return self::uploadDataTypeData($data);
+
     }
 
     protected static function formatSingleItem($args)
@@ -90,12 +104,11 @@ class SaleSync extends AbstractDataSync
         return apply_filters('woocommerce_custobar_sale_properties', $properties, $order, $order_item);
     }
 
-    protected static function uploadDataTypeData($data)
-    {
-        $formatted_data = array(
-            'sales' => $data
-        );
-        self::uploadCustobarData($formatted_data);
+    protected static function uploadDataTypeData($data) {
+      $formatted_data = array(
+        'sales' => $data
+      );
+      return self::uploadCustobarData($formatted_data);
     }
 
     /**

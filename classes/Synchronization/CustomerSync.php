@@ -43,7 +43,7 @@ class CustomerSync extends AbstractDataSync
       $orders = \wc_get_orders(array(
         'posts_per_page' => -1,
         'orderby'        => 'date',
-        'order'          => 'DESC',
+        'order'          => 'ASC',
       ));
       if( empty( $orders )) {
         return false;
@@ -68,7 +68,7 @@ class CustomerSync extends AbstractDataSync
       }
 
       // no data
-      if( !empty( $data )) {
+      if( empty( $data )) {
         return false;
       }
 

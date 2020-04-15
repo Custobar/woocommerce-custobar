@@ -66,26 +66,22 @@ class DataUpload {
 
   public static function jxExport() {
 
-    // change to public functions (self::)
-
+    // environment checks
     $plugin = new Plugin();
-
     if ($plugin::isWooCommerceActived() && $plugin::hasAllSettingsDefined()) {
-      $response = CustomerSync::batchUpdate();
-      // ProductSync::batchUpdate();
-      // SaleSync::batchUpdate();
+      $apiResponse = CustomerSync::batchUpdate();
+      //$apiResponse2 = SaleSync::batchUpdate();
     }
 
-    if( $response_code == 200 ) {
-      $message = "Successful test, your site is connected to Custobar.";
+    if( $apiResponse->code == 200 ) {
+      $message = "Export succesful.";
     } else {
-      $message = "Sorry the test failed, please check your API token and domain and try again. If the problems persists please contact Custobar support.";
+      $message = "No custom records available to export.";
     }
 
     $response = array(
-      'url'     => $url,
-      'code'    => $response_code,
-      'body'    => $response_body,
+      'code'    => $apiResponse->code,
+      'body'    => $apiResponse->body,
       'message' => $message
     );
     print json_encode( $response );
