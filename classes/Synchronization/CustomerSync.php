@@ -39,8 +39,6 @@ class CustomerSync extends AbstractDataSync
 
       /*
        * Fetch orders
-       * Add check for is_processed
-       * Meta data custobar_processed = 1 means we can skip it
        */
       $orders = \wc_get_orders(array(
         'posts_per_page' => -1,
@@ -60,6 +58,12 @@ class CustomerSync extends AbstractDataSync
       foreach ($orders as $order) {
         if (!self::customerAlreadyAdded($data, $order, $custobarExportTracker)) {
           $data[] = self::formatSingleItem($order);
+
+          // enforce single batch limit
+          if( count( $data ) >= 250 ) {
+            break;
+          }
+
         }
       }
 
