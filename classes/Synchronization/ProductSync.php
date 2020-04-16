@@ -12,11 +12,11 @@ use WooCommerceCustobar\AsyncTasks\CustobarAsyncTask;
  *
  * @package WooCommerceCustobar\Synchronization
  */
-class ProductSync extends AbstractDataSync
-{
-    protected static $endpoint = '/products/upload/';
+class ProductSync extends AbstractDataSync {
 
-    public static function addHooks()
+  protected static $endpoint = '/products/upload/';
+
+  public static function addHooks()
     {
         add_action('wp_async_woocommerce_new_product', [__CLASS__, 'singleUpdate']);
         add_action('wp_async_woocommerce_update_product', [__CLASS__, 'singleUpdate']);
@@ -33,13 +33,36 @@ class ProductSync extends AbstractDataSync
         self::uploadDataTypeData($properties, true);
     }
 
-    public static function batchUpdate()
-    {
-        $products = [];
-        foreach (wc_get_products(array('limit' => -1)) as $product) {
-            $products[] = self::formatSingleItem($product);
+    public static function batchUpdate() {
+
+      $limit = 500;
+      $tracker = self::trackerFetch();
+
+      $products = [];
+      $productIds = [];
+      foreach (wc_get_products(array('limit' => -1)) as $product) {
+        $products[] = self::formatSingleItem($product);
+        $productIds[] = $product->get_id();
+        if( count($products) >= $limit ) {
+          break;
         }
-        self::uploadDataTypeData($products);
+      }
+
+      self::trackerSave( $productIds );
+      return self::uploadDataTypeData($products);
+    }
+
+    public static function trackerFetch() {
+      $trackerKey = 'custobar_export_product';
+      return get_option($trackerKey, []);
+    }
+
+    public static function trackerSave( $objectIds ) {
+      $trackerKey = 'custobar_export_product';
+      $trackerData = get_option($trackerKey, []);
+      $trackerData = array_merge($trackerData, $objectIds);
+      $trackerData = array_unique($trackerData);
+      update_option($trackerKey, $trackerData);
     }
 
     protected static function formatSingleItem($product)
@@ -59,6 +82,6 @@ class ProductSync extends AbstractDataSync
         } else {
             $formatted_data['products'] = $data;
         }
-        self::uploadCustobarData($formatted_data);
+        return self::uploadCustobarData($formatted_data);
     }
 }

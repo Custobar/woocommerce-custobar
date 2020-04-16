@@ -70,7 +70,8 @@ class DataUpload {
     $plugin = new Plugin();
     if ($plugin::isWooCommerceActived() && $plugin::hasAllSettingsDefined()) {
       // $apiResponse = CustomerSync::batchUpdate();
-      $apiResponse = SaleSync::batchUpdate();
+      // $apiResponse = SaleSync::batchUpdate();
+      $apiResponse = ProductSync::batchUpdate();
     }
 
     if( $apiResponse->code == 200 ) {
@@ -82,7 +83,7 @@ class DataUpload {
     $response = array(
       'code'    => $apiResponse->code,
       'body'    => $apiResponse->body,
-      'tracker' => SaleSync::trackerFetch(),
+      'tracker' => ProductSync::trackerFetch(),
       'message' => $message
     );
     print json_encode( $response );
