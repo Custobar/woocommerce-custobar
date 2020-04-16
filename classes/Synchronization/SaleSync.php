@@ -75,25 +75,52 @@ class SaleSync extends AbstractDataSync
         'order'          => 'ASC',
       ));
 
-      $trackerKey = 'custobar_export_sale';
-      $custobarExportTracker = get_option($trackerKey, []);
+      $tracker = self::trackerFetch();
 
       $data = [];
+      $orderIds = [];
+      $limit = 500;
       foreach ($orders as $order) {
+
+        // skip already processed orders
+        if( in_array( $order->get_id(), $tracker)) {
+          continue;
+        }
+
         foreach ($order->get_items() as $order_item) {
           $data[] = self::formatSingleItem(array(
             'order'      => $order,
             'order_item' => $order_item
           ));
         }
+
+        $orderIds[] = $order->get_id();
+        if( count( $data ) >= $limit ) {
+          break;
+        }
+
       }
 
       if( empty( $data )) {
         return;
       }
 
+      self::trackerSave( $orderIds );
       return self::uploadDataTypeData($data);
 
+    }
+
+    public static function trackerFetch() {
+      $trackerKey = 'custobar_export_sale';
+      return get_option($trackerKey, []);
+    }
+
+    public static function trackerSave( $objectIds ) {
+      $trackerKey = 'custobar_export_sale';
+      $trackerData = get_option($trackerKey, []);
+      $trackerData = array_merge($trackerData, $objectIds);
+      $trackerData = array_unique($trackerData);
+      update_option($trackerKey, $trackerData);
     }
 
     protected static function formatSingleItem($args)
