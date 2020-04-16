@@ -92,4 +92,40 @@ class DataUpload {
 
   }
 
+  public function fetchSyncStatProducts() {
+
+    $stat = new \stdClass;
+
+    $products = wc_get_products(array('limit' => -1));
+    $stat->total = count( $products );
+
+    $productSyncTracker = ProductSync::trackerFetch();
+    $stat->synced = count( $productSyncTracker );
+
+    return $stat;
+
+  }
+
+  public function fetchSyncStatSales() {
+
+    $stat = new \stdClass;
+
+    $orders = \wc_get_orders(array(
+      'posts_per_page' => -1,
+      'orderby'        => 'date',
+      'order'          => 'ASC',
+    ));
+    $salesCount = 0;
+    foreach ($order->get_items() as $order_item) {
+      $salesCount++;
+    }
+    $stat->total = $salesCount;
+
+    $tracker = SalesSync::trackerFetch();
+    $stat->synced = count( $tracker );
+
+    return $stat;
+
+  }
+
 }

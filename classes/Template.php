@@ -1,6 +1,6 @@
 <?php
 
-namespace Custobar;
+namespace WooCommerceCustobar;
 
 class Template {
 

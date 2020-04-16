@@ -54,7 +54,12 @@ class Settings {
     print '</div>';
     print '<hr style="margin-bottom:45px;" />';
 
-    $template = new \Custobar\Template();
+    $dataUpload = new DataUpload();
+    $template = new Template();
+
+    $productStat = $dataUpload->fetchSyncStatProducts();
+
+    print '<h2>' . $productStat->synced . ' of ' . $productStat->total . ' synced with Custobar.</h2>';
 
     print '<h2>Custobar Sync Status</h2>';
     print '<table>
