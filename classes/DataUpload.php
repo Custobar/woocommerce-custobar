@@ -130,4 +130,26 @@ class DataUpload {
 
   }
 
+  public function fetchSyncStatCustomers() {
+
+    $stat = new \stdClass;
+    $tracker = CustomerSync::trackerFetch();
+
+    $orders = \wc_get_orders(array(
+      'posts_per_page' => -1,
+      'orderby'        => 'date',
+      'order'          => 'ASC',
+    ));
+    $customerIds = [];
+    foreach ($orders as $order) {
+      $customerIds[] = $order->get_user_id();
+    }
+
+    $stat->total = count( $customerIds );
+    $stat->synced = count( $tracker );
+
+    return $stat;
+
+  }
+
 }

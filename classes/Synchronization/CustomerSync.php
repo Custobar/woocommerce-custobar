@@ -37,6 +37,9 @@ class CustomerSync extends AbstractDataSync
 
     public static function batchUpdate() {
 
+      $tracker = self::trackerFetch();
+      $limit = 250;
+
       /*
        * Fetch orders
        */
@@ -49,18 +52,15 @@ class CustomerSync extends AbstractDataSync
         return false;
       }
 
-      $trackerKey = 'custobar_export_customer';
-      $custobarExportTracker = get_option($trackerKey, []);
-
       // loop over orders to find unique customers
       // customer data organized into $data
       $data = [];
       foreach ($orders as $order) {
-        if (!self::customerAlreadyAdded($data, $order, $custobarExportTracker)) {
+        if (!self::customerAlreadyAdded($data, $order, $tracker)) {
           $data[] = self::formatSingleItem($order);
 
           // enforce single batch limit
-          if( count( $data ) >= 250 ) {
+          if( count( $data ) >= $limit ) {
             break;
           }
 
@@ -79,9 +79,7 @@ class CustomerSync extends AbstractDataSync
       }
 
       // track the export
-      $custobarExportTracker = array_merge($custobarExportTracker, $customerIds);
-      $custobarExportTracker = array_unique($custobarExportTracker);
-      update_option($trackerKey, $custobarExportTracker);
+      self::trackerSave( $customerIds );
 
       // do upload to custobar API
       $response = self::uploadDataTypeData($data);
@@ -89,11 +87,24 @@ class CustomerSync extends AbstractDataSync
 
     }
 
-    protected static function customerAlreadyAdded( $already_looped_data, $order, $custobarExportTracker ) {
+    public static function trackerFetch() {
+      $trackerKey = 'custobar_export_customer';
+      return get_option($trackerKey, []);
+    }
+
+    public static function trackerSave( $objectIds ) {
+      $trackerKey = 'custobar_export_customer';
+      $trackerData = get_option($trackerKey, []);
+      $trackerData = array_merge($trackerData, $objectIds);
+      $trackerData = array_unique($trackerData);
+      update_option($trackerKey, $trackerData);
+    }
+
+    public static function customerAlreadyAdded( $already_looped_data, $order, $tracker ) {
 
       // check for already exported
       $uid = $order->get_user_id();
-      if( in_array( $uid, $custobarExportTracker )) {
+      if( in_array( $uid, $tracker )) {
         return true;
       }
 
