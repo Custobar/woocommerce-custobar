@@ -116,12 +116,14 @@ class DataUpload {
       'order'          => 'ASC',
     ));
     $salesCount = 0;
-    foreach ($order->get_items() as $order_item) {
-      $salesCount++;
+    foreach ($orders as $order) {
+      foreach ($order->get_items() as $order_item) {
+        $salesCount++;
+      }
     }
     $stat->total = $salesCount;
 
-    $tracker = SalesSync::trackerFetch();
+    $tracker = SaleSync::trackerFetch();
     $stat->synced = count( $tracker );
 
     return $stat;
