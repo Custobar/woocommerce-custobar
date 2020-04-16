@@ -20,3 +20,4 @@ require_once(WOOCOMMERCE_CUSTOBAR_PATH . '/classes/Synchronization/AbstractDataS
 require_once(WOOCOMMERCE_CUSTOBAR_PATH . '/classes/Synchronization/CustomerSync.php');
 require_once(WOOCOMMERCE_CUSTOBAR_PATH . '/classes/Synchronization/ProductSync.php');
 require_once(WOOCOMMERCE_CUSTOBAR_PATH . '/classes/Synchronization/SaleSync.php');
+require_once(WOOCOMMERCE_CUSTOBAR_PATH . '/classes/Template.php');

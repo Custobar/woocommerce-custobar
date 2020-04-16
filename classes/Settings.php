@@ -54,6 +54,18 @@ class Settings {
     print '</div>';
     print '<hr style="margin-bottom:45px;" />';
 
+    $template = new \Custobar\Template();
+
+    print '<h2>Custobar Sync Status</h2>';
+    print '<table>
+      <tr>
+        <th>Stat</th>
+      </tr>
+      <tr>
+        <td>45</td>
+      </tr>
+    </table>';
+
     print '<div id="custobar-api-connection-test-wrap" style="margin:25px 0 45px;">';
     print '<h2>Test Custobar API Connection</h2>';
     print '<p>Test uses the credentials you have already saved, if you are making changes press the save changes button before running this test.</p>';
