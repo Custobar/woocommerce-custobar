@@ -47,13 +47,6 @@ class Settings {
    */
   public static function settings_tab() {
 
-    print '<div id="custobar-export-wrap" style="margin:25px 0 45px;">';
-    print '<h2>Export Existing Data</h2>';
-    print '<p>Export your existing WooCommerce data to Custobar.</p>';
-    print '<button style="font-size:18px; padding: 16px;" id="custobar-export">Run Export</button>';
-    print '</div>';
-    print '<hr style="margin-bottom:45px;" />';
-
     $dataUpload = new DataUpload();
     $template = new Template();
 
@@ -61,20 +54,14 @@ class Settings {
     $saleStat = $dataUpload->fetchSyncStatSales();
     $customerStat = $dataUpload->fetchSyncStatCustomers();
 
-    print '<h2>' . $productStat->synced . ' of ' . $productStat->total . ' products synced with Custobar.</h2>';
-    print '<h2>' . $saleStat->synced . ' of ' . $saleStat->total . ' sales synced with Custobar.</h2>';
-    print '<h2>' . $customerStat->synced . ' of ' . $customerStat->total . ' customers synced with Custobar.</h2>';
-
-
-    print '<h2>Custobar Sync Status</h2>';
-    print '<table>
-      <tr>
-        <th>Stat</th>
-      </tr>
-      <tr>
-        <td>45</td>
-      </tr>
-    </table>';
+    $template = new Template();
+    $template->name = 'sync-report';
+    $template->data = [
+      'productStat' => $productStat,
+      'saleStat' => $saleStat,
+      'customerStat' => $customerStat
+    ];
+    print $template->get();
 
     print '<div id="custobar-api-connection-test-wrap" style="margin:25px 0 45px;">';
     print '<h2>Test Custobar API Connection</h2>';
