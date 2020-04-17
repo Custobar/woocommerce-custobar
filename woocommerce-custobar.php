@@ -5,6 +5,7 @@
  * Description: Syncs your WooCommerce data with Custobar CRM.
  * Author: Custobar CRM
  * Text Domain: woocommerce-custobar
+ * Version: 1.0.0
  * Domain Path: /languages
  * WC requires at least: 3.0
  */
