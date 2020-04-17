@@ -58,11 +58,12 @@ class Settings {
     $template = new Template();
 
     $productStat = $dataUpload->fetchSyncStatProducts();
-    $salesStat = $dataUpload->fetchSyncStatSales();
+    $saleStat = $dataUpload->fetchSyncStatSales();
+    $customerStat = $dataUpload->fetchSyncStatCustomers();
 
     print '<h2>' . $productStat->synced . ' of ' . $productStat->total . ' products synced with Custobar.</h2>';
-
-    print '<h2>' . $salesStat->synced . ' of ' . $salesStat->total . ' sales synced with Custobar.</h2>';
+    print '<h2>' . $saleStat->synced . ' of ' . $saleStat->total . ' sales synced with Custobar.</h2>';
+    print '<h2>' . $customerStat->synced . ' of ' . $customerStat->total . ' customers synced with Custobar.</h2>';
 
 
     print '<h2>Custobar Sync Status</h2>';

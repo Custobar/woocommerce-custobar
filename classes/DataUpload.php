@@ -144,6 +144,7 @@ class DataUpload {
     foreach ($orders as $order) {
       $customerIds[] = $order->get_user_id();
     }
+    $customerIds = array_unique( $customerIds );
 
     $stat->total = count( $customerIds );
     $stat->synced = count( $tracker );
