@@ -69,15 +69,24 @@ class DataUpload {
     // environment checks
     $plugin = new Plugin();
     if ($plugin::isWooCommerceActived() && $plugin::hasAllSettingsDefined()) {
-      // $apiResponse = CustomerSync::batchUpdate();
-      // $apiResponse = SaleSync::batchUpdate();
-      $apiResponse = ProductSync::batchUpdate();
+
+      $statProducts = self::fetchSyncStatProducts();
+      $statSales = self::fetchSyncStatSales();
+
+      if( $statProducts->total != $statProducts->synced ) {
+        $apiResponse = CustomerSync::batchUpdate();
+      } elseif( $statSales->total != $statSales->synced ) {
+        $apiResponse = SaleSync::batchUpdate();
+      } else {
+        $apiResponse = ProductSync::batchUpdate();
+      }
+
     }
 
     if( $apiResponse->code == 200 ) {
-      $message = "Export succesful.";
+      $message = "Export to Custobar successful.";
     } else {
-      $message = "No custom records available to export.";
+      $message = "No WooCommerce records available to export.";
     }
 
     $response = array(
