@@ -1,6 +1,5 @@
 <?php
 
-require_once(WOOCOMMERCE_CUSTOBAR_PATH . '/config.php');
 require_once(WOOCOMMERCE_CUSTOBAR_PATH . '/includes/functions.php');
 require_once(WOOCOMMERCE_CUSTOBAR_PATH . '/includes/post_type_log.php');
 require_once(WOOCOMMERCE_CUSTOBAR_PATH . '/includes/wp-async-task.php');
