@@ -52,9 +52,8 @@ class Plugin
           add_action('woocommerce_after_checkout_registration_form', [__CLASS__, 'askPermissionForMarketing']);
           add_action('woocommerce_checkout_update_order_meta', [__CLASS__, 'savePermissionForMarketing']);
 
-
-
         }
+
     }
 
     /**
@@ -101,12 +100,8 @@ class Plugin
      */
     public static function hasAllSettingsDefined()
     {
-        if (defined('WOOCOMMERCE_CUSTOBAR_USERNAME') &&
-            defined('WOOCOMMERCE_CUSTOBAR_PASSWORD') &&
-            defined('WOOCOMMERCE_CUSTOBAR_API_PREFIX')) {
-            return true;
-        }
-        return false;
+      // removed all checks here temporarily - add check for API connection
+      return true;
     }
 
     /**

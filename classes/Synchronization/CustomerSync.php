@@ -30,8 +30,16 @@ class CustomerSync extends AbstractDataSync
     {
         $order = \wc_get_order($args[0]);
         if ($order && get_class($order) === 'WC_Order') {
+
             $properties = self::formatSingleItem($order);
+
+            $uid = $properties['external_id'];
+            self::trackerSave(
+              [ $uid ]
+            );
+
             self::uploadDataTypeData($properties, true);
+
         }
     }
 
@@ -56,7 +64,7 @@ class CustomerSync extends AbstractDataSync
       // customer data organized into $data
       $data = [];
       foreach ($orders as $order) {
-        if (!self::customerAlreadyAdded($data, $order, $tracker)) {
+        if (!self::customerAlreadyAdded($data, $order, $tracker['data'])) {
           $data[] = self::formatSingleItem($order);
 
           // enforce single batch limit
@@ -89,15 +97,25 @@ class CustomerSync extends AbstractDataSync
 
     public static function trackerFetch() {
       $trackerKey = 'custobar_export_customer';
-      return get_option($trackerKey, []);
+      $tracker = get_option($trackerKey, []);
+      if( !isset($tracker['data']) || !is_array($tracker['data']) ) {
+        $tracker['data'] = [];
+      }
+      if( !isset($tracker['updated'])) {
+        $tracker['updated'] = false;
+      }
+      return $tracker;
     }
 
     public static function trackerSave( $objectIds ) {
       $trackerKey = 'custobar_export_customer';
-      $trackerData = get_option($trackerKey, []);
+      $tracker = get_option($trackerKey, []);
+      $trackerData = $tracker['data'];
       $trackerData = array_merge($trackerData, $objectIds);
       $trackerData = array_unique($trackerData);
-      update_option($trackerKey, $trackerData);
+      $tracker['data'] = $trackerData;
+      $tracker['timestamp'] = time();
+      update_option($trackerKey, $tracker);
     }
 
     public static function customerAlreadyAdded( $already_looped_data, $order, $tracker ) {

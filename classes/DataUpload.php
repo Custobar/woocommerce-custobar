@@ -92,7 +92,6 @@ class DataUpload {
     $response = array(
       'code'    => $apiResponse->code,
       'body'    => $apiResponse->body,
-      'tracker' => ProductSync::trackerFetch(),
       'message' => $message
     );
     print json_encode( $response );
@@ -156,7 +155,8 @@ class DataUpload {
     $customerIds = array_unique( $customerIds );
 
     $stat->total = count( $customerIds );
-    $stat->synced = count( $tracker );
+    $stat->synced = count( $tracker['data'] );
+    $stat->updated = $tracker['updated'];
 
     return $stat;
 
