@@ -1,10 +1,8 @@
-<div id="custobar-export-wrap" style="margin:25px 0 45px;">
+<div id="custobar-export-wrap">
 
-  <h2>Export Existing Data</h2>
-  <p>Export your existing WooCommerce data to Custobar.</p>
+  <h2>Custobar Export Sync Status</h2>
   <button id="custobar-export">Run Exporter</button>
 
-  <h3>Custobar Export Sync Status</h3>
   <table>
     <tr>
       <th>Record Type</th>
