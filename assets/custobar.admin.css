@@ -1,21 +1,29 @@
 #custobar-settings button {
+  font-size:18px;
+  padding: 16px;
+}
 
-    font-size:18px;
-    padding: 16px;
+#custobar-settings table {
+  background: #F8F8F8;
+}
 
+#custobar-settings table button {
+  padding: 10px 16px;
+  font-size: 16px;
+}
+
+#custobar-settings th,
+#custobar-settings td {
+  font-size: 14px;
+  padding: 12px 10px;
+}
+
+#custobar-settings td {
+  font-size: 18px;
 }
 
 #custobar-export-wrap {
   margin: 25px 0 45px;
-}
-
-#custobar-export-wrap table {
-
-}
-
-#custobar-export-wrap th,
-#custobar-export-wrap td {
-
 }
 
 /*
