@@ -54,6 +54,8 @@ class Settings {
     $saleStat = $dataUpload->fetchSyncStatSales();
     $customerStat = $dataUpload->fetchSyncStatCustomers();
 
+    print '<div id="custobar-settings">'; // open settings wrapper div
+
     $template = new Template();
     $template->name = 'sync-report';
     $template->data = [
@@ -67,6 +69,8 @@ class Settings {
     $template->name = 'api-test';
     $template->data = [];
     print $template->get();
+
+    print '</div>'; // close settings wrap
 
     woocommerce_admin_fields( self::get_settings() );
 

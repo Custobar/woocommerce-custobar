@@ -1,3 +1,10 @@
+#custobar-settings button {
+
+    font-size:18px;
+    padding: 16px;
+
+}
+
 #custobar-export-wrap {
   margin: 25px 0 45px;
 }
@@ -9,4 +16,16 @@
 #custobar-export-wrap th,
 #custobar-export-wrap td {
 
+}
+
+/*
+ *
+ * API Test
+ *
+ */
+#custobar-api-connection-test-wrap {
+  margin:25px 0 45px;
+}
+#custobar-api-connection-test-wrap hr {
+  margin-bottom:45px;
 }
