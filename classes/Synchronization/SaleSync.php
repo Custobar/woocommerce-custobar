@@ -76,6 +76,7 @@ class SaleSync extends AbstractDataSync
       ));
 
       $tracker = self::trackerFetch();
+      $trackerData = $tracker['data'];
 
       $data = [];
       $orderIds = [];
@@ -83,7 +84,7 @@ class SaleSync extends AbstractDataSync
       foreach ($orders as $order) {
 
         // skip already processed orders
-        if( in_array( $order->get_id(), $tracker)) {
+        if( in_array( $order->get_id(), $trackerData)) {
           continue;
         }
 
@@ -112,15 +113,27 @@ class SaleSync extends AbstractDataSync
 
     public static function trackerFetch() {
       $trackerKey = 'custobar_export_sale';
-      return get_option($trackerKey, []);
+      $tracker = get_option($trackerKey);
+      if( !is_array( $tracker )) {
+        $tracker = [];
+      }
+      if( !isset($tracker['data']) ) {
+        $tracker['data'] = [];
+      }
+      if( !isset($tracker['updated']) ) {
+        $tracker['updated'] = false;
+      }
+      return $tracker;
     }
 
     public static function trackerSave( $objectIds ) {
-      $trackerKey = 'custobar_export_sale';
-      $trackerData = get_option($trackerKey, []);
+      $tracker = self::trackerFetch();
+      $trackerData = $tracker['data'];
       $trackerData = array_merge($trackerData, $objectIds);
       $trackerData = array_unique($trackerData);
-      update_option($trackerKey, $trackerData);
+      $tracker['data'] = $trackerData;
+      $tracker['updated'] = time();
+      update_option('custobar_export_sale', $trackerData);
     }
 
     protected static function formatSingleItem($args)
