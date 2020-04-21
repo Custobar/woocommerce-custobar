@@ -63,12 +63,10 @@ class Settings {
     ];
     print $template->get();
 
-    print '<div id="custobar-api-connection-test-wrap" style="margin:25px 0 45px;">';
-    print '<h2>Test Custobar API Connection</h2>';
-    print '<p>Test uses the credentials you have already saved, if you are making changes press the save changes button before running this test.</p>';
-    print '<button style="font-size:18px; padding: 16px;" id="custobar-api-connection-test">Test API Connection</button>';
-    print '</div>';
-    print '<hr style="margin-bottom:45px;" />';
+    $template = new Template();
+    $template->name = 'api-test';
+    $template->data = [];
+    print $template->get();
 
     woocommerce_admin_fields( self::get_settings() );
 
@@ -129,6 +127,13 @@ class Settings {
       array( 'jquery' ),
       '1.0.0',
       true
+    );
+
+    wp_enqueue_style(
+      'custobar-admin-style',
+      WOOCOMMERCE_CUSTOBAR_URL . 'assets/custobar.admin.css',
+      array(),
+      '1.0.0'
     );
 
   }
