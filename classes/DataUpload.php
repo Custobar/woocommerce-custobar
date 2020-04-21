@@ -62,6 +62,7 @@ class DataUpload {
 
   public static function addHooks() {
     add_action( 'wp_ajax_custobar_export', __CLASS__ . '::jxExport' );
+    add_action( 'wp_ajax_custobar_api_test', __CLASS__ . '::apiTest' );
   }
 
   public static function jxExport() {
@@ -159,6 +160,41 @@ class DataUpload {
     $stat->updated = $tracker['updated'];
 
     return $stat;
+
+  }
+
+  public function apiTest() {
+
+    $apiToken = \WC_Admin_Settings::get_option( 'custobar_api_setting_token', false );
+    $companyDomain = \WC_Admin_Settings::get_option( 'custobar_api_setting_company', false );
+    $url = sprintf('https://%s.custobar.com/api', $companyDomain) . '/data/customers/';
+
+    $response = wp_remote_request($url, array(
+      'method' => 'GET',
+      'headers' => array(
+        'Content-Type'  => 'application/json',
+        'Authorization' => 'Token ' . $apiToken
+      )
+    ));
+
+    $response_code = wp_remote_retrieve_response_code($response);
+    $response_body = wp_remote_retrieve_body($response);
+
+    if( $response_code == 200 ) {
+      $message = "Successful test, your site is connected to Custobar.";
+    } else {
+      $message = "Sorry the test failed, please check your API token and domain and try again. If the problems persists please contact Custobar support.";
+    }
+
+    $response = array(
+      'url'     => $url,
+      'code'    => $response_code,
+      'body'    => $response_body,
+      'message' => $message
+    );
+    print json_encode( $response );
+
+    wp_die();
 
   }
 
