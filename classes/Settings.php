@@ -4,75 +4,42 @@ namespace WooCommerceCustobar;
 
 defined('ABSPATH') or exit;
 
+use WC_Settings_Page;
+use WC_Admin_Settings;
+
 /**
  * Class Settings
  *
  * @package WooCommerceCustobar
  */
-class Settings {
+class WC_Settings_Custobar extends WC_Settings_Page {
 
   /**
    * Bootstraps the class and hooks required actions & filters.
    *
    */
-  public static function init() {
+  public function __construct() {
 
-    add_filter( 'woocommerce_settings_tabs_array', __CLASS__ . '::add_settings_tab', 50 );
-    add_action( 'woocommerce_settings_tabs_custobar_settings', __CLASS__ . '::settings_tab' );
-    add_action( 'woocommerce_update_options_custobar_settings', __CLASS__ . '::update_settings' );
+    add_action( 'admin_enqueue_scripts', array( $this, 'scripts' ));
+    add_action( 'wp_ajax_custobar_api_test', array( $this, 'apiTest' ));
 
-    add_action( 'admin_enqueue_scripts', __CLASS__ . '::scripts' );
-    add_action( 'wp_ajax_custobar_api_test', __CLASS__ . '::apiTest' );
+    $this->id = 'custobar';
+    $this->label = __( 'Custobar', 'woocommerce-custobar' );
+    parent::__construct();
 
   }
 
+  public function add_settings_page( $pages ) {
+		return parent::add_settings_page( $pages );
+	}
 
-  /**
-   * Add a new settings tab to the WooCommerce settings tabs array.
-   *
-   * @param array $settings_tabs Array of WooCommerce setting tabs & their labels, excluding the Subscription tab.
-   * @return array $settings_tabs Array of WooCommerce setting tabs & their labels, including the Subscription tab.
-   */
-  public static function add_settings_tab( $settings_tabs ) {
-    $settings_tabs['custobar_settings'] = __( 'Custobar', 'woocommerce-custobar' );
-    return $settings_tabs;
-  }
+  public function get_sections() {
 
-
-  /**
-   * Uses the WooCommerce admin fields API to output settings via the @see woocommerce_admin_fields() function.
-   *
-   * @uses woocommerce_admin_fields()
-   * @uses self::get_settings()
-   */
-  public static function settings_tab() {
-
-    $dataUpload = new DataUpload();
-    $template = new Template();
-
-    $productStat = $dataUpload->fetchSyncStatProducts();
-    $saleStat = $dataUpload->fetchSyncStatSales();
-    $customerStat = $dataUpload->fetchSyncStatCustomers();
-
-    print '<div id="custobar-settings">'; // open settings wrapper div
-
-    $template = new Template();
-    $template->name = 'sync-report';
-    $template->data = [
-      'productStat' => $productStat,
-      'saleStat' => $saleStat,
-      'customerStat' => $customerStat
-    ];
-    print $template->get();
-
-    $template = new Template();
-    $template->name = 'api-test';
-    $template->data = [];
-    print $template->get();
-
-    print '</div>'; // close settings wrap
-
-    woocommerce_admin_fields( self::get_settings() );
+    return array(
+			''        => __( 'Data Syncronization', 'woocommerce-custobar' ),
+			'fields' => __( 'Field Settings', 'woocommerce-custobar' ),
+			'api' => __( 'API Settings', 'woocommerce-custobar' ),
+		);
 
   }
 
@@ -82,8 +49,8 @@ class Settings {
    * @uses woocommerce_update_options()
    * @uses self::get_settings()
    */
-  public static function update_settings() {
-    woocommerce_update_options( self::get_settings() );
+  public function save() {
+    woocommerce_update_options( $this->get_settings() );
   }
 
 
@@ -92,7 +59,7 @@ class Settings {
    *
    * @return array Array of settings for @see woocommerce_admin_fields() function.
    */
-  public static function get_settings() {
+  public function get_settings() {
 
     $settings = array(
       'custobar_api_settings' => array(
@@ -123,7 +90,51 @@ class Settings {
 
   }
 
-  public static function scripts() {
+  public function output() {
+
+    global $current_section, $hide_save_button;
+
+    print '<div id="custobar-settings">';
+
+    if ( '' === $current_section ) {
+
+      $hide_save_button = true;
+
+      $dataUpload = new DataUpload();
+      $template = new Template();
+
+      $productStat = $dataUpload->fetchSyncStatProducts();
+      $saleStat = $dataUpload->fetchSyncStatSales();
+      $customerStat = $dataUpload->fetchSyncStatCustomers();
+
+      $template = new Template();
+      $template->name = 'sync-report';
+      $template->data = [
+        'productStat' => $productStat,
+        'saleStat' => $saleStat,
+        'customerStat' => $customerStat
+      ];
+      print $template->get();
+
+    } elseif ( 'api' === $current_section ) {
+
+      $template = new Template();
+      $template->name = 'api-test';
+      $template->data = [];
+      print $template->get();
+
+      WC_Admin_Settings::output_fields( $this->get_settings() );
+
+
+    } else {
+
+    }
+
+    print '</div>'; // close settings wrap
+
+  }
+
+  public function scripts() {
 
     wp_enqueue_script(
       'custobar-admin-js',
@@ -142,7 +153,7 @@ class Settings {
 
   }
 
-  public static function apiTest() {
+  public function apiTest() {
 
     $apiToken = \WC_Admin_Settings::get_option( 'custobar_api_setting_token', false );
     $companyDomain = \WC_Admin_Settings::get_option( 'custobar_api_setting_company', false );

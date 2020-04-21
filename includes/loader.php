@@ -6,7 +6,12 @@ require_once(WOOCOMMERCE_CUSTOBAR_PATH . '/includes/wp-async-task.php');
 require_once(WOOCOMMERCE_CUSTOBAR_PATH . '/classes/Plugin.php');
 require_once(WOOCOMMERCE_CUSTOBAR_PATH . '/classes/DataUpload.php');
 require_once(WOOCOMMERCE_CUSTOBAR_PATH . '/classes/API.php');
-require_once(WOOCOMMERCE_CUSTOBAR_PATH . '/classes/Settings.php');
+
+add_filter( 'woocommerce_get_settings_pages', function() {
+  require_once(WOOCOMMERCE_CUSTOBAR_PATH . '/classes/Settings.php');
+  return new \WooCommerceCustobar\WC_Settings_Custobar();
+});
+
 require_once(WOOCOMMERCE_CUSTOBAR_PATH . '/classes/AsyncTasks/CustobarAsyncTask.php');
 require_once(WOOCOMMERCE_CUSTOBAR_PATH . '/classes/DataType/AbstractCustobarDataType.php');
 require_once(WOOCOMMERCE_CUSTOBAR_PATH . '/classes/DataType/CustobarCustomer.php');
