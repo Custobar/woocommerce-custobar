@@ -1,7 +1,7 @@
 (function($) {
 
   // Export run
-  $('#custobar-export').on('click', function( e ) {
+  $('button.custobar-export').on('click', function( e ) {
 
     e.preventDefault()
 
@@ -10,7 +10,7 @@
      }
      $.post( ajaxurl, data, function( response ) {
        response = JSON.parse( response )
-       $('#custobar-export-wrap').append('<p>' + response.message + '</p>')
+       $('#custobar-export-wrap table').append('<tr><td colspan="4">' + response.message + '</td></tr>');
      });
 
   })
