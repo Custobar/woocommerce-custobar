@@ -17,7 +17,7 @@
       <td><?php print $productStat->synced; ?></td>
       <td><?php print ($productStat->synced / $productStat->total) * 100 . '%'; ?></td>
       <td>2020-04-10 02:34AM</td>
-      <td><button class="custobar-export">Run Exporter</button></td>
+      <td><button class="custobar-export" data-record-type="product">Run Exporter</button></td>
     </tr>
     <tr>
       <td>Sales</td>
@@ -25,7 +25,7 @@
       <td><?php print $saleStat->synced; ?></td>
       <td><?php print ($saleStat->synced / $saleStat->total) * 100 . '%'; ?></td>
       <td>2020-04-10 02:34AM</td>
-      <td><button class="custobar-export">Run Exporter</button></td>
+      <td><button class="custobar-export" data-record-type="sale">Run Exporter</button></td>
     </tr>
     <tr>
       <td>Customers</td>
@@ -33,7 +33,7 @@
       <td><?php print $customerStat->synced; ?></td>
       <td><?php print ($customerStat->synced / $customerStat->total) * 100 . '%'; ?></td>
       <td><?php print $customerStat->updated; ?></td>
-      <td><button class="custobar-export">Run Exporter</button></td>
+      <td><button class="custobar-export" data-record-type="customer">Run Exporter</button></td>
     </tr>
   </table>
 

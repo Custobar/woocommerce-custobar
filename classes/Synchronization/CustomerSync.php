@@ -91,31 +91,34 @@ class CustomerSync extends AbstractDataSync
 
       // do upload to custobar API
       $response = self::uploadDataTypeData($data);
+      $response->count = count( $customerIds );
       return $response;
 
     }
 
     public static function trackerFetch() {
       $trackerKey = 'custobar_export_customer';
-      $tracker = get_option($trackerKey, []);
-      if( !isset($tracker['data']) || !is_array($tracker['data']) ) {
+      $tracker = get_option($trackerKey);
+      if( !is_array( $tracker )) {
+        $tracker = [];
+      }
+      if( !isset($tracker['data']) ) {
         $tracker['data'] = [];
       }
-      if( !isset($tracker['updated'])) {
+      if( !isset($tracker['updated']) ) {
         $tracker['updated'] = false;
       }
       return $tracker;
     }
 
     public static function trackerSave( $objectIds ) {
-      $trackerKey = 'custobar_export_customer';
-      $tracker = get_option($trackerKey, []);
+      $tracker = self::trackerFetch();
       $trackerData = $tracker['data'];
       $trackerData = array_merge($trackerData, $objectIds);
       $trackerData = array_unique($trackerData);
       $tracker['data'] = $trackerData;
-      $tracker['timestamp'] = time();
-      update_option($trackerKey, $tracker);
+      $tracker['updated'] = time();
+      update_option('custobar_export_customer', $tracker);
     }
 
     public static function customerAlreadyAdded( $already_looped_data, $order, $tracker ) {

@@ -71,18 +71,24 @@ class DataUpload {
     $plugin = new Plugin();
     if ($plugin::isWooCommerceActived() && $plugin::hasAllSettingsDefined()) {
 
-      $statProducts = self::fetchSyncStatProducts();
-      $statSales = self::fetchSyncStatSales();
-
-      if( $statProducts->total != $statProducts->synced ) {
-        $apiResponse = CustomerSync::batchUpdate();
-      } elseif( $statSales->total != $statSales->synced ) {
-        $apiResponse = SaleSync::batchUpdate();
-      } else {
-        $apiResponse = ProductSync::batchUpdate();
+      $recordType = sanitize_text_field( $_POST['recordType'] );
+      switch( $recordType ) {
+        case 'customer':
+          $apiResponse = CustomerSync::batchUpdate();
+          break;
+        case 'sale':
+          $apiResponse = SaleSync::batchUpdate();
+          break;
+        case 'sale':
+          $apiResponse = ProductSync::batchUpdate();
+          break;
       }
 
+    } else {
+      wp_die();
     }
+
+
 
     if( $apiResponse->code == 200 ) {
       $message = "Export to Custobar successful.";
@@ -90,10 +96,14 @@ class DataUpload {
       $message = "No WooCommerce records available to export.";
     }
 
+    $tracker = CustomerSync::trackerFetch();
+
     $response = array(
       'code'    => $apiResponse->code,
       'body'    => $apiResponse->body,
-      'message' => $message
+      'message' => $message,
+      'full'    => $apiResponse,
+      'tracker' => $tracker
     );
     print json_encode( $response );
 
