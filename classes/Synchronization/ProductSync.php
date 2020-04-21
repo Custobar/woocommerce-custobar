@@ -37,11 +37,18 @@ class ProductSync extends AbstractDataSync {
 
       $limit = 500;
       $tracker = self::trackerFetch();
+      $trackerData = $tracker['data'];
 
       $products = [];
       $productIds = [];
       foreach (wc_get_products(array('limit' => -1)) as $product) {
         $products[] = self::formatSingleItem($product);
+
+        // skip already processed orders
+        if( in_array( $product->get_id(), $trackerData)) {
+          continue;
+        }
+
         $productIds[] = $product->get_id();
         if( count($products) >= $limit ) {
           break;
@@ -54,15 +61,27 @@ class ProductSync extends AbstractDataSync {
 
     public static function trackerFetch() {
       $trackerKey = 'custobar_export_product';
-      return get_option($trackerKey, []);
+      $tracker = get_option($trackerKey);
+      if( !is_array( $tracker )) {
+        $tracker = [];
+      }
+      if( !isset($tracker['data']) ) {
+        $tracker['data'] = [];
+      }
+      if( !isset($tracker['updated']) ) {
+        $tracker['updated'] = false;
+      }
+      return $tracker;
     }
 
     public static function trackerSave( $objectIds ) {
-      $trackerKey = 'custobar_export_product';
-      $trackerData = get_option($trackerKey, []);
+      $tracker = self::trackerFetch();
+      $trackerData = $tracker['data'];
       $trackerData = array_merge($trackerData, $objectIds);
       $trackerData = array_unique($trackerData);
-      update_option($trackerKey, $trackerData);
+      $tracker['data'] = $trackerData;
+      $tracker['updated'] = time();
+      update_option('custobar_export_product', $tracker);
     }
 
     protected static function formatSingleItem($product)
