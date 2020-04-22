@@ -13,8 +13,15 @@
      }
      $.post( ajaxurl, data, function( response ) {
        response = JSON.parse( response )
-       $('#custobar-export-wrap table').append('<tr><td colspan="4">' + response.message + '</td></tr>');
+       var responseRow = $( '#custobar-export-wrap table tr.response' );
+       if( responseRow.length ) {
+         responseRow.find('td').html( response.message )
+       } else {
+         $('#custobar-export-wrap table').append('<tr class="response"><td colspan="6">' + response.message + '</td></tr>');
+       }
+
        console.log( response )
+
      });
 
   })

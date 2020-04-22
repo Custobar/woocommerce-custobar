@@ -3,40 +3,44 @@
   <h2>Custobar Sync Status</h2>
 
   <table>
-    <tr>
-      <th>Record Type</th>
-      <th>Total Records</th>
-      <th>Synced Records</th>
-      <th>Sync %</th>
-      <th>Last Export</th>
-      <th>&nbsp;</th>
-    </tr>
-    <tr>
-      <td>Products</td>
-      <td><?php print $productStat->total; ?></td>
-      <td><?php print $productStat->synced; ?></td>
-      <td><?php print ($productStat->synced / $productStat->total) * 100 . '%'; ?></td>
-      <td>2020-04-10 02:34AM</td>
-      <td><button class="custobar-export" data-record-type="product">Run Exporter</button></td>
-    </tr>
-    <tr>
-      <td>Sales</td>
-      <td><?php print $saleStat->total; ?></td>
-      <td><?php print $saleStat->synced; ?></td>
-      <td><?php print ($saleStat->synced / $saleStat->total) * 100 . '%'; ?></td>
-      <td>2020-04-10 02:34AM</td>
-      <td><button class="custobar-export" data-record-type="sale">Run Exporter</button></td>
-    </tr>
-    <tr>
-      <td>Customers</td>
-      <td><?php print $customerStat->total; ?></td>
-      <td><?php print $customerStat->synced; ?></td>
-      <td><?php print ($customerStat->synced / $customerStat->total) * 100 . '%'; ?></td>
-      <td><?php print $customerStat->updated; ?></td>
-      <td><button class="custobar-export" data-record-type="customer">Run Exporter</button></td>
-    </tr>
+    <thead>
+      <tr>
+        <th>Record Type</th>
+        <th class="custobar-center">Total Records</th>
+        <th class="custobar-center">Synced Records</th>
+        <th class="custobar-center">Sync %</th>
+        <th>Last Export</th>
+        <th>&nbsp;</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Products</td>
+        <td class="custobar-center"><?php print $productStat->total; ?></td>
+        <td class="custobar-center"><?php print $productStat->synced; ?></td>
+        <td class="custobar-center"><?php print ($productStat->synced / $productStat->total) * 100 . '%'; ?></td>
+        <td>2020-04-10 02:34AM</td>
+        <td><button class="custobar-export" data-record-type="product">Run Exporter</button></td>
+      </tr>
+      <tr>
+        <td>Sales</td>
+        <td class="custobar-center"><?php print $saleStat->total; ?></td>
+        <td class="custobar-center"><?php print $saleStat->synced; ?></td>
+        <td class="custobar-center"><?php print ($saleStat->synced / $saleStat->total) * 100 . '%'; ?></td>
+        <td>2020-04-10 02:34AM</td>
+        <td><button class="custobar-export" data-record-type="sale">Run Exporter</button></td>
+      </tr>
+      <tr>
+        <td>Customers</td>
+        <td class="custobar-center"><?php print $customerStat->total; ?></td>
+        <td class="custobar-center"><?php print $customerStat->synced; ?></td>
+        <td class="custobar-center"><?php print ($customerStat->synced / $customerStat->total) * 100 . '%'; ?></td>
+        <td><?php print $customerStat->updated; ?></td>
+        <td><button class="custobar-export" data-record-type="customer">Run Exporter</button></td>
+      </tr>
+    <tbody>
   </table>
 
 </div>
 
-<hr style="margin-bottom:45px;" />
+<hr />
