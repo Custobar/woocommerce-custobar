@@ -26,11 +26,17 @@ class ProductSync extends AbstractDataSync {
         });
     }
 
-    public static function singleUpdate($args)
-    {
-        $product = wc_get_product($args[0]);
-        $properties = self::formatSingleItem($product);
-        self::uploadDataTypeData($properties, true);
+    public static function singleUpdate($args) {
+
+      $product = wc_get_product($args[0]);
+      $properties = self::formatSingleItem($product);
+      self::uploadDataTypeData($properties, true);
+
+      $productId = $product->get_id();
+      self::trackerSave(
+        [ $productId ]
+      );
+
     }
 
     public static function batchUpdate() {
