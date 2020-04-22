@@ -79,33 +79,28 @@ class DataUpload {
         case 'sale':
           $apiResponse = SaleSync::batchUpdate();
           break;
-        case 'sale':
+        case 'product':
           $apiResponse = ProductSync::batchUpdate();
           break;
       }
 
     } else {
+      $response = array(
+        'code' => 420
+      );
+      print json_encode( $response );
       wp_die();
     }
 
-
-
-    if( $apiResponse->code == 200 ) {
-      $message = "Export to Custobar successful.";
+    if( $apiResponse ) {
+      print json_encode( $apiResponse );
     } else {
-      $message = "No WooCommerce records available to export.";
+      $response = array(
+        'code' => 440
+      );
+      print json_encode( $response );
     }
 
-    $tracker = CustomerSync::trackerFetch();
-
-    $response = array(
-      'code'    => $apiResponse->code,
-      'body'    => $apiResponse->body,
-      'message' => $message,
-      'full'    => $apiResponse,
-      'tracker' => $tracker
-    );
-    print json_encode( $response );
 
     wp_die();
 
@@ -118,8 +113,9 @@ class DataUpload {
     $products = wc_get_products(array('limit' => -1));
     $stat->total = count( $products );
 
-    $productSyncTracker = ProductSync::trackerFetch();
-    $stat->synced = count( $productSyncTracker );
+    $tracker = ProductSync::trackerFetch();
+    $stat->synced = count( $tracker['data'] );
+    $stat->updated = $tracker['updated'];
 
     return $stat;
 
@@ -143,7 +139,8 @@ class DataUpload {
     $stat->total = $salesCount;
 
     $tracker = SaleSync::trackerFetch();
-    $stat->synced = count( $tracker );
+    $stat->synced = count( $tracker['data'] );
+    $stat->updated = $tracker['updated'];
 
     return $stat;
 

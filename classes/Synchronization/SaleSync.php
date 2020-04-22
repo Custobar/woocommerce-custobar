@@ -79,25 +79,28 @@ class SaleSync extends AbstractDataSync
       $trackerData = $tracker['data'];
 
       $data = [];
-      $orderIds = [];
+      $orderItemIds = [];
       $limit = 500;
       foreach ($orders as $order) {
 
-        // skip already processed orders
-        if( in_array( $order->get_id(), $trackerData)) {
-          continue;
+        if( count( $data ) >= $limit ) {
+          break;
         }
 
         foreach ($order->get_items() as $order_item) {
+
+          // skip already processed orders
+          if( in_array( $order_item->get_id(), $trackerData)) {
+            continue;
+          }
+
           $data[] = self::formatSingleItem(array(
             'order'      => $order,
             'order_item' => $order_item
           ));
-        }
 
-        $orderIds[] = $order->get_id();
-        if( count( $data ) >= $limit ) {
-          break;
+          $orderItemIds[] = $order_item->get_id();
+
         }
 
       }
@@ -106,8 +109,15 @@ class SaleSync extends AbstractDataSync
         return;
       }
 
-      self::trackerSave( $orderIds );
-      return self::uploadDataTypeData($data);
+      self::trackerSave( $orderItemIds );
+      $apiResponse = self::uploadDataTypeData($data);
+
+      $response = new \stdClass;
+      $response->code = $apiResponse->code;
+      $response->body = $apiResponse->body;
+      $response->tracker = self::trackerFetch();
+      $response->count = count( $orderItemIds );
+      return $response;
 
     }
 
@@ -133,7 +143,7 @@ class SaleSync extends AbstractDataSync
       $trackerData = array_unique($trackerData);
       $tracker['data'] = $trackerData;
       $tracker['updated'] = time();
-      update_option('custobar_export_sale', $trackerData);
+      update_option('custobar_export_sale', $tracker);
     }
 
     protected static function formatSingleItem($args)

@@ -90,7 +90,13 @@ class CustomerSync extends AbstractDataSync
       self::trackerSave( $customerIds );
 
       // do upload to custobar API
-      $response = self::uploadDataTypeData($data);
+      $apiResponse = self::uploadDataTypeData($data);
+
+      // return response
+      $response = new \stdClass;
+      $response->code = $apiResponse->code;
+      $response->body = $apiResponse->body;
+      $response->tracker = self::trackerFetch();
       $response->count = count( $customerIds );
       return $response;
 

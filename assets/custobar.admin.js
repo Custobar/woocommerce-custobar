@@ -13,11 +13,23 @@
      }
      $.post( ajaxurl, data, function( response ) {
        response = JSON.parse( response )
+
+       var message = '';
+       if( response.code == 200 ) {
+         message += "Custobar data export successful. Code " + response.code + ", total of " + response.count + " records exported.";
+       }
+       if( response.code == 420 ) {
+         message += "Either WooCommerce is uninstalled or other configuration conditions were not met. Check that you have a valid API key set for Custobar. Response code " + response.code + ", no records were exported.";
+       }
+       if( response.code == 440 ) {
+         message += "No records available to export. Response code " + response.code + ", no records were exported.";
+       }
+
        var responseRow = $( '#custobar-export-wrap table tr.response' );
        if( responseRow.length ) {
-         responseRow.find('td').html( response.message )
+         responseRow.find('td').html( message )
        } else {
-         $('#custobar-export-wrap table').append('<tr class="response"><td colspan="6">' + response.message + '</td></tr>');
+         $('#custobar-export-wrap table').append('<tr class="response"><td colspan="6">' + message + '</td></tr>');
        }
 
        console.log( response )

@@ -42,21 +42,37 @@ class ProductSync extends AbstractDataSync {
       $products = [];
       $productIds = [];
       foreach (wc_get_products(array('limit' => -1)) as $product) {
-        $products[] = self::formatSingleItem($product);
 
         // skip already processed orders
         if( in_array( $product->get_id(), $trackerData)) {
           continue;
         }
 
+        $products[] = self::formatSingleItem($product);
+
         $productIds[] = $product->get_id();
         if( count($products) >= $limit ) {
           break;
         }
+
+      }
+
+      // no products
+      if( empty( $productIds )) {
+        return false;
       }
 
       self::trackerSave( $productIds );
-      return self::uploadDataTypeData($products);
+      $apiResponse = self::uploadDataTypeData($products);
+
+      // return response
+      $response = new \stdClass;
+      $response->code = $apiResponse->code;
+      $response->body = $apiResponse->body;
+      $response->tracker = self::trackerFetch();
+      $response->count = count( $productIds );
+      return $response;
+
     }
 
     public static function trackerFetch() {
