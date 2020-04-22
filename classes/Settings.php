@@ -99,11 +99,39 @@ class WC_Settings_Custobar extends WC_Settings_Page {
   public function get_settings_fields() {
 
     $settings = array(
+      'custobar_field_map_title' => array(
+        'name'     => __( 'Field Mapping', 'woocommerce-custobar' ),
+        'type'     => 'title'
+      ),
       'custobar_customer_fields' => array(
         'name'     => __( 'Customer Field Map', 'woocommerce-custobar' ),
         'type'     => 'textarea',
         'desc'     => '',
+        'custom_attributes' => [
+          'rows' => 8
+        ],
+        'class'    => 'input-text wide-input',
         'id'       => 'custobar_customer_fields'
+      ),
+      'custobar_product_fields' => array(
+        'name'     => __( 'Product Field Map', 'woocommerce-custobar' ),
+        'type'     => 'textarea',
+        'desc'     => '',
+        'custom_attributes' => [
+          'rows' => 8
+        ],
+        'class'    => 'input-text wide-input',
+        'id'       => 'custobar_product_fields'
+      ),
+      'custobar_sale_fields' => array(
+        'name'     => __( 'Sale Field Map', 'woocommerce-custobar' ),
+        'type'     => 'textarea',
+        'desc'     => '',
+        'custom_attributes' => [
+          'rows' => 8
+        ],
+        'class'    => 'input-text wide-input',
+        'id'       => 'custobar_sale_fields'
       ),
       'section_end' => array(
         'type' => 'sectionend',
