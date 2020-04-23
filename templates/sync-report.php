@@ -14,28 +14,28 @@
       </tr>
     </thead>
     <tbody>
-      <tr>
+      <tr class="sync-report-product">
         <td>Products</td>
         <td class="custobar-center"><?php print $productStat->total; ?></td>
         <td class="custobar-center"><?php print $productStat->synced; ?></td>
         <td class="custobar-center"><?php print $productStat->synced_percent; ?></td>
-        <td><?php print date('Y-m-d g:i:sA', $productStat->updated); ?></td>
+        <td><?php print $productStat->updated; ?></td>
         <td><button class="custobar-export" data-record-type="product">Run Exporter</button></td>
       </tr>
-      <tr>
+      <tr class="sync-report-sale">
         <td>Sales</td>
         <td class="custobar-center"><?php print $saleStat->total; ?></td>
         <td class="custobar-center"><?php print $saleStat->synced; ?></td>
         <td class="custobar-center"><?php print $saleStat->synced_percent; ?></td>
-        <td><?php print date('Y-m-d g:i:sA', $saleStat->updated); ?></td>
+        <td><?php print $saleStat->updated; ?></td>
         <td><button class="custobar-export" data-record-type="sale">Run Exporter</button></td>
       </tr>
-      <tr>
+      <tr class="sync-report-customer">
         <td>Customers</td>
         <td class="custobar-center"><?php print $customerStat->total; ?></td>
         <td class="custobar-center"><?php print $customerStat->synced; ?></td>
         <td class="custobar-center"><?php print $customerStat->synced_percent; ?></td>
-        <td><?php print date('Y-m-d g:i:sA', $customerStat->updated); ?></td>
+        <td><?php print $customerStat->updated; ?></td>
         <td><button class="custobar-export" data-record-type="customer">Run Exporter</button></td>
       </tr>
     <tbody>

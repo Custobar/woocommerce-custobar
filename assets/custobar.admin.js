@@ -12,11 +12,20 @@
        recordType: recordType
      }
      $.post( ajaxurl, data, function( response ) {
+
        response = JSON.parse( response )
 
        var message = '';
        if( response.code == 200 ) {
          message += "Custobar data export successful. Code " + response.code + ", total of " + response.count + " records exported.";
+
+         // update row
+         var reportRow = $('tr.sync-report-' + response.recordType)
+         reportRow.find('td').eq(2).html( response.stats.synced )
+         reportRow.find('td').eq(3).html( response.stats.synced_percent )
+         reportRow.find('td').eq(4).html( response.stats.updated )
+
+
        }
        if( response.code == 420 ) {
          message += "Either WooCommerce is uninstalled or other configuration conditions were not met. Check that you have a valid API key set for Custobar. Response code " + response.code + ", no records were exported.";

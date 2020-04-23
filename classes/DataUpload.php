@@ -75,14 +75,19 @@ class DataUpload {
       switch( $recordType ) {
         case 'customer':
           $apiResponse = CustomerSync::batchUpdate();
+          $apiResponse->stats = self::fetchSyncStatCustomers();
           break;
         case 'sale':
           $apiResponse = SaleSync::batchUpdate();
+          $apiResponse->stats = self::fetchSyncStatSales();
           break;
         case 'product':
           $apiResponse = ProductSync::batchUpdate();
+          $apiResponse->stats = self::fetchSyncStatProducts();
           break;
       }
+
+      $apiResponse->recordType = $recordType;
 
     } else {
       $response = array(
@@ -106,7 +111,7 @@ class DataUpload {
 
   }
 
-  public function fetchSyncStatProducts() {
+  public static function fetchSyncStatProducts() {
 
     $stat = new \stdClass;
 
@@ -115,14 +120,24 @@ class DataUpload {
 
     $tracker = ProductSync::trackerFetch();
     $stat->synced = count( $tracker['data'] );
-    $stat->synced_percent = number_format(($stat->synced / $stat->total) * 100) . '%';
-    $stat->updated = $tracker['updated'];
+    if( $stat->total > 0 ) {
+      $stat->synced_percent = number_format(($stat->synced / $stat->total) * 100) . '%';
+    } else {
+      $stat->synced_percent = '-';
+    }
+
+    $updatedTimestamp = $tracker['updated'];
+    if( $updatedTimestamp ) {
+      $stat->updated = date('Y-m-d g:i:sA', $updatedTimestamp);
+    } else {
+      $stat->updated = '-';
+    }
 
     return $stat;
 
   }
 
-  public function fetchSyncStatSales() {
+  public static function fetchSyncStatSales() {
 
     $stat = new \stdClass;
 
@@ -141,14 +156,25 @@ class DataUpload {
 
     $tracker = SaleSync::trackerFetch();
     $stat->synced = count( $tracker['data'] );
-    $stat->synced_percent = number_format(($stat->synced / $stat->total) * 100) . '%';
-    $stat->updated = $tracker['updated'];
+
+    if( $stat->total > 0 ) {
+      $stat->synced_percent = number_format(($stat->synced / $stat->total) * 100) . '%';
+    } else {
+      $stat->synced_percent = '-';
+    }
+
+    $updatedTimestamp = $tracker['updated'];
+    if( $updatedTimestamp ) {
+      $stat->updated = date('Y-m-d g:i:sA', $updatedTimestamp);
+    } else {
+      $stat->updated = '-';
+    }
 
     return $stat;
 
   }
 
-  public function fetchSyncStatCustomers() {
+  public static function fetchSyncStatCustomers() {
 
     $stat = new \stdClass;
     $tracker = CustomerSync::trackerFetch();
@@ -166,14 +192,23 @@ class DataUpload {
 
     $stat->total = count( $customerIds );
     $stat->synced = count( $tracker['data'] );
-    $stat->synced_percent = number_format(($stat->synced / $stat->total) * 100) . '%';
-    $stat->updated = $tracker['updated'];
+    if( $stat->total > 0 ) {
+      $stat->synced_percent = number_format(($stat->synced / $stat->total) * 100) . '%';
+    } else {
+      $stat->synced_percent = '-';
+    }
+    $updatedTimestamp = $tracker['updated'];
+    if( $updatedTimestamp ) {
+      $stat->updated = date('Y-m-d g:i:sA', $updatedTimestamp);
+    } else {
+      $stat->updated = '-';
+    }
 
     return $stat;
 
   }
 
-  public function apiTest() {
+  public static function apiTest() {
 
     $apiToken = \WC_Admin_Settings::get_option( 'custobar_api_setting_token', false );
     $companyDomain = \WC_Admin_Settings::get_option( 'custobar_api_setting_company', false );
