@@ -115,6 +115,7 @@ class DataUpload {
 
     $tracker = ProductSync::trackerFetch();
     $stat->synced = count( $tracker['data'] );
+    $stat->synced_percent = number_format(($stat->synced / $stat->total) * 100) . '%';
     $stat->updated = $tracker['updated'];
 
     return $stat;
@@ -140,6 +141,7 @@ class DataUpload {
 
     $tracker = SaleSync::trackerFetch();
     $stat->synced = count( $tracker['data'] );
+    $stat->synced_percent = number_format(($stat->synced / $stat->total) * 100) . '%';
     $stat->updated = $tracker['updated'];
 
     return $stat;
@@ -164,6 +166,7 @@ class DataUpload {
 
     $stat->total = count( $customerIds );
     $stat->synced = count( $tracker['data'] );
+    $stat->synced_percent = number_format(($stat->synced / $stat->total) * 100) . '%';
     $stat->updated = $tracker['updated'];
 
     return $stat;
