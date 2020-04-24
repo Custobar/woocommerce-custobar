@@ -77,4 +77,5 @@
 .submit .button-restore,
 .submit .button-lock {
   line-height: 1;
+  vertical-align: top !important;
 }
