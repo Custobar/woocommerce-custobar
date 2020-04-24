@@ -212,6 +212,14 @@ class WC_Settings_Custobar extends WC_Settings_Page {
       true
     );
 
+    wp_localize_script(
+      'custobar-admin-js',
+      'Custobar',
+      array(
+        'fieldsMap' => FieldsMap::getFieldsMapFroFront(),
+      )
+    );
+
     wp_enqueue_style(
       'custobar-admin-style',
       WOOCOMMERCE_CUSTOBAR_URL . 'assets/custobar.admin.css',

@@ -4,7 +4,12 @@
         var $actions = $('#fields-action').children().remove(),
             $submit = $('p.submit'),
             $container = $('#custobar-settings'),
-            $fields = $container.find('textarea');
+            $fields = $container.find('textarea'),
+            fieldsMap = {
+                customer: 'custobar_customer_fields',
+                product: 'custobar_product_fields',
+                sale: 'custobar_sale_fields',
+            };
 
         $submit.append($actions);
 
@@ -28,6 +33,16 @@
                 $fields.attr('readonly', true);
                 $icon.removeClass('dashicons-unlock').addClass('dashicons-lock');
             }
+        });
+
+        $submit.on('click', '.button-restore', function(event) {
+            event.preventDefault();
+
+            for (var fieldKey in Custobar.fieldsMap) {
+                $('#'+fieldsMap[fieldKey]).val(Custobar.fieldsMap[fieldKey]);
+            }
+
+            $submit.find('.woocommerce-save-button').click();
         });
     });
 

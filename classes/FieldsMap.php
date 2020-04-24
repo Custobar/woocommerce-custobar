@@ -97,6 +97,27 @@ class FieldsMap
             ),
         );
 
-        return isset($groups[$fieldGroup]) ? $groups[$fieldGroup] : $groups['product'];
+        return isset($groups[$fieldGroup]) ? $groups[$fieldGroup] : $groups;
+    }
+
+    public static function getFieldsMapFroFront() {
+        $groups = self::getDefaults( 'all' );
+        $out = array();
+
+        foreach ($groups as $key => $group) {
+            foreach ($group as $ckey => $wkey) {
+                if (is_null($wkey)) {
+                    $wkey = 'null';
+                }
+
+                if (isset($out[$key])) {
+                    $out[$key] .= "{$ckey}: {$wkey}\n";
+                } else {
+                    $out[$key] = "{$ckey}: {$wkey}\n";
+                }
+            }
+        }
+
+        return $out;
     }
 }
