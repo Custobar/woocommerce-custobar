@@ -61,3 +61,20 @@
   background: #75C46B;
   color: #FFFFFF;
 }
+
+#fields-action {
+  display: none;
+}
+
+.submit .woocommerce-save-button {
+  margin-right: 125px;
+}
+
+.submit .button-restore {
+  margin-left: 10px;
+}
+
+.submit .button-restore,
+.submit .button-lock {
+  line-height: 1;
+}

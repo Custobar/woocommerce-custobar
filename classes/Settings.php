@@ -108,7 +108,8 @@ class WC_Settings_Custobar extends WC_Settings_Page {
         'type'     => 'textarea',
         'desc'     => '',
         'custom_attributes' => [
-          'rows' => 8
+          'rows' => 8,
+          'readonly' => 'readonly',
         ],
         'class'    => 'input-text wide-input',
         'id'       => 'custobar_customer_fields'
@@ -118,7 +119,8 @@ class WC_Settings_Custobar extends WC_Settings_Page {
         'type'     => 'textarea',
         'desc'     => '',
         'custom_attributes' => [
-          'rows' => 8
+          'rows' => 8,
+          'readonly' => 'readonly',
         ],
         'class'    => 'input-text wide-input',
         'id'       => 'custobar_product_fields'
@@ -128,7 +130,8 @@ class WC_Settings_Custobar extends WC_Settings_Page {
         'type'     => 'textarea',
         'desc'     => '',
         'custom_attributes' => [
-          'rows' => 8
+          'rows' => 8,
+          'readonly' => 'readonly',
         ],
         'class'    => 'input-text wide-input',
         'id'       => 'custobar_sale_fields'
@@ -183,10 +186,20 @@ class WC_Settings_Custobar extends WC_Settings_Page {
 
       WC_Admin_Settings::output_fields( $this->get_settings_fields() );
 
+      $this->actionButtons();
     }
 
     print '</div>'; // close settings wrap
 
+  }
+
+  protected function actionButtons() {
+    ?>
+    <div id="fields-action">
+        <button type="button" class="button button-lock" data-tip="<?php esc_attr_e( 'Click here to edit fields map', 'woocommerce-custobar' ); ?>"><span class="dashicons dashicons-lock"></span></button>
+        <button type="button" class="button button-restore" data-tip="<?php esc_attr_e( 'Restore to default fields map', 'woocommerce-custobar' ); ?>"><span class="dashicons dashicons-undo"></span></button>
+    </div>
+    <?php
   }
 
   public function scripts() {

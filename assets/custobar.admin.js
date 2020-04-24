@@ -1,5 +1,36 @@
 (function($) {
 
+    $(function() {
+        var $actions = $('#fields-action').children().remove(),
+            $submit = $('p.submit'),
+            $container = $('#custobar-settings'),
+            $fields = $container.find('textarea');
+
+        $submit.append($actions);
+
+        $('.submit .button-lock, .submit .button-restore').tipTip({
+            'attribute': 'data-tip',
+            'fadeIn': 50,
+            'fadeOut': 50,
+            'delay': 200,
+            'defaultPosition': 'top'
+        });
+
+        $submit.on('click', '.button-lock', function(event) {
+            event.preventDefault();
+            
+            var $icon = $(this).find('.dashicons');
+            
+            if ($icon.hasClass('dashicons-lock')) {
+                $fields.attr('readonly', false);
+                $icon.removeClass('dashicons-lock').addClass('dashicons-unlock');
+            } else {
+                $fields.attr('readonly', true);
+                $icon.removeClass('dashicons-unlock').addClass('dashicons-lock');
+            }
+        });
+    });
+
   // Export run
   $('button.custobar-export').on('click', function( e ) {
 
