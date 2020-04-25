@@ -27,3 +27,5 @@ require_once(WOOCOMMERCE_CUSTOBAR_PATH . '/classes/Synchronization/SaleSync.php'
 require_once(WOOCOMMERCE_CUSTOBAR_PATH . '/classes/Synchronization/SyncTracker.php');
 require_once(WOOCOMMERCE_CUSTOBAR_PATH . '/classes/Template.php');
 require_once(WOOCOMMERCE_CUSTOBAR_PATH . '/classes/FieldsMap.php');
+require_once(WOOCOMMERCE_CUSTOBAR_PATH . '/classes/DataSource/AbstractDataSource.php');
+require_once(WOOCOMMERCE_CUSTOBAR_PATH . '/classes/DataSource/WooCommerceProduct.php');

@@ -2,6 +2,8 @@
 
 namespace WooCommerceCustobar\DataType;
 
+use WooCommerceCustobar\FieldsMap;
+
 defined('ABSPATH') or exit;
 
 /**
@@ -58,6 +60,14 @@ class CustobarProduct extends AbstractCustobarDataType
      */
     public function __construct($product)
     {
+
+        // Pseudo code
+        // $source = new WooCommerceProduct($product);
+        // $fields = FieldsMap::getSavedMap('product');
+        // foreach ($fields as $custobarKey => $wooCommmerceKey ) {
+        //     $destination->setValue($custobarKey, $source->getValue($wooCommmerceKey)); // destination is $this
+        // }
+
         $this->external_id                  = (string)$product->get_id();
         $this->price                        = Utilities::getPriceInCents($product->get_regular_price());
         $this->type                         = $product->get_type();

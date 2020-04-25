@@ -6,7 +6,7 @@ use WooCommerceCustobar\DataType\Utilities;
 
 defined('ABSPATH') or exit;
 
-class WooCommerceProduct
+class WooCommerceProduct extends AbstractDataSource
 {
 
     CONST PRODUCT_ID = 'product_id';

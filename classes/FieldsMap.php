@@ -2,9 +2,10 @@
 
 namespace WooCommerceCustobar;
 
-use WooCommerceCustobar\DataType\CustobarCustomer as Customer;
-use WooCommerceCustobar\DataType\CustobarProduct as Product;
-use WooCommerceCustobar\DataType\CustobarSale as Sale;
+use WooCommerceCustobar\DataType\CustobarCustomer as CBCustomer;
+use WooCommerceCustobar\DataType\CustobarProduct as CBProduct;
+use WooCommerceCustobar\DataType\CustobarSale as CBSale;
+use WooCommerceCustobar\DataSource\WooCommerceProduct as WCProduct;
 
 defined('ABSPATH') or exit;
 
@@ -26,27 +27,27 @@ class FieldsMap
              * custobar => woocommerce
              */
             'customer' => array(
-                Customer::EXTERNAL_ID    => 'user_id',
-                Customer::FIRST_NAME     => 'billing_first_name',
-                Customer::LAST_NAME      => 'billing_last_name',
-                Customer::PHONE_NUMBER   => 'billing_phone',
-                Customer::COMPANY        => 'company',
-                Customer::STREET_ADDRESS => 'street_address',
-                Customer::CITY           => 'city',
-                Customer::ZIP_CODE       => 'zip_code',
-                Customer::STATE          => 'state',
-                Customer::COUNTRY        => 'country',
-                Customer::DATE_JOINED    => 'date_joined',
-                Customer::CAN_SMS        => 'can_sms',
-                Customer::CAN_EMAIL      => 'can_email',
-                Customer::NIN            => null,
-                Customer::CAN_POST       => null,
-                Customer::LANGUAGE       => null,
-                Customer::LAST_LOGIN     => null,
-                Customer::VAT_NUMBER     => null,
-                Customer::CAN_PROFILE    => null,
-                Customer::CANONICAL_ID   => null,
-                Customer::MAILING_LISTS  => null,
+                CBCustomer::EXTERNAL_ID    => 'user_id',
+                CBCustomer::FIRST_NAME     => 'billing_first_name',
+                CBCustomer::LAST_NAME      => 'billing_last_name',
+                CBCustomer::PHONE_NUMBER   => 'billing_phone',
+                CBCustomer::COMPANY        => 'company',
+                CBCustomer::STREET_ADDRESS => 'street_address',
+                CBCustomer::CITY           => 'city',
+                CBCustomer::ZIP_CODE       => 'zip_code',
+                CBCustomer::STATE          => 'state',
+                CBCustomer::COUNTRY        => 'country',
+                CBCustomer::DATE_JOINED    => 'date_joined',
+                CBCustomer::CAN_SMS        => 'can_sms',
+                CBCustomer::CAN_EMAIL      => 'can_email',
+                CBCustomer::NIN            => null,
+                CBCustomer::CAN_POST       => null,
+                CBCustomer::LANGUAGE       => null,
+                CBCustomer::LAST_LOGIN     => null,
+                CBCustomer::VAT_NUMBER     => null,
+                CBCustomer::CAN_PROFILE    => null,
+                CBCustomer::CANONICAL_ID   => null,
+                CBCustomer::MAILING_LISTS  => null,
             ),
 
             /**
@@ -55,24 +56,24 @@ class FieldsMap
              * custobar => woocommerce
              */
             'product' => array(
-                Product::EXTERNAL_ID                  => 'product_id',
-                Product::TITLE                        => 'title',
-                Product::DESCRIPTION                  => 'description',
-                Product::IMAGE                        => 'image',
-                Product::TYPE                         => 'type',
-                Product::WEIGHT                       => 'weight',
-                Product::UNIT                         => 'unit',
-                Product::PRICE                        => 'price',
-                Product::SALE_PRICE                   => 'sale_price',
-                Product::CATEGORY                     => 'category',
-                Product::CATEGORY_ID                  => 'category_ids',
-                Product::DATE                         => 'date',
-                Product::URL                          => 'url',
-                Product::VISIBLE                      => 'visible',
-                Product::BRAND                        => null,
-                Product::VENDOR                       => null,
-                Product::LANGUAGE                     => null,
-                Product::EXCLUDE_FROM_RECOMMENDATIONS => null,
+                CBProduct::EXTERNAL_ID                  => WCProduct::PRODUCT_ID,
+                CBProduct::TITLE                        => WCProduct::TITLE,
+                CBProduct::DESCRIPTION                  => WCProduct::DESCRIPTION,
+                CBProduct::IMAGE                        => WCProduct::IMAGE,
+                CBProduct::TYPE                         => WCProduct::TYPE,
+                CBProduct::WEIGHT                       => WCProduct::WEIGHT,
+                CBProduct::UNIT                         => WCProduct::UNIT,
+                CBProduct::PRICE                        => WCProduct::PRICE,
+                CBProduct::SALE_PRICE                   => WCProduct::SALE_PRICE,
+                CBProduct::CATEGORY                     => WCProduct::CATEGORY,
+                CBProduct::CATEGORY_ID                  => WCProduct::CATEGORY_IDS,
+                CBProduct::DATE                         => WCProduct::DATE,
+                CBProduct::URL                          => WCProduct::URL,
+                CBProduct::VISIBLE                      => WCProduct::VISIBLE,
+                CBProduct::BRAND                        => null,
+                CBProduct::VENDOR                       => null,
+                CBProduct::LANGUAGE                     => null,
+                CBProduct::EXCLUDE_FROM_RECOMMENDATIONS => null,
             ),
 
             /**
@@ -81,23 +82,23 @@ class FieldsMap
              * custobar => woocommerce
              */
             'sale' => array(
-                Sale::EXTERNAL_ID         => 'order_id',
-                Sale::SALE_EXTERNAL_ID    => 'order_number',
-                Sale::SALE_DATE           => 'order_date',
-                Sale::TOTAL               => 'total',
-                Sale::SALE_TOTAL          => 'total',
-                Sale::SALE_CUSTOMER_ID    => 'customer_id',
-                Sale::SALE_PHONE_NUMBER   => 'customer_phone',
-                Sale::SALE_EMAIL          => 'customer_email',
-                Sale::PRODUCT_ID          => 'product_id',
-                Sale::QUANTITY            => 'quantity',
-                Sale::UNIT_PRICE          => 'price',
-                Sale::SALE_DISCOUNT       => 'total_discount',
-                Sale::SALE_SHIPPING       => 'sale_shipping',
-                Sale::SALE_PAYMENT_METHOD => 'payment_method_title',
-                Sale::DISCOUNT            => null,
-                Sale::SALE_STATE          => null,
-                Sale::SALE_SHOP_ID        => null,
+                CBSale::EXTERNAL_ID         => 'order_id',
+                CBSale::SALE_EXTERNAL_ID    => 'order_number',
+                CBSale::SALE_DATE           => 'order_date',
+                CBSale::TOTAL               => 'total',
+                CBSale::SALE_TOTAL          => 'total',
+                CBSale::SALE_CUSTOMER_ID    => 'customer_id',
+                CBSale::SALE_PHONE_NUMBER   => 'customer_phone',
+                CBSale::SALE_EMAIL          => 'customer_email',
+                CBSale::PRODUCT_ID          => 'product_id',
+                CBSale::QUANTITY            => 'quantity',
+                CBSale::UNIT_PRICE          => 'price',
+                CBSale::SALE_DISCOUNT       => 'total_discount',
+                CBSale::SALE_SHIPPING       => 'sale_shipping',
+                CBSale::SALE_PAYMENT_METHOD => 'payment_method_title',
+                CBSale::DISCOUNT            => null,
+                CBSale::SALE_STATE          => null,
+                CBSale::SALE_SHOP_ID        => null,
             ),
         );
 
