@@ -91,7 +91,7 @@ class WooCommerceProduct extends AbstractDataSource
         return $this->product->get_permalink();
     }
     
-    public function visible()
+    public function getVisible()
     {
         return $this->product->is_visible();
     }
