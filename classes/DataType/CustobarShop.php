@@ -11,6 +11,12 @@ defined('ABSPATH') or exit;
  */
 class CustobarShop extends AbstractCustobarDataType
 {
+    CONST EXTERNAL_ID = 'external_id';
+    CONST NAME = 'name';
+    CONST EMAIL = 'email';
+    CONST SHOP_TYPE = 'shop_type';
+    CONST PHONE_NUMBER = 'phone_number';
+
     protected $external_id;
     protected $name;
     protected $email;

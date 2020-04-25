@@ -2,6 +2,10 @@
 
 namespace WooCommerceCustobar;
 
+use WooCommerceCustobar\DataType\CustobarCustomer as Customer;
+use WooCommerceCustobar\DataType\CustobarProduct as Product;
+use WooCommerceCustobar\DataType\CustobarSale as Sale;
+
 defined('ABSPATH') or exit;
 
 class FieldsMap
@@ -13,7 +17,7 @@ class FieldsMap
      * @param string $fieldGroup
      * @return array
      */
-    public static function getDefaults( $fieldGroup = 'product' )
+    public static function getDefaults($fieldGroup = 'product')
     {
         $groups = array(
             /**
@@ -22,27 +26,27 @@ class FieldsMap
              * custobar => woocommerce
              */
             'customer' => array(
-                'nin'            => null,
-                'external_id'    => 'user_id',
-                'phone_number'   => 'billing_phone',
-                'canonical_id'   => null,
-                'first_name'     => 'billing_first_name',
-                'last_name'      => 'billing_last_name',
-                'can_email'      => 'can_email',
-                'can_post'       => null,
-                'can_profile'    => null,
-                'can_sms'        => 'can_sms',
-                'date_joined'    => 'date_joined',
-                'mailing_lists'  => null,
-                'street_address' => 'street_address',
-                'zip_code'       => 'zip_code',
-                'state'          => 'state',
-                'city'           => 'city',
-                'country'        => 'country',
-                'language'       => 'null',
-                'company'        => 'company',
-                'vat_number'     => null,
-                'last_login'     => null,
+                Customer::NIN            => null,
+                Customer::EXTERNAL_ID    => 'user_id',
+                Customer::PHONE_NUMBER   => 'billing_phone',
+                Customer::CANONICAL_ID   => null,
+                Customer::FIRST_NAME     => 'billing_first_name',
+                Customer::LAST_NAME      => 'billing_last_name',
+                Customer::CAN_EMAIL      => 'can_email',
+                Customer::CAN_POST       => null,
+                Customer::CAN_PROFILE    => null,
+                Customer::CAN_SMS        => 'can_sms',
+                Customer::DATE_JOINED    => 'date_joined',
+                Customer::MAILING_LISTS  => null,
+                Customer::STREET_ADDRESS => 'street_address',
+                Customer::ZIP_CODE       => 'zip_code',
+                Customer::STATE          => 'state',
+                Customer::CITY           => 'city',
+                Customer::COUNTRY        => 'country',
+                Customer::LANGUAGE       => 'null',
+                Customer::COMPANY        => 'company',
+                Customer::VAT_NUMBER     => null,
+                Customer::LAST_LOGIN     => null,
             ),
 
             /**
@@ -51,24 +55,24 @@ class FieldsMap
              * custobar => woocommerce
              */
             'product' => array(
-                'external_id'                  => 'product_id',
-                'price'                        => 'price',
-                'type'                         => 'type',
-                'category'                     => 'category',
-                'category_id'                  => 'category_ids',
-                'vendor'                       => null,
-                'brand'                        => null,
-                'title'                        => 'title',
-                'image'                        => 'image',
-                'date'                         => 'date',
-                'url'                          => 'url',
-                'sale_price'                   => 'sale_price',
-                'description'                  => 'description',
-                'language'                     => null,
-                'visible'                      => 'visible',
-                'exclude_from_recommendations' => null,
-                'unit'                         => 'unit',
-                'weight'                       => 'weight',
+                Product::EXTERNAL_ID                  => 'product_id',
+                Product::PRICE                        => 'price',
+                Product::TYPE                         => 'type',
+                Product::CATEGORY                     => 'category',
+                Product::CATEGORY_ID                  => 'category_ids',
+                Product::VENDOR                       => null,
+                Product::BRAND                        => null,
+                Product::TITLE                        => 'title',
+                Product::IMAGE                        => 'image',
+                Product::DATE                         => 'date',
+                Product::URL                          => 'url',
+                Product::SALE_PRICE                   => 'sale_price',
+                Product::DESCRIPTION                  => 'description',
+                Product::LANGUAGE                     => null,
+                Product::VISIBLE                      => 'visible',
+                Product::UNIT                         => 'unit',
+                Product::WEIGHT                       => 'weight',
+                Product::EXCLUDE_FROM_RECOMMENDATIONS => null,
             ),
 
             /**
@@ -77,40 +81,50 @@ class FieldsMap
              * custobar => woocommerce
              */
             'sale' => array(
-                'sale_external_id'    => 'order_number',
-                'sale_date'           => 'order_date',
-                'sale_customer_id'    => 'customer_id',
-                'sale_phone_number'   => 'customer_phone',
-                'sale_email'          => 'customer_email',
-                'sale_discount'       => 'total_discount',
-                'sale_payment_method' => 'payment_method_title',
-                'sale_shipping'       => 'sale_shipping',
-                'sale_shop_id'        => null,
-                'sale_state'          => null,
-                'sale_total'          => 'total',
-                'external_id'         => 'order_id',
-                'product_id'          => 'product_id',
-                'quantity'            => 'quantity',
-                'unit_price'          => 'price',
-                'discount'            => null,
-                'total'               => 'total',
+                Sale::SALE_EXTERNAL_ID    => 'order_number',
+                Sale::SALE_DATE           => 'order_date',
+                Sale::SALE_CUSTOMER_ID    => 'customer_id',
+                Sale::SALE_PHONE_NUMBER   => 'customer_phone',
+                Sale::SALE_EMAIL          => 'customer_email',
+                Sale::SALE_DISCOUNT       => 'total_discount',
+                Sale::SALE_PAYMENT_METHOD => 'payment_method_title',
+                Sale::SALE_SHIPPING       => 'sale_shipping',
+                Sale::SALE_SHOP_ID        => null,
+                Sale::SALE_STATE          => null,
+                Sale::SALE_TOTAL          => 'total',
+                Sale::EXTERNAL_ID         => 'order_id',
+                Sale::PRODUCT_ID          => 'product_id',
+                Sale::QUANTITY            => 'quantity',
+                Sale::UNIT_PRICE          => 'price',
+                Sale::DISCOUNT            => null,
+                Sale::TOTAL               => 'total',
             ),
         );
 
         return isset($groups[$fieldGroup]) ? $groups[$fieldGroup] : $groups;
     }
 
-    public static function getFieldsMapFroFront() {
+    /**
+     * Prepare fields output for restore defualt butotn
+     *
+     * @return array
+     */
+    public static function getFieldsMapFroFront()
+    {
         $groups = self::getDefaults( 'all' );
         $out = array();
 
-        foreach ($groups as $key => $group) {
-            foreach ($group as $ckey => $wkey) {
-                if (is_null($wkey)) {
+        foreach ($groups as $key => $group)
+        {
+            foreach ($group as $ckey => $wkey)
+            {
+                if (is_null($wkey))
+                {
                     $wkey = 'null';
                 }
 
-                if (isset($out[$key])) {
+                if (isset($out[$key]))
+                {
                     $out[$key] .= "{$ckey}: {$wkey}\n";
                 } else {
                     $out[$key] = "{$ckey}: {$wkey}\n";

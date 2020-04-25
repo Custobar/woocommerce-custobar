@@ -11,6 +11,13 @@ defined('ABSPATH') or exit;
  */
 class CustobarEvent extends AbstractCustobarDataType
 {
+
+    CONST TYPE = 'type';
+    CONST DATE = 'date';
+    CONST CUSTOMER_ID = 'customer_id';
+    CONST PRODUCT_ID = 'product_id';
+    CONST MAILING_LISTS = 'mailing_lists';
+
     protected $type;
     protected $date;
     protected $customer_id;
