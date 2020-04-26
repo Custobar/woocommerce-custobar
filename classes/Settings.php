@@ -15,6 +15,21 @@ use WC_Admin_Settings;
 class WC_Settings_Custobar extends WC_Settings_Page {
 
   /**
+   * Product fields setting id
+   */
+  const PRODUCT_FIELDS = 'custobar_product_fields';
+
+  /**
+   * Customer fields setting id
+   */
+  const CUSTOMER_FIELDS = 'custobar_customer_fields';
+
+  /**
+   * Sale fields setting id
+   */
+  const SALE_FIELDS = 'custobar_sale_fields';
+
+  /**
    * Bootstraps the class and hooks required actions & filters.
    *
    */
@@ -103,7 +118,7 @@ class WC_Settings_Custobar extends WC_Settings_Page {
         'name'     => __( 'Field Mapping', 'woocommerce-custobar' ),
         'type'     => 'title'
       ),
-      'custobar_customer_fields' => array(
+      self::CUSTOMER_FIELDS => array(
         'name'     => __( 'Customer Field Map', 'woocommerce-custobar' ),
         'type'     => 'textarea',
         'desc'     => '',
@@ -112,9 +127,9 @@ class WC_Settings_Custobar extends WC_Settings_Page {
           'readonly' => 'readonly',
         ],
         'class'    => 'input-text wide-input',
-        'id'       => 'custobar_customer_fields'
+        'id'       => self::CUSTOMER_FIELDS
       ),
-      'custobar_product_fields' => array(
+      self::PRODUCT_FIELDS => array(
         'name'     => __( 'Product Field Map', 'woocommerce-custobar' ),
         'type'     => 'textarea',
         'desc'     => '',
@@ -123,9 +138,9 @@ class WC_Settings_Custobar extends WC_Settings_Page {
           'readonly' => 'readonly',
         ],
         'class'    => 'input-text wide-input',
-        'id'       => 'custobar_product_fields'
+        'id'       => self::PRODUCT_FIELDS
       ),
-      'custobar_sale_fields' => array(
+      self::SALE_FIELDS => array(
         'name'     => __( 'Sale Field Map', 'woocommerce-custobar' ),
         'type'     => 'textarea',
         'desc'     => '',
@@ -134,7 +149,7 @@ class WC_Settings_Custobar extends WC_Settings_Page {
           'readonly' => 'readonly',
         ],
         'class'    => 'input-text wide-input',
-        'id'       => 'custobar_sale_fields'
+        'id'       => self::SALE_FIELDS
       ),
       'section_end' => array(
         'type' => 'sectionend',
@@ -216,7 +231,7 @@ class WC_Settings_Custobar extends WC_Settings_Page {
       'custobar-admin-js',
       'Custobar',
       array(
-        'fieldsMap' => FieldsMap::getFieldsMapFroFront(),
+        'fieldsMap' => FieldsMap::getFieldsMapForFront(),
       )
     );
 

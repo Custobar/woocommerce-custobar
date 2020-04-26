@@ -4,12 +4,7 @@
         var $actions = $('#fields-action').children().remove(),
             $submit = $('p.submit'),
             $container = $('#custobar-settings'),
-            $fields = $container.find('textarea'),
-            fieldsMap = {
-                customer: 'custobar_customer_fields',
-                product: 'custobar_product_fields',
-                sale: 'custobar_sale_fields',
-            };
+            $fields = $container.find('textarea');
 
         $submit.append($actions);
 
@@ -39,7 +34,7 @@
             event.preventDefault();
 
             for (var fieldKey in Custobar.fieldsMap) {
-                $('#'+fieldsMap[fieldKey]).val(Custobar.fieldsMap[fieldKey]);
+                $('#'+fieldKey).val(Custobar.fieldsMap[fieldKey]);
             }
 
             $submit.find('.woocommerce-save-button').click();

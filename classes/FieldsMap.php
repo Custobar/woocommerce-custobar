@@ -18,7 +18,7 @@ class FieldsMap
      * @param string $fieldGroup
      * @return array
      */
-    public static function getDefaults($fieldGroup = 'product')
+    public static function getDefaults($fieldGroup = 'all')
     {
         $groups = array(
             /**
@@ -26,7 +26,7 @@ class FieldsMap
              * 
              * custobar => woocommerce
              */
-            'customer' => array(
+            WC_Settings_Custobar::CUSTOMER_FIELDS => array(
                 CBCustomer::EXTERNAL_ID    => 'user_id',
                 CBCustomer::FIRST_NAME     => 'billing_first_name',
                 CBCustomer::LAST_NAME      => 'billing_last_name',
@@ -55,7 +55,7 @@ class FieldsMap
              * 
              * custobar => woocommerce
              */
-            'product' => array(
+            WC_Settings_Custobar::PRODUCT_FIELDS => array(
                 CBProduct::EXTERNAL_ID                  => WCProduct::PRODUCT_ID,
                 CBProduct::TITLE                        => WCProduct::TITLE,
                 CBProduct::DESCRIPTION                  => WCProduct::DESCRIPTION,
@@ -81,7 +81,7 @@ class FieldsMap
              * 
              * custobar => woocommerce
              */
-            'sale' => array(
+            WC_Settings_Custobar::SALE_FIELDS => array(
                 CBSale::EXTERNAL_ID         => 'order_id',
                 CBSale::SALE_EXTERNAL_ID    => 'order_number',
                 CBSale::SALE_DATE           => 'order_date',
@@ -110,9 +110,9 @@ class FieldsMap
      *
      * @return array
      */
-    public static function getFieldsMapFroFront()
+    public static function getFieldsMapForFront()
     {
-        $groups = self::getDefaults( 'all' );
+        $groups = self::getDefaults();
         $out = array();
 
         foreach ($groups as $key => $group)
@@ -132,6 +132,71 @@ class FieldsMap
                 }
             }
         }
+
+        return $out;
+    }
+
+    /**
+     * Get user defined product fields map
+     *
+     * @return array
+     */
+    public static function getProductFields()
+    {
+        return self::getSavedMap(WC_Settings_Custobar::PRODUCT_FIELDS);
+    }
+
+    /**
+     * Get user defined sale fields map
+     *
+     * @return array
+     */
+    public static function getSaleFields()
+    {
+        return self::getSavedMap(WC_Settings_Custobar::SALE_FIELDS);
+    }
+
+    /**
+     * Get user defined customer fields map
+     *
+     * @return array
+     */
+    public static function getCustomerFields()
+    {
+        return self::getSavedMap(WC_Settings_Custobar::CUSTOMER_FIELDS);
+    }
+
+    /**
+     * Get processed fields map
+     *
+     * @param string $fieldsId
+     * @return array
+     */
+    protected static function getSavedMap($fieldsId = WC_Settings_Custobar::CUSTOMER_FIELDS)
+    {
+        $fieldsStr = get_option($fieldsId, '');
+        $fieldsArr = explode(PHP_EOL, $fieldsStr);
+
+        $out = array_reduce($fieldsArr, function($carry, $field) {
+            $arr = explode(':', $field);
+
+            // Make sure there is actually two keys
+            if (count($arr) < 2) {
+                return $carry;
+            }
+
+            // Trim white spaces around keys
+            $loadKey = trim($arr[0]);
+            $sourceKey = trim($arr[1]);
+
+            // Set actual null for stirng null
+            $carry[$loadKey] = $sourceKey !== 'null' ? $sourceKey : null;
+
+            return $carry;
+        }, []);
+
+        // Remove all falsy fields e.g. null, false, empty string
+        $out = array_filter($out);
 
         return $out;
     }
