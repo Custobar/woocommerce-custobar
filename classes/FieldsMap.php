@@ -102,6 +102,8 @@ class FieldsMap
             ),
         );
 
+        $groups = apply_filters('woocommerce_custobar_get_fields_map', $groups);
+
         return isset($groups[$fieldGroup]) ? $groups[$fieldGroup] : $groups;
     }
 
@@ -143,7 +145,7 @@ class FieldsMap
      */
     public static function getProductFields()
     {
-        return self::getSavedMap(WC_Settings_Custobar::PRODUCT_FIELDS);
+        return self::getSavedFields(WC_Settings_Custobar::PRODUCT_FIELDS);
     }
 
     /**
@@ -153,7 +155,7 @@ class FieldsMap
      */
     public static function getSaleFields()
     {
-        return self::getSavedMap(WC_Settings_Custobar::SALE_FIELDS);
+        return self::getSavedFields(WC_Settings_Custobar::SALE_FIELDS);
     }
 
     /**
@@ -163,7 +165,7 @@ class FieldsMap
      */
     public static function getCustomerFields()
     {
-        return self::getSavedMap(WC_Settings_Custobar::CUSTOMER_FIELDS);
+        return self::getSavedFields(WC_Settings_Custobar::CUSTOMER_FIELDS);
     }
 
     /**
@@ -172,7 +174,7 @@ class FieldsMap
      * @param string $fieldsId
      * @return array
      */
-    protected static function getSavedMap($fieldsId = WC_Settings_Custobar::CUSTOMER_FIELDS)
+    protected static function getSavedFields($fieldsId = WC_Settings_Custobar::CUSTOMER_FIELDS)
     {
         $fieldsStr = get_option($fieldsId, '');
         $fieldsArr = explode(PHP_EOL, $fieldsStr);
