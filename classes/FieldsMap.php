@@ -2,10 +2,12 @@
 
 namespace WooCommerceCustobar;
 
-use WooCommerceCustobar\DataType\CustobarCustomer as CBCustomer;
-use WooCommerceCustobar\DataType\CustobarProduct as CBProduct;
+use WooCommerceCustobar\DataSource\Sale;
+use WooCommerceCustobar\DataSource\Product;
+use WooCommerceCustobar\DataSource\Customer;
 use WooCommerceCustobar\DataType\CustobarSale as CBSale;
-use WooCommerceCustobar\DataSource\WooCommerceProduct as WCProduct;
+use WooCommerceCustobar\DataType\CustobarProduct as CBProduct;
+use WooCommerceCustobar\DataType\CustobarCustomer as CBCustomer;
 
 defined('ABSPATH') or exit;
 
@@ -27,19 +29,19 @@ class FieldsMap
              * custobar => woocommerce
              */
             WC_Settings_Custobar::CUSTOMER_FIELDS => array(
-                CBCustomer::EXTERNAL_ID    => 'user_id',
-                CBCustomer::FIRST_NAME     => 'billing_first_name',
-                CBCustomer::LAST_NAME      => 'billing_last_name',
-                CBCustomer::PHONE_NUMBER   => 'billing_phone',
-                CBCustomer::COMPANY        => 'company',
-                CBCustomer::STREET_ADDRESS => 'street_address',
-                CBCustomer::CITY           => 'city',
-                CBCustomer::ZIP_CODE       => 'zip_code',
-                CBCustomer::STATE          => 'state',
-                CBCustomer::COUNTRY        => 'country',
-                CBCustomer::DATE_JOINED    => 'date_joined',
-                CBCustomer::CAN_SMS        => 'can_sms',
-                CBCustomer::CAN_EMAIL      => 'can_email',
+                CBCustomer::EXTERNAL_ID    => Customer::USER_ID,
+                CBCustomer::FIRST_NAME     => Customer::BILLING_FIRST_NAME,
+                CBCustomer::LAST_NAME      => Customer::BILLING_LAST_NAME,
+                CBCustomer::PHONE_NUMBER   => Customer::BILLING_PHONE,
+                CBCustomer::COMPANY        => Customer::COMPANY,
+                CBCustomer::STREET_ADDRESS => Customer::STREET_ADDRESS,
+                CBCustomer::CITY           => Customer::CITY,
+                CBCustomer::ZIP_CODE       => Customer::ZIP_CODE,
+                CBCustomer::STATE          => Customer::STATE,
+                CBCustomer::COUNTRY        => Customer::COUNTRY,
+                CBCustomer::DATE_JOINED    => Customer::DATE_JOINED,
+                CBCustomer::CAN_SMS        => Customer::CAN_SMS,
+                CBCustomer::CAN_EMAIL      => Customer::CAN_EMAIL,
                 CBCustomer::NIN            => null,
                 CBCustomer::CAN_POST       => null,
                 CBCustomer::LANGUAGE       => null,
@@ -56,20 +58,20 @@ class FieldsMap
              * custobar => woocommerce
              */
             WC_Settings_Custobar::PRODUCT_FIELDS => array(
-                CBProduct::EXTERNAL_ID                  => WCProduct::PRODUCT_ID,
-                CBProduct::TITLE                        => WCProduct::TITLE,
-                CBProduct::DESCRIPTION                  => WCProduct::DESCRIPTION,
-                CBProduct::IMAGE                        => WCProduct::IMAGE,
-                CBProduct::TYPE                         => WCProduct::TYPE,
-                CBProduct::WEIGHT                       => WCProduct::WEIGHT,
-                CBProduct::UNIT                         => WCProduct::UNIT,
-                CBProduct::PRICE                        => WCProduct::PRICE,
-                CBProduct::SALE_PRICE                   => WCProduct::SALE_PRICE,
-                CBProduct::CATEGORY                     => WCProduct::CATEGORY,
-                CBProduct::CATEGORY_ID                  => WCProduct::CATEGORY_IDS,
-                CBProduct::DATE                         => WCProduct::DATE,
-                CBProduct::URL                          => WCProduct::URL,
-                CBProduct::VISIBLE                      => WCProduct::VISIBLE,
+                CBProduct::EXTERNAL_ID                  => Product::PRODUCT_ID,
+                CBProduct::TITLE                        => Product::TITLE,
+                CBProduct::DESCRIPTION                  => Product::DESCRIPTION,
+                CBProduct::IMAGE                        => Product::IMAGE,
+                CBProduct::TYPE                         => Product::TYPE,
+                CBProduct::WEIGHT                       => Product::WEIGHT,
+                CBProduct::UNIT                         => Product::UNIT,
+                CBProduct::PRICE                        => Product::PRICE,
+                CBProduct::SALE_PRICE                   => Product::SALE_PRICE,
+                CBProduct::CATEGORY                     => Product::CATEGORY,
+                CBProduct::CATEGORY_ID                  => Product::CATEGORY_IDS,
+                CBProduct::DATE                         => Product::DATE,
+                CBProduct::URL                          => Product::URL,
+                CBProduct::VISIBLE                      => Product::VISIBLE,
                 CBProduct::BRAND                        => null,
                 CBProduct::VENDOR                       => null,
                 CBProduct::LANGUAGE                     => null,
@@ -82,20 +84,20 @@ class FieldsMap
              * custobar => woocommerce
              */
             WC_Settings_Custobar::SALE_FIELDS => array(
-                CBSale::EXTERNAL_ID         => 'order_id',
-                CBSale::SALE_EXTERNAL_ID    => 'order_number',
-                CBSale::SALE_DATE           => 'order_date',
-                CBSale::TOTAL               => 'total',
-                CBSale::SALE_TOTAL          => 'total',
-                CBSale::SALE_CUSTOMER_ID    => 'customer_id',
-                CBSale::SALE_PHONE_NUMBER   => 'customer_phone',
-                CBSale::SALE_EMAIL          => 'customer_email',
-                CBSale::PRODUCT_ID          => 'product_id',
-                CBSale::QUANTITY            => 'quantity',
-                CBSale::UNIT_PRICE          => 'price',
-                CBSale::SALE_DISCOUNT       => 'total_discount',
-                CBSale::SALE_SHIPPING       => 'sale_shipping',
-                CBSale::SALE_PAYMENT_METHOD => 'payment_method_title',
+                CBSale::EXTERNAL_ID         => Sale::ORDER_ID,
+                CBSale::SALE_EXTERNAL_ID    => Sale::ORDER_NUMBER,
+                CBSale::SALE_DATE           => Sale::ORDER_DATE,
+                CBSale::TOTAL               => Sale::TOTAL,
+                CBSale::SALE_TOTAL          => Sale::ORDER_TOTAL,
+                CBSale::SALE_CUSTOMER_ID    => Sale::CUSTOMER_ID,
+                CBSale::SALE_PHONE_NUMBER   => Sale::CUSTOMER_PHONE,
+                CBSale::SALE_EMAIL          => Sale::CUSTOMER_EMAIL,
+                CBSale::PRODUCT_ID          => Sale::PRODUCT_ID,
+                CBSale::QUANTITY            => Sale::QUANTITY,
+                CBSale::UNIT_PRICE          => Sale::PRICE,
+                CBSale::SALE_DISCOUNT       => Sale::TOTAL_DISCOUNT,
+                CBSale::SALE_SHIPPING       => Sale::SALE_SHIPPING,
+                CBSale::SALE_PAYMENT_METHOD => Sale::PAYMENT_METHOD_TITLE,
                 CBSale::DISCOUNT            => null,
                 CBSale::SALE_STATE          => null,
                 CBSale::SALE_SHOP_ID        => null,
@@ -183,7 +185,8 @@ class FieldsMap
             $arr = explode(':', $field);
 
             // Make sure there is actually two keys
-            if (count($arr) < 2) {
+            if (count($arr) < 2)
+            {
                 return $carry;
             }
 

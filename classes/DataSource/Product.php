@@ -6,7 +6,7 @@ use WooCommerceCustobar\DataType\Utilities;
 
 defined('ABSPATH') or exit;
 
-class WooCommerceProduct extends AbstractDataSource
+class Product extends AbstractDataSource
 {
 
     CONST PRODUCT_ID = 'product_id';
@@ -24,15 +24,12 @@ class WooCommerceProduct extends AbstractDataSource
     CONST URL = 'url';
     CONST VISIBLE = 'visible';
 
-    /**
-     * Instance of WC_Product
-     *
-     * @var WC_Product
-     */
-    protected $product;
+    public static $sourceKey = 'product';
 
     public function __construct(\WC_Product $product)
     {
+        parent::__construct();
+
         $this->product = $product;
     }
 

@@ -6,33 +6,39 @@ defined('ABSPATH') or exit;
 
 abstract class AbstractDataSource
 {
-    protected static $allowedKeys = array();
+    protected $defaultKeys = array();
 
-    protected static function getValidKeys()
+    protected $fields = array();
+
+    public static $sourceKey = 'common';
+
+    public function __construct()
     {
-        if (empty(static::$allowedKeys)) {
-            $reflection = new \ReflectionClass(get_called_class());
-            static::$allowedKeys = array_values($reflection->getConstants());
-        }
-
-        return static::$allowedKeys;
+        $this->defaultKeys = static::getDefaultKeys();
     }
 
-    protected static function isValidKey($key)
+    protected static function getDefaultKeys()
     {
-        return in_array($key, static::getValidKeys(), true);
+        $reflection = new \ReflectionClass(get_called_class());
+        return array_values($reflection->getConstants());
     }
 
-    public function getValue($key)
+    public function getFields()
     {
-        $method = static::getMethodByKey($key);
+        $fields = array_reduce($this->defaultKeys, function($carry, $key) {
+            $method = static::getMethodByKey($key);
 
-        if (!static::isValidKey($key) || !method_exists($this, $method))
-        {
-            return null;
-        }
+            if (!method_exists($this, $method))
+            {
+                return $carry;
+            }
 
-        return $this->{$method}();
+            $carry[$key] = $method;
+
+            return $carry;
+        }, array());
+
+        return apply_filters('woocommerce_custobar_get_'. static::$sourceKey . '_fields', $fields, $this);
     }
 
     protected static function getMethodByKey($key)

@@ -28,4 +28,6 @@ require_once(WOOCOMMERCE_CUSTOBAR_PATH . '/classes/Synchronization/SyncTracker.p
 require_once(WOOCOMMERCE_CUSTOBAR_PATH . '/classes/Template.php');
 require_once(WOOCOMMERCE_CUSTOBAR_PATH . '/classes/FieldsMap.php');
 require_once(WOOCOMMERCE_CUSTOBAR_PATH . '/classes/DataSource/AbstractDataSource.php');
-require_once(WOOCOMMERCE_CUSTOBAR_PATH . '/classes/DataSource/WooCommerceProduct.php');
+require_once(WOOCOMMERCE_CUSTOBAR_PATH . '/classes/DataSource/Product.php');
+require_once(WOOCOMMERCE_CUSTOBAR_PATH . '/classes/DataSource/Customer.php');
+require_once(WOOCOMMERCE_CUSTOBAR_PATH . '/classes/DataSource/Sale.php');

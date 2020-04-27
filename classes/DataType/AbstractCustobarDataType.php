@@ -13,14 +13,58 @@ defined('ABSPATH') or exit;
  */
 abstract class AbstractCustobarDataType
 {
+    protected static $defaultKeys = array();
+
+    public function __construct()
+    {
+        static::$defaultKeys = static::getDefaultKeys();
+    }
+
     public function getAssignedProperties()
     {
-        $not_null_values = array();
-        foreach ($this as $key => $value) {
-            if (!is_null($value)) {
-                $not_null_values[$key] = $value;
+        $dataSourceFields = $this->dataSource->getFields();
+        $fieldsMap = static::getFieldsMap();
+        $properties = array();
+
+        foreach ($fieldsMap as $custobarKey => $sourceKey)
+        {
+            if (!in_array($custobarKey, static::$defaultKeys, true))
+            {
+                continue;
             }
+
+            if (!array_key_exists($sourceKey, $dataSourceFields))
+            {
+                continue;
+            }
+
+            $methodOrFn = $dataSourceFields[$sourceKey];
+
+            if (!method_exists($this->dataSource, $methodOrFn) || !is_callable($methodOrFn))
+            {
+                continue;
+            }
+
+            $methodOrFn = method_exists($this->dataSource, $methodOrFn) ? array($this->dataSource, $methodOrFn) : $methodOrFn;
+
+            $value = call_user_func($methodOrFn, $this);
+            
+            if (is_null($value))
+            {
+                continue;
+            }
+
+            $properties[$custobarKey] = $value;
         }
-        return $not_null_values;
+
+        return $properties;
+    }
+
+    abstract static function getFieldsMap();
+
+    protected static function getDefaultKeys()
+    {
+        $reflection = new \ReflectionClass(get_called_class());
+        return array_values($reflection->getConstants());
     }
 }

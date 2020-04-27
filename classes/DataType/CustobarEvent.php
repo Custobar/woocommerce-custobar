@@ -27,4 +27,9 @@ class CustobarEvent extends AbstractCustobarDataType
     public function __construct()
     {
     }
+    
+    public static function getFieldsMap()
+    {
+        return array();
+    }
 }
