@@ -40,12 +40,14 @@ abstract class AbstractCustobarDataType
 
             $methodOrFn = $dataSourceFields[$sourceKey];
 
-            if (!method_exists($this->dataSource, $methodOrFn) || !is_callable($methodOrFn))
-            {
+            if (!is_callable($methodOrFn) && !is_string($methodOrFn)) {
                 continue;
             }
 
-            $methodOrFn = method_exists($this->dataSource, $methodOrFn) ? array($this->dataSource, $methodOrFn) : $methodOrFn;
+            if (is_string($methodOrFn) && method_exists($this->dataSource, $methodOrFn))
+            {
+                $methodOrFn = array($this->dataSource, $methodOrFn);
+            }
 
             $value = call_user_func($methodOrFn, $this);
             

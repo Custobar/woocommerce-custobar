@@ -104,6 +104,11 @@ class FieldsMap
             ),
         );
 
+        /**
+         * @param array $group
+         * @param string $fieldGroup
+         * 
+         */
         $groups = apply_filters('woocommerce_custobar_get_fields_map', $groups, $fieldGroup);
 
         return isset($groups[$fieldGroup]) ? $groups[$fieldGroup] : $groups;
