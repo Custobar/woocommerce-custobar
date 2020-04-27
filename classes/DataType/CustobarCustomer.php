@@ -49,8 +49,6 @@ class CustobarCustomer extends AbstractCustobarDataType
         parent::__construct();
 
         $this->dataSource = new Customer($order);
-
-        $this->setD
     }
 
     public static function getFieldsMap() {
