@@ -31,3 +31,4 @@ require_once(WOOCOMMERCE_CUSTOBAR_PATH . '/classes/DataSource/AbstractDataSource
 require_once(WOOCOMMERCE_CUSTOBAR_PATH . '/classes/DataSource/Product.php');
 require_once(WOOCOMMERCE_CUSTOBAR_PATH . '/classes/DataSource/Customer.php');
 require_once(WOOCOMMERCE_CUSTOBAR_PATH . '/classes/DataSource/Sale.php');
+require_once(WOOCOMMERCE_CUSTOBAR_PATH . '/classes/DataSource/CustobarDataSource.php');

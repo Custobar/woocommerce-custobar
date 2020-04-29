@@ -34,6 +34,36 @@ class Plugin
     public function initialize()
     {
 
+      // test DataSource handling
+      $cds = new DataSource\CustobarDataSource();
+      $integrationId = $cds->getIntegrationId();
+
+      var_dump($integrationId);
+      if( !$integrationId ) {
+        $cds->createIntegration();
+      }
+
+      $productsDataSourceId = $cds->getProductDataSourceId();
+      if( !$productsDataSourceId ) {
+        $productsDataSourceId = $cds->createDataSource( 'WooCommerce products', 'products' );
+      }
+
+      $salesDataSourceId = $cds->getSaleDataSourceId();
+      if( !$salesDataSourceId ) {
+        $salesDataSourceId = $cds->createDataSource( 'WooCommerce sales', 'sales' );
+      }
+
+      $customersDataSourceId = $cds->getCustomerDataSourceId();
+      if( !$customersDataSourceId ) {
+        $customersDataSourceId = $cds->createDataSource( 'WooCommerce customers', 'customers' );
+      }
+
+      //var_dump($productsDataSourceId);
+      //die();
+
+      // end test section
+
+
         if ($this->initialized) {
             return;
         }
