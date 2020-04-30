@@ -54,7 +54,10 @@ class CustobarDataSource {
 
     if( $response_code == 200 ) {
       update_option( CustobarDataSource::CUSTOBAR_INTEGRATION_KEY, $response->integration->id );
+      return $response->integration->id;
     }
+
+    return false;
 
   }
 

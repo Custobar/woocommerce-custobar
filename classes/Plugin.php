@@ -35,6 +35,8 @@ class Plugin
     {
 
       // test DataSource handling
+
+      /*
       $cds = new DataSource\CustobarDataSource();
       $integrationId = $cds->getIntegrationId();
 
@@ -62,6 +64,8 @@ class Plugin
       //die();
 
       // end test section
+
+      */
 
 
         if ($this->initialized) {

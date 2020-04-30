@@ -19,7 +19,45 @@ abstract class AbstractDataSync
     abstract protected static function uploadDataTypeData($data);
 
     protected static function uploadCustobarData($data) {
+
       $endpoint = static::$endpoint;
+
+      $cds = new DataSource\CustobarDataSource();
+      $integrationId = $cds->getIntegrationId();
+      if( !$integrationId ) {
+        $integrationId = $cds->createIntegration();
+      }
+
+      if( $integrationId ) {
+
+        switch( $endpoint ) {
+          case '/customers/upload/':
+            $dataSourceId = $cds->getCustomerDataSourceId();
+            if( !$dataSourceId ) {
+              $dataSourceId = $cds->createDataSource( 'WooCommerce customers', 'customers' );
+            }
+            break;
+          case '/products/upload/':
+            $dataSourceId = $cds->getProductDataSourceId();
+            if( !$dataSourceId ) {
+              $dataSourceId = $cds->createDataSource( 'WooCommerce products', 'products' );
+            }
+            break;
+          case '/sales/upload/':
+            $dataSourceId = $cds->getSaleDataSourceId();
+            if( !$dataSourceId ) {
+              $dataSourceId = $cds->createDataSource( 'WooCommerce sales', 'sales' );
+            }
+            break;
+        }
+
+        if( $dataSourceId ) {
+          $endpoint = '/api/datasources/' . $dataSourceId . '/import/';
+        }
+
+      }
+
       return DataUpload::uploadCustobarData($endpoint, $data);
+
     }
 }
