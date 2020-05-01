@@ -22,7 +22,7 @@ abstract class AbstractDataSync
 
       $endpoint = static::$endpoint;
 
-      $cds = new DataSource\CustobarDataSource();
+      $cds = new \WooCommerceCustobar\DataSource\CustobarDataSource();
       $integrationId = $cds->getIntegrationId();
       if( !$integrationId ) {
         $integrationId = $cds->createIntegration();
@@ -52,7 +52,7 @@ abstract class AbstractDataSync
         }
 
         if( $dataSourceId ) {
-          $endpoint = '/api/datasources/' . $dataSourceId . '/import/';
+          $endpoint = '/datasources/' . $dataSourceId . '/import/';
         }
 
       }

@@ -13,7 +13,7 @@ defined('ABSPATH') or exit;
 
 class FieldsMap
 {
-    
+
     /**
      * Get custobar to woocommer fields map
      *
@@ -25,10 +25,10 @@ class FieldsMap
         $groups = array(
             /**
              * Customer fields map
-             * 
+             *
              * custobar => woocommerce
              */
-            WC_Settings_Custobar::CUSTOMER_FIELDS => array(
+            'custobar_customer_fields' => array(
                 CBCustomer::EXTERNAL_ID    => Customer::USER_ID,
                 CBCustomer::FIRST_NAME     => Customer::BILLING_FIRST_NAME,
                 CBCustomer::LAST_NAME      => Customer::BILLING_LAST_NAME,
@@ -54,10 +54,10 @@ class FieldsMap
 
             /**
              * Prduct fields map
-             * 
+             *
              * custobar => woocommerce
              */
-            WC_Settings_Custobar::PRODUCT_FIELDS => array(
+            'custobar_product_fields' => array(
                 CBProduct::EXTERNAL_ID                  => Product::PRODUCT_ID,
                 CBProduct::TITLE                        => Product::TITLE,
                 CBProduct::DESCRIPTION                  => Product::DESCRIPTION,
@@ -80,10 +80,10 @@ class FieldsMap
 
             /**
              * Sale/order fields map
-             * 
+             *
              * custobar => woocommerce
              */
-            WC_Settings_Custobar::SALE_FIELDS => array(
+            'custobar_sale_fields' => array(
                 CBSale::EXTERNAL_ID         => Sale::ORDER_ID,
                 CBSale::SALE_EXTERNAL_ID    => Sale::ORDER_NUMBER,
                 CBSale::SALE_DATE           => Sale::ORDER_DATE,
@@ -107,7 +107,7 @@ class FieldsMap
         /**
          * @param array $group
          * @param string $fieldGroup
-         * 
+         *
          */
         $groups = apply_filters('woocommerce_custobar_get_fields_map', $groups, $fieldGroup);
 
@@ -152,7 +152,7 @@ class FieldsMap
      */
     public static function getProductFields()
     {
-        return self::getSavedFields(WC_Settings_Custobar::PRODUCT_FIELDS);
+        return self::getSavedFields('custobar_product_fields');
     }
 
     /**
@@ -162,7 +162,7 @@ class FieldsMap
      */
     public static function getSaleFields()
     {
-        return self::getSavedFields(WC_Settings_Custobar::SALE_FIELDS);
+        return self::getSavedFields('custobar_sale_fields');
     }
 
     /**
@@ -172,7 +172,7 @@ class FieldsMap
      */
     public static function getCustomerFields()
     {
-        return self::getSavedFields(WC_Settings_Custobar::CUSTOMER_FIELDS);
+        return self::getSavedFields('custobar_customer_fields');
     }
 
     /**
@@ -181,7 +181,7 @@ class FieldsMap
      * @param string $fieldsId
      * @return array
      */
-    protected static function getSavedFields($fieldsId = WC_Settings_Custobar::CUSTOMER_FIELDS)
+    protected static function getSavedFields( $fieldsId )
     {
         $fieldsStr = get_option($fieldsId, '');
         $fieldsArr = explode(PHP_EOL, $fieldsStr);

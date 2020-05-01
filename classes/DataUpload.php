@@ -25,7 +25,7 @@ class DataUpload {
     $url = sprintf('https://%s.custobar.com/api', $companyDomain) . $endpoint;
 
     $response = wp_remote_request($url, array(
-      'method' => 'PUT',
+      'method' => 'POST',
       'headers' => array(
         'Content-Type'  => 'application/json',
         'Authorization' => 'Token ' . $apiToken
