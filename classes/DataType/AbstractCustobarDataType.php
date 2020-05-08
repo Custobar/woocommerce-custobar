@@ -26,6 +26,14 @@ abstract class AbstractCustobarDataType
         $fieldsMap = static::getFieldsMap();
         $properties = array();
 
+        wc_get_logger()->info('getAssignedProperties, $dataSourceFields: ' . print_r($dataSourceFields,1), array(
+          'source'        => 'woocommerce-custobar'
+        ));
+
+        wc_get_logger()->info('getAssignedProperties, $fieldsMap: ' . print_r($fieldsMap,1), array(
+          'source'        => 'woocommerce-custobar'
+        ));
+
         foreach ($fieldsMap as $custobarKey => $sourceKey)
         {
             if (!in_array($custobarKey, static::$defaultKeys, true))
@@ -50,7 +58,7 @@ abstract class AbstractCustobarDataType
             }
 
             $value = call_user_func($methodOrFn, $this);
-            
+
             if (is_null($value))
             {
                 continue;
