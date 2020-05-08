@@ -115,7 +115,7 @@ class Customer extends AbstractDataSource
         return $address;
     }
 
-    protected function getDateJoined()
+    public function getDateJoined()
     {
         $user_data = get_userdata($this->order->get_user_id());
         $registered_time = $user_data->user_registered;

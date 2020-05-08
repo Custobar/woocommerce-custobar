@@ -87,7 +87,7 @@ class Product extends AbstractDataSource
     {
         return $this->product->get_permalink();
     }
-    
+
     public function getVisible()
     {
         return $this->product->is_visible();
@@ -98,7 +98,7 @@ class Product extends AbstractDataSource
         ($this->product->get_weight()) ? $this->product->get_weight() : null;
     }
 
-    protected function getCategories($productId)
+    public function getCategories($productId)
     {
         $terms = get_the_terms($productId, 'product_cat');
 

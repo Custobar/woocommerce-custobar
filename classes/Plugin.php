@@ -31,62 +31,27 @@ class Plugin
      *
      * @return void
      */
-    public function initialize()
-    {
+    public function initialize() {
 
-      // test DataSource handling
-
-      /*
-      $cds = new DataSource\CustobarDataSource();
-      $integrationId = $cds->getIntegrationId();
-
-      var_dump($integrationId);
-      if( !$integrationId ) {
-        $cds->createIntegration();
+      if ($this->initialized) {
+        return;
       }
 
-      $productsDataSourceId = $cds->getProductDataSourceId();
-      if( !$productsDataSourceId ) {
-        $productsDataSourceId = $cds->createDataSource( 'WooCommerce products', 'products' );
+      $this->initialized = true;
+
+      if (self::isWooCommerceActived() && self::hasAllSettingsDefined()) {
+
+        // Data type hooks
+        ProductSync::addHooks();
+        CustomerSync::addHooks();
+        SaleSync::addHooks();
+        DataUpload::addHooks();
+
+        // Add other
+        add_action('woocommerce_after_checkout_registration_form', [__CLASS__, 'askPermissionForMarketing']);
+        add_action('woocommerce_checkout_update_order_meta', [__CLASS__, 'savePermissionForMarketing']);
+
       }
-
-      $salesDataSourceId = $cds->getSaleDataSourceId();
-      if( !$salesDataSourceId ) {
-        $salesDataSourceId = $cds->createDataSource( 'WooCommerce sales', 'sales' );
-      }
-
-      $customersDataSourceId = $cds->getCustomerDataSourceId();
-      if( !$customersDataSourceId ) {
-        $customersDataSourceId = $cds->createDataSource( 'WooCommerce customers', 'customers' );
-      }
-
-      //var_dump($productsDataSourceId);
-      //die();
-
-      // end test section
-
-      */
-
-
-        if ($this->initialized) {
-            return;
-        }
-
-        $this->initialized = true;
-
-        if (self::isWooCommerceActived() && self::hasAllSettingsDefined()) {
-
-          // Data type hooks
-          ProductSync::addHooks();
-          CustomerSync::addHooks();
-          SaleSync::addHooks();
-          DataUpload::addHooks();
-
-          // Add other
-          add_action('woocommerce_after_checkout_registration_form', [__CLASS__, 'askPermissionForMarketing']);
-          add_action('woocommerce_checkout_update_order_meta', [__CLASS__, 'savePermissionForMarketing']);
-
-        }
 
     }
 
@@ -121,10 +86,10 @@ class Plugin
      */
     public static function isWooCommerceActived()
     {
-        if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) {
-            return true;
-        }
-        return false;
+      if (in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))) {
+        return true;
+      }
+      return false;
     }
 
     /**

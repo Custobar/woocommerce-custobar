@@ -69,6 +69,8 @@ class SaleSync extends AbstractDataSync
 
     public static function batchUpdate() {
 
+      $response = new \stdClass;
+
       $orders = \wc_get_orders(array(
         'posts_per_page' => -1,
         'orderby'        => 'date',
@@ -106,13 +108,13 @@ class SaleSync extends AbstractDataSync
       }
 
       if( empty( $data )) {
-        return;
+        $response->code = 220;
+        return $response;
       }
 
       self::trackerSave( $orderItemIds );
       $apiResponse = self::uploadDataTypeData($data);
 
-      $response = new \stdClass;
       $response->code = $apiResponse->code;
       $response->body = $apiResponse->body;
       $response->tracker = self::trackerFetch();
