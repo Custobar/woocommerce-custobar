@@ -124,7 +124,13 @@ class Plugin
      * @return void
      */
     public static function activate() {
-      // self::runBatchUploadForAllDataTypes();
+
+      // setup default field maps
+      $fieldMaps = \WooCommerceCustobar\FieldsMap::getFieldsMapForFront();
+      update_option( 'custobar_product_fields', $fieldMaps['custobar_product_fields'] );
+      update_option( 'custobar_customer_fields', $fieldMaps['custobar_customer_fields'] );
+      update_option( 'custobar_sale_fields', $fieldMaps['custobar_sale_fields'] );
+
     }
 
     /**
@@ -132,7 +138,9 @@ class Plugin
      *
      * @return void
      */
-    public static function deactivate()
-    {
+    public static function deactivate() {
+
+
+
     }
 }
