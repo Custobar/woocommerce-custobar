@@ -43,15 +43,11 @@ class DataUpload {
     // do wc logging
     if (!in_array($response_code, array(200, 201)) || is_wp_error($response_body)) {
       wc_get_logger()->warning('Custobar data upload failed', array(
-        'source'        => 'woocommerce-custobar',
-        'response_code' => $response_code,
-        'response_body' => $response_body,
+        'source'        => 'woocommerce-custobar'
       ));
     } else {
       wc_get_logger()->info('Sent request to Custobar API', array(
-        'source'        => 'woocommerce-custobar',
-        'response_code' => $response_code,
-        'response_body' => $response_body,
+        'source'        => 'woocommerce-custobar'
       ));
     }
 

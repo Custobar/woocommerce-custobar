@@ -55,7 +55,7 @@ class SaleSync extends AbstractDataSync
 
         // Would sometimes be triggered twice without the class check, because
         // Subscriptions plugin also creates additional order instance.
-        if ($order && get_class($order) === 'WC_Order') {
+        if ($order && (get_class($order) === 'WC_Order' || get_class($order) === 'Automattic\WooCommerce\Admin\Overrides\Order' )) {
             $data = [];
             foreach ($order->get_items() as $order_item) {
                 $data[] = self::formatSingleItem(array(
