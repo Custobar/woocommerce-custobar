@@ -53,9 +53,9 @@ class Product extends AbstractDataSource
         return $this->product->get_name();
     }
 
-    public function getImage()
-    {
-        return ($image=get_the_post_thumbnail_url($this->product->get_id(), 'shop_thumbnail')) ? $image : null;
+    public function getImage() {
+      $image_id = $this->product->get_image_id();
+      return ($image=wp_get_attachment_image_url($image_id, 'woocommerce_single')) ? $image : null;
     }
 
     public function getType()

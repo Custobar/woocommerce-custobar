@@ -46,7 +46,7 @@ class DataUpload {
         'source'        => 'woocommerce-custobar'
       ));
     } else {
-      wc_get_logger()->info('Sent request to Custobar API', array(
+      wc_get_logger()->info('Sent request to Custobar API, $body: ' . print_r($body,1), array(
         'source'        => 'woocommerce-custobar'
       ));
     }
