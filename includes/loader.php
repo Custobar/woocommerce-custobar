@@ -6,10 +6,11 @@ require_once(WOOCOMMERCE_CUSTOBAR_PATH . '/classes/Plugin.php');
 require_once(WOOCOMMERCE_CUSTOBAR_PATH . '/classes/DataUpload.php');
 require_once(WOOCOMMERCE_CUSTOBAR_PATH . '/classes/API.php');
 
-add_filter( 'woocommerce_get_settings_pages', function() {
+add_filter( 'woocommerce_get_settings_pages', function( $settings ) {
 
   require_once(WOOCOMMERCE_CUSTOBAR_PATH . '/classes/Settings.php');
-  return new \WooCommerceCustobar\WC_Settings_Custobar();
+  $settings[] = new \WooCommerceCustobar\WC_Settings_Custobar();
+  return $settings;
 
 });
 
