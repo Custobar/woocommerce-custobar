@@ -2,6 +2,8 @@
 
 namespace WooCommerceCustobar;
 
+defined('ABSPATH') or exit;
+
 class Template {
 
   public $data = [];

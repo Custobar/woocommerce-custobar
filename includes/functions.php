@@ -2,7 +2,7 @@
 
 namespace WooCommerceCustobar;
 
-
+defined('ABSPATH') or exit;
 
 /**
  * functions.php
