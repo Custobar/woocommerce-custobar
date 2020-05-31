@@ -111,8 +111,7 @@ class DataUpload {
 
     $stat = new \stdClass;
 
-    $products = wc_get_products(array('limit' => -1));
-    $stat->total = count( $products );
+    $stat->total = wp_count_posts( 'product' );
 
     $tracker = ProductSync::trackerFetch();
     $stat->synced = count( $tracker['data'] );
