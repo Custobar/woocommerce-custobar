@@ -70,9 +70,8 @@ class CustomerSync extends AbstractDataSync
        * Fetch orders
        */
       $orders = \wc_get_orders(array(
-        'posts_per_page' => -1,
-        'orderby'        => 'date',
-        'order'          => 'ASC',
+        'posts_per_page' => 250,
+        'orderby'        => 'rand',
       ));
       if( empty( $orders )) {
         return false;

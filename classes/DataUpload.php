@@ -111,7 +111,7 @@ class DataUpload {
 
     $stat = new \stdClass;
 
-    $stat->total = wp_count_posts( 'product' );
+    $stat->total = wp_count_posts( 'product' )->publish;
 
     $tracker = ProductSync::trackerFetch();
     $stat->synced = count( $tracker['data'] );
@@ -136,18 +136,19 @@ class DataUpload {
 
     $stat = new \stdClass;
 
-    $orders = \wc_get_orders(array(
-      'posts_per_page' => -1,
-      'orderby'        => 'date',
-      'order'          => 'ASC',
-    ));
-    $salesCount = 0;
-    foreach ($orders as $order) {
-      foreach ($order->get_items() as $order_item) {
-        $salesCount++;
-      }
+    // get total sale count
+    global $wpdb;
+    $table = $wpdb->prefix . 'woocommerce_order_items';
+    $saleCount = $wpdb->get_var("
+      SELECT COUNT(order_item_id)
+      FROM $table
+      WHERE order_item_type = 'line_item'
+    ");
+    if( isset($saleCount) ) {
+      $stat->total = $saleCount;
+    } else {
+      $stat->total = 0;
     }
-    $stat->total = $salesCount;
 
     $tracker = SaleSync::trackerFetch();
     $stat->synced = count( $tracker['data'] );
@@ -174,18 +175,18 @@ class DataUpload {
     $stat = new \stdClass;
     $tracker = CustomerSync::trackerFetch();
 
-    $orders = \wc_get_orders(array(
-      'posts_per_page' => -1,
-      'orderby'        => 'date',
-      'order'          => 'ASC',
-    ));
-    $customerIds = [];
-    foreach ($orders as $order) {
-      $customerIds[] = $order->get_user_id();
+    global $wpdb;
+    $table = $wpdb->prefix . 'wc_customer_lookup';
+    $customerCount = $wpdb->get_var("
+      SELECT COUNT(customer_id)
+      FROM $table
+    ");
+    if( isset($customerCount) ) {
+      $stat->total = $customerCount;
+    } else {
+      $stat->total = 0;
     }
-    $customerIds = array_unique( $customerIds );
 
-    $stat->total = count( $customerIds );
     $stat->synced = count( $tracker['data'] );
     if( $stat->total > 0 ) {
       $stat->synced_percent = number_format(($stat->synced / $stat->total) * 100) . '%';

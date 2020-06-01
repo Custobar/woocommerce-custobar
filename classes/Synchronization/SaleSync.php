@@ -71,10 +71,10 @@ class SaleSync extends AbstractDataSync
 
       $response = new \stdClass;
 
+      // fetch random orders
       $orders = \wc_get_orders(array(
-        'posts_per_page' => -1,
-        'orderby'        => 'date',
-        'order'          => 'ASC',
+        'limit'          => 250
+        'orderby'        => 'rand'
       ));
 
       $tracker = self::trackerFetch();

@@ -41,23 +41,27 @@ class ProductSync extends AbstractDataSync {
 
     public static function batchUpdate() {
 
-      $limit = 500;
+      $limit = 250;
       $tracker = self::trackerFetch();
       $trackerData = $tracker['data'];
 
-      $products = [];
+      $productList = [];
       $productIds = [];
-      foreach (wc_get_products(array('limit' => -1)) as $product) {
+      $products = wc_get_products([
+        'limit'   => 250,
+        'orderby' => 'rand'
+      ]);
+      foreach ( $products as $product ) {
 
         // skip already processed orders
         if( in_array( $product->get_id(), $trackerData)) {
           continue;
         }
 
-        $products[] = self::formatSingleItem($product);
+        $productList[] = self::formatSingleItem($product);
 
         $productIds[] = $product->get_id();
-        if( count($products) >= $limit ) {
+        if( count($productList) >= $limit ) {
           break;
         }
 
@@ -69,7 +73,7 @@ class ProductSync extends AbstractDataSync {
       }
 
       self::trackerSave( $productIds );
-      $apiResponse = self::uploadDataTypeData($products);
+      $apiResponse = self::uploadDataTypeData($productList);
 
       // return response
       $response = new \stdClass;
