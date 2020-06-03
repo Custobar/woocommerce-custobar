@@ -73,7 +73,7 @@ class SaleSync extends AbstractDataSync
 
       // fetch random orders
       $orders = \wc_get_orders(array(
-        'limit'          => 250
+        'limit'          => 250,
         'orderby'        => 'rand'
       ));
 
