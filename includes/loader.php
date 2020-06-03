@@ -1,5 +1,7 @@
 <?php
 
+defined('ABSPATH') or exit;
+
 require_once(WOOCOMMERCE_CUSTOBAR_PATH . '/includes/functions.php');
 require_once(WOOCOMMERCE_CUSTOBAR_PATH . '/includes/wp-async-task.php');
 require_once(WOOCOMMERCE_CUSTOBAR_PATH . '/classes/Plugin.php');
