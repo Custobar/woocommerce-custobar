@@ -70,6 +70,7 @@ class FieldsMap
                 CBProduct::CATEGORY                     => Product::CATEGORY,
                 CBProduct::CATEGORY_ID                  => Product::CATEGORY_IDS,
                 CBProduct::DATE                         => Product::DATE,
+                CBProduct::TAGS                         => Product::TAGS,
                 CBProduct::URL                          => Product::URL,
                 CBProduct::VISIBLE                      => Product::VISIBLE,
                 CBProduct::BRAND                        => null,
@@ -98,8 +99,8 @@ class FieldsMap
                 CBSale::SALE_DISCOUNT       => Sale::TOTAL_DISCOUNT,
                 CBSale::SALE_SHIPPING       => Sale::SALE_SHIPPING,
                 CBSale::SALE_PAYMENT_METHOD => Sale::PAYMENT_METHOD_TITLE,
+                CBSale::SALE_STATE          => Sale::STATUS,
                 CBSale::DISCOUNT            => null,
-                CBSale::SALE_STATE          => null,
                 CBSale::SALE_SHOP_ID        => null,
             ),
         );

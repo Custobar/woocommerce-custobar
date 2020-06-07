@@ -54,6 +54,8 @@
        recordType: recordType
      }
 
+     $('#custobar-export-wrap table').append('<tr class="response"><td colspan="6">Starting to export ' + recordType + 's...</td></tr>');
+
     var _post = function () {
       $.post( ajaxurl, data, function( response ) {
 
@@ -61,7 +63,7 @@
 
         var message = '';
         if( response.code == 200) {
-          message += "Custobar data export successful. Total of " + response.stats.synced + " records exported.";
+          message += response.stats.synced + " " + recordType + "s exported.";
 
           // update row
           var reportRow = $('tr.sync-report-' + response.recordType);
@@ -70,7 +72,7 @@
           reportRow.find('td').eq(4).html( response.stats.updated );
         }
         if( response.code == 220) {
-          message += "No more products were found. Total of " + response.stats.synced + " records exported.";
+          message += "No more records were found. Total of " + response.stats.synced + " " + recordType + "s exported.";
         }
         if( response.code == 420 ) {
           message += "Either WooCommerce is uninstalled or other configuration conditions were not met. Check that you have a valid API key set for Custobar. Response code " + response.code + ", no records were exported.";
@@ -79,12 +81,7 @@
           message += "No more records available to export. Response code " + response.code + ", no records were exported.";
         }
 
-        var responseRow = $( '#custobar-export-wrap table tr.response' );
-        if( responseRow.length ) {
-          responseRow.find('td').html( message )
-        } else {
-          $('#custobar-export-wrap table').append('<tr class="response"><td colspan="6">' + message + '</td></tr>');
-        }
+        $( '#custobar-export-wrap table tr.response td' ).html( message );
 
         // Post again
         if (response.count && response.stats.synced < response.stats.total) {

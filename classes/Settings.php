@@ -223,7 +223,7 @@ class WC_Settings_Custobar extends WC_Settings_Page {
       'custobar-admin-js',
       WOOCOMMERCE_CUSTOBAR_URL . 'assets/custobar.admin.js',
       array( 'jquery' ),
-      '1.3.4',
+      '1.3.5',
       true
     );
 
@@ -239,7 +239,7 @@ class WC_Settings_Custobar extends WC_Settings_Page {
       'custobar-admin-style',
       WOOCOMMERCE_CUSTOBAR_URL . 'assets/custobar.admin.css',
       array(),
-      '1.3.4'
+      '1.3.5'
     );
 
   }

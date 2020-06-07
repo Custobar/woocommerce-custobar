@@ -175,17 +175,29 @@ class DataUpload {
     $stat = new \stdClass;
     $tracker = CustomerSync::trackerFetch();
 
-    global $wpdb;
-    $table = $wpdb->prefix . 'wc_customer_lookup';
-    $customerCount = $wpdb->get_var("
-      SELECT COUNT(customer_id)
-      FROM $table
-    ");
-    if( isset($customerCount) ) {
-      $stat->total = $customerCount;
-    } else {
-      $stat->total = 0;
-    }
+    $admin_users = new \WP_User_Query(
+        array(
+          'role'   => 'administrator',
+          'fields' => 'ID',
+        )
+      );
+
+    $manager_users = new \WP_User_Query(
+      array(
+        'role'   => 'shop_manager',
+        'fields' => 'ID',
+      )
+    );
+
+    $query = new \WP_User_Query(
+      array(
+        'exclude' => array_merge( $admin_users->get_results(), $manager_users->get_results() ),
+        'fields'  => 'ID',
+        'number' => 1
+      )
+    );
+    
+    $stat->total = $query->get_total();
 
     $stat->synced = $tracker['offset'];
     if( $stat->total > 0 ) {

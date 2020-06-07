@@ -22,6 +22,7 @@ class Sale extends AbstractDataSource
     const TOTAL_DISCOUNT = 'total_discount';
     const SALE_SHIPPING = 'sale_shipping';
     const PAYMENT_METHOD_TITLE = 'payment_method_title';
+    const STATUS = 'status';
 
     public static $sourceKey = 'sale';
 
@@ -96,6 +97,11 @@ class Sale extends AbstractDataSource
     public function getSaleShipping()
     {
         return Utilities::getPriceInCents($this->order->get_shipping_total());
+    }
+
+    public function getStatus()
+    {
+        return strtoupper($this->order->get_status());
     }
 
     public function getPaymentMethodTitle()

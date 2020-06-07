@@ -32,6 +32,7 @@ class CustobarProduct extends AbstractCustobarDataType
     CONST LANGUAGE = 'language';
     CONST VISIBLE = 'visible';
     CONST EXCLUDE_FROM_RECOMMENDATIONS = 'exclude_from_recommendations';
+    CONST TAGS = 'tags';
     CONST UNIT = 'unit';
     CONST WEIGHT = 'weight';
 

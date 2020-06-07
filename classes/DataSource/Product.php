@@ -21,6 +21,7 @@ class Product extends AbstractDataSource
     CONST CATEGORY = 'category';
     CONST CATEGORY_IDS = 'category_ids';
     CONST DATE = 'date';
+    CONST TAGS = 'tags';
     CONST URL = 'url';
     CONST VISIBLE = 'visible';
 
@@ -81,6 +82,12 @@ class Product extends AbstractDataSource
     public function getDate()
     {
         return Utilities::formatDateTime($this->product->get_date_modified());
+    }
+
+    public function getTags()
+    {
+        $terms = get_the_terms( $this->product->get_id(), 'product_tag');
+        return wp_list_pluck($terms, 'name');
     }
 
     public function getUrl()
