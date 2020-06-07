@@ -8,14 +8,15 @@ defined('ABSPATH') or exit;
 
 class Customer extends AbstractDataSource
 {
-    const USER_ID = 'user_id';
-    const BILLING_FIRST_NAME = 'billing_first_name';
-    const BILLING_LAST_NAME = 'billing_last_name';
-    const BILLING_PHONE = 'billing_phone';
+    const ID = 'id';
+    const FIRST_NAME = 'first_name';
+    const LAST_NAME = 'last_name';
+    const EMAIL = 'email';
+    const PHONE = 'phone';
     const COMPANY = 'company';
     const STREET_ADDRESS = 'street_address';
     const CITY = 'city';
-    const ZIP_CODE = 'zip_code';
+    const ZIP_CODE = 'postcode';
     const STATE = 'state';
     const COUNTRY = 'country';
     const DATE_JOINED = 'date_joined';
@@ -25,66 +26,71 @@ class Customer extends AbstractDataSource
     public static $sourceKey = 'customer';
 
     /**
-     * Maps the customer properties found in the WC_Order object to match
+     * Maps the customer properties found in the WC_Customer object to match
      * the ones used in Custobar.
      *
-     * @param \WC_Order $order
+     * @param \WC_Customer $order
      */
-    public function __construct($order)
+    public function __construct($customer)
     {
         parent::__construct();
 
-        $this->order = $order;
+        $this->customer = $customer;
     }
 
-    public function getUserId()
+    public function getId()
     {
-        return ($this->order->get_user_id()) ? (string)$this->order->get_user_id() : null;
+        return $this->customer->get_id();
     }
 
-    public function getBillingFirstName()
+    public function getFirstName()
     {
-        return $this->order->get_billing_first_name();
+        return $this->customer->get_first_name();
     }
 
-    public function getBillingLastName()
+    public function getLastName()
     {
-        return $this->order->get_billing_last_name();
+        return $this->customer->get_last_name();
     }
 
-    public function getBillingPhone()
+    public function getEmail()
     {
-        return $this->order->get_billing_phone();
+        return $this->customer->get_email();
+    }
+
+    public function getPhone()
+    {
+        return $this->customer->get_billing_phone();
     }
 
     public function getCompany()
     {
-        return $this->order->get_billing_company();
+        return $this->customer->get_billing_company();
     }
 
     public function getCity()
     {
-        return $this->order->get_billing_city();
+        return $this->customer->get_billing_city();
     }
 
-    public function getZipCode()
+    public function getPostcode()
     {
-        return $this->order->get_billing_postcode();
+        return $this->customer->get_billing_postcode();
     }
 
     public function getState()
     {
-        return $this->order->get_billing_state();
+        return $this->customer->get_billing_state();
     }
 
     public function getCountry()
     {
-        return $this->order->get_billing_country();
+        return $this->customer->get_billing_country();
     }
 
     public function getCanEmail()
     {
-        $can_email = get_post_meta($this->order->get_id(), '_woocommerce_custobar_can_email', true);
+        $can_email = get_post_meta($this->customer->get_id(), '_woocommerce_custobar_can_email', true);
         if ($can_email) {
             return true;
         }
@@ -96,7 +102,7 @@ class Customer extends AbstractDataSource
 
     public function getCanSms()
     {
-        $can_sms = get_post_meta($this->order->get_id(), '_woocommerce_custobar_can_sms', true);
+        $can_sms = get_post_meta($this->customer->get_id(), '_woocommerce_custobar_can_sms', true);
         if ($can_sms) {
             return true;
         }
@@ -108,19 +114,16 @@ class Customer extends AbstractDataSource
 
     public function getStreetAddress()
     {
-        $address = $this->order->get_billing_address_1();
-        if ($billing_address_2 = $this->order->get_billing_address_2()) {
-            $address .= ' ' . $billing_address_2;
+        $address = $this->customer->get_billing_address_1();
+        if ($billing_address_2 = $this->customer->get_billing_address_2()) {
+            $address .= '\n' . $billing_address_2;
         }
         return $address;
     }
 
     public function getDateJoined()
     {
-        $user_data = get_userdata($this->order->get_user_id());
-        $registered_time = $user_data->user_registered;
-        $registered_time = new \DateTime($registered_time);
-        $formatted_time = Utilities::formatDateTime($registered_time);
-        return $formatted_time;
+        $created_at = new \DateTime($this->created_at);
+        return Utilities::formatDateTime($created_at);
     }
 }

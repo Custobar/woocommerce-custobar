@@ -29,10 +29,11 @@ class FieldsMap
              * custobar => woocommerce
              */
             'custobar_customer_fields' => array(
-                CBCustomer::EXTERNAL_ID    => Customer::USER_ID,
-                CBCustomer::FIRST_NAME     => Customer::BILLING_FIRST_NAME,
-                CBCustomer::LAST_NAME      => Customer::BILLING_LAST_NAME,
-                CBCustomer::PHONE_NUMBER   => Customer::BILLING_PHONE,
+                CBCustomer::EXTERNAL_ID    => Customer::ID,
+                CBCustomer::FIRST_NAME     => Customer::FIRST_NAME,
+                CBCustomer::LAST_NAME      => Customer::LAST_NAME,
+                CBCustomer::EMAIL          => Customer::EMAIL,
+                CBCustomer::PHONE_NUMBER   => Customer::PHONE,
                 CBCustomer::COMPANY        => Customer::COMPANY,
                 CBCustomer::STREET_ADDRESS => Customer::STREET_ADDRESS,
                 CBCustomer::CITY           => Customer::CITY,
@@ -42,7 +43,6 @@ class FieldsMap
                 CBCustomer::DATE_JOINED    => Customer::DATE_JOINED,
                 CBCustomer::CAN_SMS        => Customer::CAN_SMS,
                 CBCustomer::CAN_EMAIL      => Customer::CAN_EMAIL,
-                CBCustomer::NIN            => null,
                 CBCustomer::CAN_POST       => null,
                 CBCustomer::LANGUAGE       => null,
                 CBCustomer::LAST_LOGIN     => null,

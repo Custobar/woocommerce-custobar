@@ -70,55 +70,57 @@ class SaleSync extends AbstractDataSync
     public static function batchUpdate() {
 
       $response = new \stdClass;
+      $limit = 500;
+      $tracker = self::trackerFetch();
+      $offset = $tracker['offset'];
+
+      wc_get_logger()->warning('Orders count:' . count($offset), array(
+        'source'        => 'woocommerce-custobar'
+      ));
 
       // fetch random orders
       $orders = \wc_get_orders(array(
-        'limit'          => 250,
-        'orderby'        => 'rand'
+        'limit'   => $limit,
+        'offset'  => $offset,
+        'orderby' => 'ID',
+        'order'   => 'ASC'
       ));
 
-      $tracker = self::trackerFetch();
-      $trackerData = $tracker['data'];
+      wc_get_logger()->warning('Orders count:' . count($orders), array(
+        'source'        => 'woocommerce-custobar'
+      ));
 
-      $data = [];
-      $orderItemIds = [];
-      $limit = 500;
+      $orderRows = [];
+
       foreach ($orders as $order) {
-
-        if( count( $data ) >= $limit ) {
-          break;
-        }
 
         foreach ($order->get_items() as $order_item) {
 
-          // skip already processed orders
-          if( in_array( $order_item->get_id(), $trackerData)) {
-            continue;
-          }
-
-          $data[] = self::formatSingleItem(array(
+          $orderRows[] = self::formatSingleItem(array(
             'order'      => $order,
             'order_item' => $order_item
           ));
 
-          $orderItemIds[] = $order_item->get_id();
-
         }
 
       }
 
-      if( empty( $data )) {
+      # No rows
+      if( empty( $orderRows )) {
         $response->code = 220;
         return $response;
       }
 
-      self::trackerSave( $orderItemIds );
-      $apiResponse = self::uploadDataTypeData($data);
+      $count = count( $orders );
+
+      $apiResponse = self::uploadDataTypeData($orderRows);
+
+      self::trackerSave( $offset + $count );
 
       $response->code = $apiResponse->code;
       $response->body = $apiResponse->body;
       $response->tracker = self::trackerFetch();
-      $response->count = count( $orderItemIds );
+      $response->count = $count;
       return $response;
 
     }
@@ -129,8 +131,8 @@ class SaleSync extends AbstractDataSync
       if( !is_array( $tracker )) {
         $tracker = [];
       }
-      if( !isset($tracker['data']) ) {
-        $tracker['data'] = [];
+      if( !isset($tracker['offset']) ) {
+        $tracker['offset'] = 0;
       }
       if( !isset($tracker['updated']) ) {
         $tracker['updated'] = false;
@@ -138,12 +140,9 @@ class SaleSync extends AbstractDataSync
       return $tracker;
     }
 
-    public static function trackerSave( $objectIds ) {
+    public static function trackerSave( $offset ) {
       $tracker = self::trackerFetch();
-      $trackerData = $tracker['data'];
-      $trackerData = array_merge($trackerData, $objectIds);
-      $trackerData = array_unique($trackerData);
-      $tracker['data'] = $trackerData;
+      $tracker['offset'] = $offset;
       $tracker['updated'] = time();
       update_option('custobar_export_sale', $tracker);
     }

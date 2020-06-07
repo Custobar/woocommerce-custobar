@@ -46,46 +46,53 @@
 
     e.preventDefault()
 
-    var recordType = $(this).data('record-type')
+    var recordType = $(this).data('record-type');
+    var previousCount = 0;
 
     data = {
        action: 'custobar_export',
        recordType: recordType
      }
-     $.post( ajaxurl, data, function( response ) {
 
-       response = JSON.parse( response )
+    var _post = function () {
+      $.post( ajaxurl, data, function( response ) {
 
-       var message = '';
-       if( response.code == 200 ) {
-         message += "Custobar data export successful. Code " + response.code + ", total of " + response.count + " records exported.";
+        response = JSON.parse( response )
 
-         // update row
-         var reportRow = $('tr.sync-report-' + response.recordType)
-         reportRow.find('td').eq(2).html( response.stats.synced )
-         reportRow.find('td').eq(3).html( response.stats.synced_percent )
-         reportRow.find('td').eq(4).html( response.stats.updated )
+        var message = '';
+        if( response.code == 200) {
+          message += "Custobar data export successful. Total of " + response.stats.synced + " records exported.";
 
+          // update row
+          var reportRow = $('tr.sync-report-' + response.recordType);
+          reportRow.find('td').eq(2).html( response.stats.synced );
+          reportRow.find('td').eq(3).html( response.stats.synced_percent );
+          reportRow.find('td').eq(4).html( response.stats.updated );
+        }
+        if( response.code == 220) {
+          message += "No more products were found. Total of " + response.stats.synced + " records exported.";
+        }
+        if( response.code == 420 ) {
+          message += "Either WooCommerce is uninstalled or other configuration conditions were not met. Check that you have a valid API key set for Custobar. Response code " + response.code + ", no records were exported.";
+        }
+        if( response.code == 440 ) {
+          message += "No more records available to export. Response code " + response.code + ", no records were exported.";
+        }
 
-       }
-       if( response.code == 420 ) {
-         message += "Either WooCommerce is uninstalled or other configuration conditions were not met. Check that you have a valid API key set for Custobar. Response code " + response.code + ", no records were exported.";
-       }
-       if( response.code == 440 ) {
-         message += "No records available to export. Response code " + response.code + ", no records were exported.";
-       }
+        var responseRow = $( '#custobar-export-wrap table tr.response' );
+        if( responseRow.length ) {
+          responseRow.find('td').html( message )
+        } else {
+          $('#custobar-export-wrap table').append('<tr class="response"><td colspan="6">' + message + '</td></tr>');
+        }
 
-       var responseRow = $( '#custobar-export-wrap table tr.response' );
-       if( responseRow.length ) {
-         responseRow.find('td').html( message )
-       } else {
-         $('#custobar-export-wrap table').append('<tr class="response"><td colspan="6">' + message + '</td></tr>');
-       }
-
-       console.log( response )
-
-     });
-
+        // Post again
+        if (response.count && response.stats.synced < response.stats.total) {
+          _post();
+        }
+      });
+    }
+    _post();
   })
 
   // API connection test

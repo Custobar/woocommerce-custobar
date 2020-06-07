@@ -63,58 +63,74 @@ class CustomerSync extends AbstractDataSync
 
     public static function batchUpdate() {
 
+      $response = new \stdClass;
       $tracker = self::trackerFetch();
-      $limit = 250;
+      $offset = $tracker['offset'];
+
+      $limit = 500;
 
       /*
-       * Fetch orders
+       * Fetch users
        */
-      $orders = \wc_get_orders(array(
-        'posts_per_page' => 250,
-        'orderby'        => 'rand',
-      ));
-      if( empty( $orders )) {
-        return false;
+
+
+      $admin_users = new \WP_User_Query(
+        array(
+          'role'   => 'administrator',
+          'fields' => 'ID',
+        )
+      );
+
+      $manager_users = new \WP_User_Query(
+        array(
+          'role'   => 'shop_manager',
+          'fields' => 'ID',
+        )
+      );
+
+      $query = new \WP_User_Query(
+        array(
+          'exclude' => array_merge( $admin_users->get_results(), $manager_users->get_results() ),
+          'fields'  => 'ID',
+          'number'  => $limit,
+          'offset'  => $offset
+        )
+      );
+
+      $users = $query->get_results();
+
+      if( empty( $users )) {
+        $response->code = 220;
+        return $response;
       }
 
       // loop over orders to find unique customers
       // customer data organized into $data
-      $data = [];
-      foreach ($orders as $order) {
-        if (!self::customerAlreadyAdded($data, $order, $tracker['data'])) {
-          $data[] = self::formatSingleItem($order);
-
-          // enforce single batch limit
-          if( count( $data ) >= $limit ) {
-            break;
-          }
-
-        }
+      $customers = [];
+      foreach ($users as $user_id) {
+        $customer = new \WC_Customer( $user_id );
+        $customers[] = self::formatSingleItem($customer);
       }
 
       // no data
-      if( empty( $data )) {
-        return false;
+      if( empty( $customers )) {
+        $response->code = 221;
+        return $response;
       }
 
-      $customerIds = [];
-      foreach( $data as $customerData ) {
-        $uid = $customerData['external_id'];
-        $customerIds[] = $uid;
-      }
+      $count = count($customers);
 
       // track the export
-      self::trackerSave( $customerIds );
+      self::trackerSave( $offset + $count );
 
       // do upload to custobar API
-      $apiResponse = self::uploadDataTypeData($data);
+      $apiResponse = self::uploadDataTypeData($customers);
 
       // return response
-      $response = new \stdClass;
       $response->code = $apiResponse->code;
       $response->body = $apiResponse->body;
       $response->tracker = self::trackerFetch();
-      $response->count = count( $customerIds );
+      $response->count = $count;
       return $response;
 
     }
@@ -125,8 +141,8 @@ class CustomerSync extends AbstractDataSync
       if( !is_array( $tracker )) {
         $tracker = [];
       }
-      if( !isset($tracker['data']) ) {
-        $tracker['data'] = [];
+      if( !isset($tracker['offset']) ) {
+        $tracker['offset'] = 0;
       }
       if( !isset($tracker['updated']) ) {
         $tracker['updated'] = false;
@@ -134,47 +150,17 @@ class CustomerSync extends AbstractDataSync
       return $tracker;
     }
 
-    public static function trackerSave( $objectIds ) {
+    public static function trackerSave( $offset ) {
       $tracker = self::trackerFetch();
-      $trackerData = $tracker['data'];
-      $trackerData = array_merge($trackerData, $objectIds);
-      $trackerData = array_unique($trackerData);
-      $tracker['data'] = $trackerData;
+      $tracker['offset'] = $offset;
       $tracker['updated'] = time();
       update_option('custobar_export_customer', $tracker);
     }
 
-    public static function customerAlreadyAdded( $already_looped_data, $order, $tracker ) {
-
-      // check for already exported
-      $uid = $order->get_user_id();
-      if( in_array( $uid, $tracker )) {
-        return true;
-      }
-
-      // check for already in this batch
-      $identifier_keys = array(
-        'external_id'  => $order->get_user_id(),
-        'phone_number' => $order->get_billing_phone(),
-        'email'        => $order->get_billing_email()
-      );
-
-      foreach ( $already_looped_data as $item ) {
-        foreach ($identifier_keys as $key => $value) {
-          if (isset($item[$key]) && $item[$key] && $item[$key] == $identifier_keys[$key]) {
-            return true;
-          }
-        }
-      }
-
-      return false;
-
-    }
-
-    protected static function formatSingleItem($order) {
-      $custobar_customer = new CustobarCustomer($order);
+    protected static function formatSingleItem($user) {
+      $custobar_customer = new CustobarCustomer($user);
       $properties = $custobar_customer->getAssignedProperties();
-      return apply_filters('woocommerce_custobar_customer_properties', $properties, $order);
+      return apply_filters('woocommerce_custobar_customer_properties', $properties, $user);
     }
 
     protected static function uploadDataTypeData($data, $single = false) {

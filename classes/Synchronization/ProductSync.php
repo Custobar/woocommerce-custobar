@@ -41,46 +41,42 @@ class ProductSync extends AbstractDataSync {
 
     public static function batchUpdate() {
 
-      $limit = 250;
+      $response = new \stdClass;
+      $limit = 500;
       $tracker = self::trackerFetch();
-      $trackerData = $tracker['data'];
-
+      $offset = $tracker['offset'];
       $productList = [];
-      $productIds = [];
-      $products = wc_get_products([
-        'limit'   => 250,
-        'orderby' => 'rand'
-      ]);
-      foreach ( $products as $product ) {
 
-        // skip already processed orders
-        if( in_array( $product->get_id(), $trackerData)) {
-          continue;
-        }
+      $products = wc_get_products([
+        'limit'   => $limit,
+        'offset'  => $offset,
+        'orderby' => 'ID',
+        'order'   => 'ASC'
+      ]);
+
+      foreach ( $products as $product ) {
 
         $productList[] = self::formatSingleItem($product);
 
-        $productIds[] = $product->get_id();
-        if( count($productList) >= $limit ) {
-          break;
-        }
-
       }
+
+      $count = count( $productList );
 
       // no products
-      if( empty( $productIds )) {
-        return false;
+      if( empty( $productList )) {
+        $response->code = 220;
+        return $response;
       }
 
-      self::trackerSave( $productIds );
       $apiResponse = self::uploadDataTypeData($productList);
 
+      self::trackerSave( $offset + $count );
+
       // return response
-      $response = new \stdClass;
       $response->code = $apiResponse->code;
       $response->body = $apiResponse->body;
       $response->tracker = self::trackerFetch();
-      $response->count = count( $productIds );
+      $response->count = $count;
       return $response;
 
     }
@@ -91,8 +87,8 @@ class ProductSync extends AbstractDataSync {
       if( !is_array( $tracker )) {
         $tracker = [];
       }
-      if( !isset($tracker['data']) ) {
-        $tracker['data'] = [];
+      if( !isset($tracker['offset']) ) {
+        $tracker['offset'] = 0;
       }
       if( !isset($tracker['updated']) ) {
         $tracker['updated'] = false;
@@ -100,12 +96,9 @@ class ProductSync extends AbstractDataSync {
       return $tracker;
     }
 
-    public static function trackerSave( $objectIds ) {
+    public static function trackerSave( $offset ) {
       $tracker = self::trackerFetch();
-      $trackerData = $tracker['data'];
-      $trackerData = array_merge($trackerData, $objectIds);
-      $trackerData = array_unique($trackerData);
-      $tracker['data'] = $trackerData;
+      $tracker['offset'] = $offset;
       $tracker['updated'] = time();
       update_option('custobar_export_product', $tracker);
     }

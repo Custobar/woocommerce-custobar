@@ -16,8 +16,8 @@ defined('ABSPATH') or exit;
  */
 class CustobarCustomer extends AbstractCustobarDataType
 {
-    const NIN = 'nin';
     const EXTERNAL_ID = 'external_id';
+    const EMAIL = 'email';
     CONST PHONE_NUMBER = 'phone_number';
     CONST CANONICAL_ID = 'canonical_id';
     CONST FIRST_NAME = 'first_name';

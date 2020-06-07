@@ -46,7 +46,7 @@ class DataUpload {
         'source'        => 'woocommerce-custobar'
       ));
     } else {
-      wc_get_logger()->info('Sent request to Custobar API, $body: ' . print_r($body,1), array(
+      wc_get_logger()->info('Sent ' . count($body) . ' items to Custobar API.', array(
         'source'        => 'woocommerce-custobar'
       ));
     }
@@ -68,6 +68,7 @@ class DataUpload {
     if ($plugin::isWooCommerceActived() && $plugin::hasAllSettingsDefined()) {
 
       $recordType = sanitize_text_field( $_POST['recordType'] );
+
       switch( $recordType ) {
         case 'customer':
           $apiResponse = CustomerSync::batchUpdate();
@@ -102,7 +103,6 @@ class DataUpload {
       print json_encode( $response );
     }
 
-
     wp_die();
 
   }
@@ -111,10 +111,16 @@ class DataUpload {
 
     $stat = new \stdClass;
 
-    $stat->total = wp_count_posts( 'product' )->publish;
+    // get total product count
+    $product_count = 0;
+    foreach(wp_count_posts( 'product' ) as $state=>$count) {
+      $product_count += $count;
+    }
+
+    $stat->total = $product_count;
 
     $tracker = ProductSync::trackerFetch();
-    $stat->synced = count( $tracker['data'] );
+    $stat->synced = $tracker['offset'];
     if( $stat->total > 0 ) {
       $stat->synced_percent = number_format(($stat->synced / $stat->total) * 100) . '%';
     } else {
@@ -137,21 +143,15 @@ class DataUpload {
     $stat = new \stdClass;
 
     // get total sale count
-    global $wpdb;
-    $table = $wpdb->prefix . 'woocommerce_order_items';
-    $saleCount = $wpdb->get_var("
-      SELECT COUNT(order_item_id)
-      FROM $table
-      WHERE order_item_type = 'line_item'
-    ");
-    if( isset($saleCount) ) {
-      $stat->total = $saleCount;
-    } else {
-      $stat->total = 0;
+    $order_count = 0;
+    foreach(wp_count_posts( 'shop_order' ) as $state=>$count) {
+      $order_count += $count;
     }
 
+    $stat->total = $order_count;
+
     $tracker = SaleSync::trackerFetch();
-    $stat->synced = count( $tracker['data'] );
+    $stat->synced = $tracker['offset'];
 
     if( $stat->total > 0 ) {
       $stat->synced_percent = number_format(($stat->synced / $stat->total) * 100) . '%';
@@ -187,7 +187,7 @@ class DataUpload {
       $stat->total = 0;
     }
 
-    $stat->synced = count( $tracker['data'] );
+    $stat->synced = $tracker['offset'];
     if( $stat->total > 0 ) {
       $stat->synced_percent = number_format(($stat->synced / $stat->total) * 100) . '%';
     } else {
