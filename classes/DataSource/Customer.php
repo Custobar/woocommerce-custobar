@@ -40,7 +40,7 @@ class Customer extends AbstractDataSource
 
     public function getId()
     {
-        return $this->customer->get_id();
+        return (string) $this->customer->get_id();
     }
 
     public function getFirstName()

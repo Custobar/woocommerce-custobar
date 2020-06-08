@@ -49,14 +49,31 @@
     var recordType = $(this).data('record-type');
     var previousCount = 0;
 
-    data = {
-       action: 'custobar_export',
-       recordType: recordType
-     }
+    var responseCell = $('#custobar-export-wrap table tr.response td');
+    var message = 'Starting to export ' + recordType + 's...';
 
-     $('#custobar-export-wrap table').append('<tr class="response"><td colspan="6">Starting to export ' + recordType + 's...</td></tr>');
+    if (!responseCell.length) {
+      $('#custobar-export-wrap table').append('<tr class="response"><td colspan="7">' + message + '</td></tr>');
+    }
+    else {
+      $responseCell.html( message );
+    }
 
     var _post = function () {
+
+      var resetCheck = $('input[name="reset-' + recordType + '"]');
+
+      data = {
+        action: 'custobar_export',
+        recordType: recordType
+      }
+
+      // Reset offset
+      if (resetCheck.is(":checked")) {
+        data['reset'] = 1;
+        resetCheck.prop('checked', false);
+      }
+
       $.post( ajaxurl, data, function( response ) {
 
         response = JSON.parse( response )

@@ -68,17 +68,27 @@ class DataUpload {
     if ($plugin::isWooCommerceActived() && $plugin::hasAllSettingsDefined()) {
 
       $recordType = sanitize_text_field( $_POST['recordType'] );
+      $resetOffset = !empty($_POST['reset']);
 
       switch( $recordType ) {
         case 'customer':
+          if ($resetOffset) {
+            CustomerSync::trackerSave(0);
+          }
           $apiResponse = CustomerSync::batchUpdate();
           $apiResponse->stats = self::fetchSyncStatCustomers();
           break;
         case 'sale':
+          if ($resetOffset) {
+            SaleSync::trackerSave(0);
+          }
           $apiResponse = SaleSync::batchUpdate();
           $apiResponse->stats = self::fetchSyncStatSales();
           break;
         case 'product':
+          if ($resetOffset) {
+            ProductSync::trackerSave(0);
+          }
           $apiResponse = ProductSync::batchUpdate();
           $apiResponse->stats = self::fetchSyncStatProducts();
           break;

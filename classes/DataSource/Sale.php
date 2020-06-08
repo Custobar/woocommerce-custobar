@@ -36,7 +36,7 @@ class Sale extends AbstractDataSource
 
     public function getOrderId()
     {
-        return $this->order_item->get_id();
+        return (string) $this->order_item->get_id();
     }
 
     public function getOrderNumber()
