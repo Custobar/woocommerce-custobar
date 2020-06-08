@@ -45,10 +45,6 @@ class DataUpload {
       wc_get_logger()->warning('Custobar data upload failed', array(
         'source'        => 'woocommerce-custobar'
       ));
-    } else {
-      wc_get_logger()->info('Sent ' . count($body) . ' items to Custobar API.', array(
-        'source'        => 'woocommerce-custobar'
-      ));
     }
 
     // return response

@@ -74,10 +74,6 @@ class SaleSync extends AbstractDataSync
       $tracker = self::trackerFetch();
       $offset = $tracker['offset'];
 
-      wc_get_logger()->warning('Orders count:' . count($offset), array(
-        'source'        => 'woocommerce-custobar'
-      ));
-
       // fetch random orders
       $orders = \wc_get_orders(array(
         'limit'   => $limit,
