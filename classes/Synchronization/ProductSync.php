@@ -28,14 +28,13 @@ class ProductSync extends AbstractDataSync {
 
     public static function singleUpdate($args) {
 
+      wc_get_logger()->info('ProductSync single update called with $args: ' . print_r($args, 1), array(
+        'source'        => 'woocommerce-custobar'
+      ));
+
       $product = wc_get_product($args[0]);
       $properties = self::formatSingleItem($product);
       self::uploadDataTypeData($properties, true);
-
-      $productId = $product->get_id();
-      self::trackerSave(
-        [ $productId ]
-      );
 
     }
 

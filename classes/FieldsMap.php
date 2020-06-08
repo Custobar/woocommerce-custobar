@@ -207,12 +207,6 @@ class FieldsMap
         }, []);
 
         // Remove all falsy fields e.g. null, false, empty string
-        $out = array_filter($out);
-
-        wc_get_logger()->info('getSavedFields, $out: ' . print_r($out,1), array(
-          'source'        => 'woocommerce-custobar'
-        ));
-
-        return $out;
+        return array_filter($out);
     }
 }

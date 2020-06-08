@@ -18,47 +18,34 @@ class CustomerSync extends AbstractDataSync
 
     public static function addHooks()
     {
-        add_action('wp_async_woocommerce_new_order', [__CLASS__, 'singleUpdate']);
-        add_action('wp_async_woocommerce_update_order', [__CLASS__, 'singleUpdate']);
+        add_action('wp_async_user_register', [__CLASS__, 'singleUpdate']);
+        add_action('wp_async_profile_update', [__CLASS__, 'singleUpdate']);
+        add_action('wp_async_woocommerce_new_customer', [__CLASS__, 'singleUpdate']);
+        add_action('wp_async_woocommerce_created_customer', [__CLASS__, 'singleUpdate']);
+        add_action('wp_async_woocommerce_update_customer', [__CLASS__, 'singleUpdate']);
         add_action('plugins_loaded', function () {
-            new CustobarAsyncTask('woocommerce_new_order');
-            new CustobarAsyncTask('woocommerce_update_order');
+            new CustobarAsyncTask('user_register');
+            new CustobarAsyncTask('profile_update');
+            new CustobarAsyncTask('woocommerce_new_customer');
+            new CustobarAsyncTask('woocommerce_created_customer');
+            new CustobarAsyncTask('woocommerce_update_customer');
         });
     }
 
     public static function singleUpdate($args)
     {
 
-      wc_get_logger()->info('CustomerSync single update called with $args: ' . print_r($args,1), array(
+      wc_get_logger()->info('CustomerSync single update called with $args: ' . print_r($args[0],1), array(
         'source'        => 'woocommerce-custobar'
       ));
 
-        $order = \wc_get_order($args[0]);
+      $customer = new \WC_Customer( $args[0] );
 
-        wc_get_logger()->info('CustomerSync single update before if check, class name: '.get_class($order), array(
-          'source'        => 'woocommerce-custobar'
-        ));
-
-        if ($order && (get_class($order) === 'WC_Order' || get_class($order) === 'Automattic\WooCommerce\Admin\Overrides\Order' )) {
-
-          wc_get_logger()->info('CustomerSync passed if check', array(
-            'source'        => 'woocommerce-custobar'
-          ));
-
-            $properties = self::formatSingleItem($order);
-
-            $uid = $properties['external_id'];
-            self::trackerSave(
-              [ $uid ]
-            );
-
-            wc_get_logger()->info('CustomerSync before uploadDataTypeData, $properties: ' . print_r($properties,1), array(
-              'source'        => 'woocommerce-custobar'
-            ));
-
-            self::uploadDataTypeData($properties, true);
-
-        }
+      # Update only customers
+      if ( $customer->get_role() == 'customer') {
+        $properties = self::formatSingleItem($customer);
+        self::uploadDataTypeData($properties, true);
+      }
     }
 
     public static function batchUpdate() {
