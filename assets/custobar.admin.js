@@ -56,7 +56,7 @@
       $('#custobar-export-wrap table').append('<tr class="response"><td colspan="7">' + message + '</td></tr>');
     }
     else {
-      $responseCell.html( message );
+      responseCell.html( message );
     }
 
     var _post = function () {
