@@ -44,22 +44,50 @@ class ProductSync extends AbstractDataSync {
       $limit = 500;
       $tracker = self::trackerFetch();
       $offset = $tracker['offset'];
+      $variantOffset = $tracker['variant_offset'];
       $productList = [];
+      $variantList = [];
 
-      $products = wc_get_products([
-        'limit'   => $limit,
-        'offset'  => $offset,
-        'orderby' => 'ID',
-        'order'   => 'ASC'
-      ]);
+      if ($variantOffset == 0) {
 
-      foreach ( $products as $product ) {
+        $products = wc_get_products([
+          'limit'   => $limit,
+          'offset'  => $offset,
+          'orderby' => 'ID',
+          'order'   => 'ASC'
+        ]);
 
-        $productList[] = self::formatSingleItem($product);
+        foreach ( $products as $product ) {
+          $productList[] = self::formatSingleItem($product);
+        }
 
       }
 
       $count = count( $productList );
+      $offset += $count;
+
+      # Fetch variants
+      if ($count < $limit) {
+
+        $variants = wc_get_products([
+          'type' => 'variation',
+          'limit'   => $limit,
+          'offset'  => $variantOffset,
+          'orderby' => 'ID',
+          'order'   => 'ASC'
+        ]);
+
+        foreach ( $variants as $variant ) {
+
+          $variantList[] = self::formatSingleVariant($variant);
+
+        }
+
+        $count = count( $variantList );
+        $variantOffset += $count;
+
+        $productList = array_merge($productList, $variantList);
+      }
 
       // no products
       if( empty( $productList )) {
@@ -69,7 +97,7 @@ class ProductSync extends AbstractDataSync {
 
       $apiResponse = self::uploadDataTypeData($productList);
 
-      self::trackerSave( $offset + $count );
+      self::trackerSave( $offset, $variantOffset );
 
       // return response
       $response->code = $apiResponse->code;
@@ -89,16 +117,26 @@ class ProductSync extends AbstractDataSync {
       if( !isset($tracker['offset']) ) {
         $tracker['offset'] = 0;
       }
+      if( !isset($tracker['variant_offset']) ) {
+        $tracker['variant_offset'] = 0;
+      }
       if( !isset($tracker['updated']) ) {
         $tracker['updated'] = false;
       }
       return $tracker;
     }
 
-    public static function trackerSave( $offset ) {
+    public static function trackerSave( $offset, $variantOffset, $total=null, $variantTotal=null ) {
       $tracker = self::trackerFetch();
-      $tracker['offset'] = $offset;
-      $tracker['updated'] = time();
+      if (isset($offset) && isset($variantOffset)) {
+        $tracker['offset'] = $offset;
+        $tracker['variant_offset'] = $variantOffset;
+        $tracker['updated'] = time();
+      }
+      if (isset($total) && isset($variantTotal)) {
+        $tracker['total'] = $total;
+        $tracker['variant_total'] = $variantTotal;
+      }
       update_option('custobar_export_product', $tracker);
     }
 
@@ -108,6 +146,15 @@ class ProductSync extends AbstractDataSync {
         $properties = $custobar_product->getAssignedProperties();
         return apply_filters('woocommerce_custobar_product_properties', $properties, $product);
     }
+
+    protected static function formatSingleVariant($variant)
+    {
+        $custobar_product = new CustobarProduct($variant);
+        $properties = $custobar_product->getAssignedProperties();
+        $properties['main_product_ids'] = [$variant->get_parent_id()];
+        return apply_filters('woocommerce_custobar_product_properties', $properties, $variant);
+    }
+
 
     protected static function uploadDataTypeData($data, $single = false)
     {

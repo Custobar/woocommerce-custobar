@@ -60,24 +60,9 @@ class CustomerSync extends AbstractDataSync
        * Fetch users
        */
 
-
-      $admin_users = new \WP_User_Query(
-        array(
-          'role'   => 'administrator',
-          'fields' => 'ID',
-        )
-      );
-
-      $manager_users = new \WP_User_Query(
-        array(
-          'role'   => 'shop_manager',
-          'fields' => 'ID',
-        )
-      );
-
       $query = new \WP_User_Query(
         array(
-          'exclude' => array_merge( $admin_users->get_results(), $manager_users->get_results() ),
+          'role'   => 'customer',
           'fields'  => 'ID',
           'number'  => $limit,
           'offset'  => $offset
@@ -137,10 +122,15 @@ class CustomerSync extends AbstractDataSync
       return $tracker;
     }
 
-    public static function trackerSave( $offset ) {
+    public static function trackerSave( $offset, $total=null ) {
       $tracker = self::trackerFetch();
-      $tracker['offset'] = $offset;
-      $tracker['updated'] = time();
+      if (isset($offset)) {
+        $tracker['offset'] = $offset;
+        $tracker['updated'] = time();
+      }
+      if (isset($total)) {
+        $tracker['total'] = $total;        
+      }
       update_option('custobar_export_customer', $tracker);
     }
 

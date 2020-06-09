@@ -70,7 +70,7 @@ class SaleSync extends AbstractDataSync
     public static function batchUpdate() {
 
       $response = new \stdClass;
-      $limit = 500;
+      $limit = 350;
       $tracker = self::trackerFetch();
       $offset = $tracker['offset'];
 
@@ -136,10 +136,15 @@ class SaleSync extends AbstractDataSync
       return $tracker;
     }
 
-    public static function trackerSave( $offset ) {
+    public static function trackerSave( $offset, $total=null) {
       $tracker = self::trackerFetch();
-      $tracker['offset'] = $offset;
-      $tracker['updated'] = time();
+      if (isset($offset)) {
+        $tracker['offset'] = $offset;
+        $tracker['updated'] = time();
+      }
+      if (isset($total)) {
+        $tracker['total'] = $total;        
+      }
       update_option('custobar_export_sale', $tracker);
     }
 

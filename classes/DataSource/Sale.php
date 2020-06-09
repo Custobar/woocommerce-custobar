@@ -76,7 +76,14 @@ class Sale extends AbstractDataSource
 
     public function getProductId()
     {
-        return $this->order_item->get_product_id();
+        $variation_id = $this->order_item->get_variation_id();
+
+        if (isset($variation_id) && $variation_id) {
+            return $variation_id;
+        }
+        else {
+            return $this->order_item->get_product_id();
+        }
     }
 
     public function getQuantity()

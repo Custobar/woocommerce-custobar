@@ -80,7 +80,12 @@
 
         var message = '';
         if( response.code == 200) {
-          message += response.stats.synced + " " + recordType + "s exported.";
+          message += response.stats.synced + " " + recordType + "s"
+
+          if (response.stats.variant_synced) {
+            message += " and " + response.stats.variant_synced + " variants";
+          }
+          message += " exported.";
 
           // update row
           var reportRow = $('tr.sync-report-' + response.recordType);
@@ -102,6 +107,7 @@
 
         // Post again
         if (response.count && response.stats.synced < response.stats.total) {
+          $( '#custobar-export-wrap table tr.response td' ).html( message + "..");
           _post();
         }
       });

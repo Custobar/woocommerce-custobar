@@ -87,7 +87,8 @@ class Product extends AbstractDataSource
     public function getTags()
     {
         $terms = get_the_terms( $this->product->get_id(), 'product_tag');
-        return wp_list_pluck($terms, 'name');
+
+        return !empty($terms) ? wp_list_pluck($terms, 'name') : null;
     }
 
     public function getUrl()

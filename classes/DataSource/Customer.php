@@ -123,7 +123,11 @@ class Customer extends AbstractDataSource
 
     public function getDateJoined()
     {
-        $created_at = new \DateTime($this->created_at);
-        return Utilities::formatDateTime($created_at);
+        if (isset($this->created_at)) {
+            $created_at = new \DateTime($this->created_at);
+            return Utilities::formatDateTime($created_at);
+        } else {
+            return null;
+        }
     }
 }

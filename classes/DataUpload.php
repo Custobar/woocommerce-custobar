@@ -83,7 +83,7 @@ class DataUpload {
           break;
         case 'product':
           if ($resetOffset) {
-            ProductSync::trackerSave(0);
+            ProductSync::trackerSave(0, 0);
           }
           $apiResponse = ProductSync::batchUpdate();
           $apiResponse->stats = self::fetchSyncStatProducts();
@@ -116,16 +116,30 @@ class DataUpload {
   public static function fetchSyncStatProducts() {
 
     $stat = new \stdClass;
+    $tracker = ProductSync::trackerFetch();
 
     // get total product count
-    $product_count = 0;
-    foreach(wp_count_posts( 'product' ) as $state=>$count) {
-      $product_count += $count;
+    if (isset($tracker['total'])) {
+      $stat->total = $tracker['total'];
+      $stat->variant_total = $variant_count;
+    } else {
+
+      $product_count = 0;
+      foreach(wp_count_posts( 'product' ) as $state=>$count) {
+        $product_count += $count;
+      }
+
+      $stat->total = $product_count;
+
+      $variant_count = 0;
+      foreach(wp_count_posts( 'product_variation' ) as $state=>$count) {
+        $variant_count += $count;
+      }
+
+      $stat->variant_total = $variant_count;
+      CustomerSync::trackerSave(null, null, $product_count, $variant_count);
     }
 
-    $stat->total = $product_count;
-
-    $tracker = ProductSync::trackerFetch();
     $stat->synced = $tracker['offset'];
     if( $stat->total > 0 ) {
       $stat->synced_percent = number_format(($stat->synced / $stat->total) * 100) . '%';
@@ -133,11 +147,17 @@ class DataUpload {
       $stat->synced_percent = '-';
     }
 
-    $updatedTimestamp = $tracker['updated'];
-    if( $updatedTimestamp ) {
-      $stat->updated = date('Y-m-d g:i:sA', $updatedTimestamp);
+    $stat->variant_synced = $tracker['variant_offset'];
+    if( $stat->variant_synced > 0 ) {
+      $stat->synced_percent .= ' / ' . number_format(($stat->variant_synced / $stat->variant_total) * 100) . '%';
     } else {
-      $stat->updated = '-';
+      $stat->synced_percent .= ' / -';
+    }
+
+    if (is_int($tracker['updated']) && $tracker['updated']) {
+      $stat->last_updated = date(wc_date_format(), $tracker['updated']) . ' ' . date(wc_time_format(), $tracker['updated']);
+    } else {
+      $stat->last_updated = '';
     }
 
     return $stat;
@@ -147,16 +167,21 @@ class DataUpload {
   public static function fetchSyncStatSales() {
 
     $stat = new \stdClass;
+    $tracker = SaleSync::trackerFetch();
 
-    // get total sale count
-    $order_count = 0;
-    foreach(wp_count_posts( 'shop_order' ) as $state=>$count) {
-      $order_count += $count;
+    // Cache total count
+    if (isset($tracker['total'])) {
+      $stat->total = $tracker['total'];
+    } else {
+      $order_count = 0;
+      foreach(wp_count_posts( 'shop_order' ) as $state=>$count) {
+        $order_count += $count;
+      }
+
+      $stat->total = $order_count;
+      SaleSync::trackerSave(null, $stat->total);
     }
 
-    $stat->total = $order_count;
-
-    $tracker = SaleSync::trackerFetch();
     $stat->synced = $tracker['offset'];
 
     if( $stat->total > 0 ) {
@@ -165,11 +190,10 @@ class DataUpload {
       $stat->synced_percent = '-';
     }
 
-    $updatedTimestamp = $tracker['updated'];
-    if( $updatedTimestamp ) {
-      $stat->updated = date('Y-m-d g:i:sA', $updatedTimestamp);
+    if (is_int($tracker['updated']) && $tracker['updated']) {
+      $stat->last_updated = date(wc_date_format(), $tracker['updated']) . ' ' . date(wc_time_format(), $tracker['updated']);
     } else {
-      $stat->updated = '-';
+      $stat->last_updated = '';
     }
 
     return $stat;
@@ -181,29 +205,21 @@ class DataUpload {
     $stat = new \stdClass;
     $tracker = CustomerSync::trackerFetch();
 
-    $admin_users = new \WP_User_Query(
+    // Cache total count
+    if (isset($tracker['total'])) {
+      $stat->total = $tracker['total'];
+    } else {
+      $query = new \WP_User_Query(
         array(
-          'role'   => 'administrator',
-          'fields' => 'ID',
+          'role'   => 'customer',
+          'fields'  => 'ID',
+          'number' => 0
         )
       );
-
-    $manager_users = new \WP_User_Query(
-      array(
-        'role'   => 'shop_manager',
-        'fields' => 'ID',
-      )
-    );
-
-    $query = new \WP_User_Query(
-      array(
-        'exclude' => array_merge( $admin_users->get_results(), $manager_users->get_results() ),
-        'fields'  => 'ID',
-        'number' => 1
-      )
-    );
-    
-    $stat->total = $query->get_total();
+      
+      $stat->total = $query->get_total();
+      CustomerSync::trackerSave(null, $stat->total);
+    }
 
     $stat->synced = $tracker['offset'];
     if( $stat->total > 0 ) {
@@ -211,11 +227,11 @@ class DataUpload {
     } else {
       $stat->synced_percent = '-';
     }
-    $updatedTimestamp = $tracker['updated'];
-    if( $updatedTimestamp ) {
-      $stat->updated = date('Y-m-d g:i:sA', $updatedTimestamp);
+
+    if (is_int($tracker['updated']) && $tracker['updated']) {
+      $stat->last_updated = date(wc_date_format(), $tracker['updated']) . ' ' . date(wc_time_format(), $tracker['updated']);
     } else {
-      $stat->updated = '-';
+      $stat->last_updated = '';
     }
 
     return $stat;
