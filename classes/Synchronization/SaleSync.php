@@ -175,7 +175,8 @@ class SaleSync extends AbstractDataSync
     {
         if (function_exists('wcs_order_contains_subscription') && wcs_order_contains_subscription($order)) {
             $product_id = $order_item->get_product_id();
-            $prefix = WOOCOMMERCE_CUSTOBAR_API_PREFIX;
+            $prefix = \WC_Admin_Settings::get_option( 'custobar_api_setting_company', false );
+
             foreach (wcs_get_subscriptions_for_order($order) as $subscription) {
                 foreach ($subscription->get_items() as $line_item) {
                     if ($line_item->get_product_id() === $product_id) {
