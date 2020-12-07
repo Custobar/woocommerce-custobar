@@ -69,14 +69,14 @@ class DataUpload {
       switch( $recordType ) {
         case 'customer':
           if ($resetOffset) {
-            CustomerSync::trackerSave(0);
+            CustomerSync::trackerSave(0, 0);
           }
           $apiResponse = CustomerSync::batchUpdate();
           $apiResponse->stats = self::fetchSyncStatCustomers();
           break;
         case 'sale':
           if ($resetOffset) {
-            SaleSync::trackerSave(0);
+            SaleSync::trackerSave(0, 0);
           }
           $apiResponse = SaleSync::batchUpdate();
           $apiResponse->stats = self::fetchSyncStatSales();
@@ -121,7 +121,7 @@ class DataUpload {
     // get total product count
     if (isset($tracker['total'])) {
       $stat->total = $tracker['total'];
-      $stat->variant_total = $variant_count;
+      $stat->variant_total = $tracker['variant_total'];
     } else {
 
       $product_count = 0;
@@ -137,7 +137,7 @@ class DataUpload {
       }
 
       $stat->variant_total = $variant_count;
-      CustomerSync::trackerSave(null, null, $product_count, $variant_count);
+      ProductSync::trackerSave(null, null, $product_count, $variant_count);
     }
 
     $stat->synced = $tracker['offset'];
