@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<ruleset name="WordPress Coding Standards">
+    <!--
+         Useful links:
+         * https://github.com/QoboLtd/wordpress-plugin-template
+         * https://github.com/squizlabs/PHP_CodeSniffer/wiki/Advanced-Usage
+         * https://raw.githubusercontent.com/squizlabs/PHP_CodeSniffer/master/phpcs.xml.dist
+         * https://github.com/squizlabs/PHP_CodeSniffer/wiki/Annotated-ruleset.xml
+    -->
+    <description>PHP CodeSniffer Configuration</description>
+
+    <!-- Files and directories to check -->
+    <file>.</file>
+
+    <!-- Exclude paths -->
+    <exclude-pattern>includes/libraries/</exclude-pattern>
+    <exclude-pattern>*/node_modules/*</exclude-pattern>
+    <exclude-pattern>*/vendor/*</exclude-pattern>
+
+    <!-- Coding standard to use -->
+    <rule ref="WordPress" />
+
+    <rule ref="WordPress.WP.I18n">
+      <properties>
+        <property name="text_domain" type="array" value="woocommerce-custobar" />
+      </properties>
+    </rule>
+
+    <!-- Do not fail on warnings -->
+    <config name="ignore_warnings_on_exit" value="1" />
+
+    <!-- Assume UTF-8 -->
+    <config name="encoding" value="UTF-8" />
+
+    <!-- Use colors -->
+    <arg name="colors" />
+
+    <!-- Show progress -->
+    <arg value="ps" />
+
+    <!-- Strip the filepaths in reports down to the relevant bit. -->
+    <arg name="basepath" value="./" />
+
+    <!-- Check up to 8 files simultaneously. -->
+    <arg name="parallel" value="8" />
+</ruleset>
