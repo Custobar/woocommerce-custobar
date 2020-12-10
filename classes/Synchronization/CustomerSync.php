@@ -62,8 +62,10 @@ class CustomerSync extends AbstractDataSync
 
       $query = new \WP_User_Query(
         array(
-          'role'   => 'customer',
+          'role'    => 'customer',
           'fields'  => 'ID',
+          'orderby' => 'ID',
+          'order'   => 'ASC',
           'number'  => $limit,
           'offset'  => $offset
         )
@@ -108,8 +110,7 @@ class CustomerSync extends AbstractDataSync
     }
 
     public static function trackerFetch() {
-      $trackerKey = 'custobar_export_customer';
-      $tracker = get_option($trackerKey);
+      $tracker = get_option('custobar_export_customer');
       if( !is_array( $tracker )) {
         $tracker = [];
       }
