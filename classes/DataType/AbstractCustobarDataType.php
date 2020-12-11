@@ -2,7 +2,7 @@
 
 namespace WooCommerceCustobar\DataType;
 
-defined('ABSPATH') or exit;
+defined( 'ABSPATH' ) or exit;
 
 /**
  * Class AbstractCustobarDataType
@@ -11,62 +11,54 @@ defined('ABSPATH') or exit;
  *
  * @package WooCommerceCustobar\DataType
  */
-abstract class AbstractCustobarDataType
-{
-    protected static $defaultKeys = array();
+abstract class AbstractCustobarDataType {
 
-    public function __construct()
-    {
-        static::$defaultKeys = static::getDefaultKeys();
-    }
+	protected static $defaultKeys = array();
 
-    public function getAssignedProperties()
-    {
-        $dataSourceFields = $this->dataSource->getFields();
-        $fieldsMap = static::getFieldsMap();
-        $properties = array();
+	public function __construct() {
+		static::$defaultKeys = static::getDefaultKeys();
+	}
 
-        foreach ($fieldsMap as $custobarKey => $sourceKey)
-        {
-            if (!in_array($custobarKey, static::$defaultKeys, true))
-            {
-                continue;
-            }
+	public function getAssignedProperties() {
+		$dataSourceFields = $this->dataSource->getFields();
+		$fieldsMap        = static::getFieldsMap();
+		$properties       = array();
 
-            if (!array_key_exists($sourceKey, $dataSourceFields))
-            {
-                continue;
-            }
+		foreach ( $fieldsMap as $custobarKey => $sourceKey ) {
+			if ( ! in_array( $custobarKey, static::$defaultKeys, true ) ) {
+				continue;
+			}
 
-            $methodOrFn = $dataSourceFields[$sourceKey];
+			if ( ! array_key_exists( $sourceKey, $dataSourceFields ) ) {
+				continue;
+			}
 
-            if (!is_callable($methodOrFn) && !is_string($methodOrFn)) {
-                continue;
-            }
+			$methodOrFn = $dataSourceFields[ $sourceKey ];
 
-            if (is_string($methodOrFn) && method_exists($this->dataSource, $methodOrFn))
-            {
-                $methodOrFn = array($this->dataSource, $methodOrFn);
-            }
+			if ( ! is_callable( $methodOrFn ) && ! is_string( $methodOrFn ) ) {
+				continue;
+			}
 
-            $value = call_user_func($methodOrFn, $this);
+			if ( is_string( $methodOrFn ) && method_exists( $this->dataSource, $methodOrFn ) ) {
+				$methodOrFn = array( $this->dataSource, $methodOrFn );
+			}
 
-            if (is_null($value))
-            {
-                continue;
-            }
+			$value = call_user_func( $methodOrFn, $this );
 
-            $properties[$custobarKey] = $value;
-        }
+			if ( is_null( $value ) ) {
+				continue;
+			}
 
-        return $properties;
-    }
+			$properties[ $custobarKey ] = $value;
+		}
 
-    abstract static function getFieldsMap();
+		return $properties;
+	}
 
-    protected static function getDefaultKeys()
-    {
-        $reflection = new \ReflectionClass(get_called_class());
-        return array_values($reflection->getConstants());
-    }
+	abstract static function getFieldsMap();
+
+	protected static function getDefaultKeys() {
+		$reflection = new \ReflectionClass( get_called_class() );
+		return array_values( $reflection->getConstants() );
+	}
 }

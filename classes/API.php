@@ -2,7 +2,7 @@
 
 namespace WooCommerceCustobar;
 
-defined('ABSPATH') or exit;
+defined( 'ABSPATH' ) or exit;
 
 use WooCommerceCustobar\DataUpload;
 
@@ -11,17 +11,16 @@ use WooCommerceCustobar\DataUpload;
  *
  * @package WooCommerceCustobar
  */
-class API
-{
-    public static function createCustobarCustomer($fields)
-    {
-        $endpoint = '/customers/upload/';
+class API {
 
-        $data = array(
-            'customers' => array()
-        );
-        $data['customers'][] = $fields;  // TODO: validate that given in a proper form and with proper field values
+	public static function createCustobarCustomer( $fields ) {
+		$endpoint = '/customers/upload/';
 
-        DataUpload::uploadCustobarData($endpoint, $data);
-    }
+		$data                = array(
+			'customers' => array(),
+		);
+		$data['customers'][] = $fields;  // TODO: validate that given in a proper form and with proper field values
+
+		DataUpload::uploadCustobarData( $endpoint, $data );
+	}
 }

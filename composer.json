@@ -19,10 +19,10 @@
   },
   "scripts": {
     "phpcs": [
-      "phpcs"
+      "phpcs -s -p --extensions=php"
     ],
     "phpcbf": [
-      "phpcbf"
+      "phpcbf -p --extensions=php"
     ]
   }
 }

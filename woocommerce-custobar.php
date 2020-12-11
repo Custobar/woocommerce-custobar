@@ -11,21 +11,21 @@
  * Requires PHP 7.2+
  */
 
-defined('ABSPATH') or exit;
+defined( 'ABSPATH' ) or exit;
 
-if (!defined('WOOCOMMERCE_CUSTOBAR_PATH')) {
-    define('WOOCOMMERCE_CUSTOBAR_PATH', plugin_dir_path(__FILE__));
+if ( ! defined( 'WOOCOMMERCE_CUSTOBAR_PATH' ) ) {
+	define( 'WOOCOMMERCE_CUSTOBAR_PATH', plugin_dir_path( __FILE__ ) );
 }
 
-if (!defined('WOOCOMMERCE_CUSTOBAR_URL')) {
-    define('WOOCOMMERCE_CUSTOBAR_URL', plugin_dir_url(__FILE__));
+if ( ! defined( 'WOOCOMMERCE_CUSTOBAR_URL' ) ) {
+	define( 'WOOCOMMERCE_CUSTOBAR_URL', plugin_dir_url( __FILE__ ) );
 }
 
-if (!defined('WOOCOMMERCE_CUSTOBAR_VERSION')) {
-    define('WOOCOMMERCE_CUSTOBAR_VERSION', '1.4.1');
+if ( ! defined( 'WOOCOMMERCE_CUSTOBAR_VERSION' ) ) {
+	define( 'WOOCOMMERCE_CUSTOBAR_VERSION', '1.4.1' );
 }
 
-require_once(WOOCOMMERCE_CUSTOBAR_PATH . '/includes/loader.php');
+require_once WOOCOMMERCE_CUSTOBAR_PATH . '/includes/loader.php';
 
-register_activation_hook(__FILE__, [\WooCommerceCustobar\Plugin::class, 'activate']);
-register_deactivation_hook(__FILE__, [\WooCommerceCustobar\Plugin::class, 'deactivate']);
+register_activation_hook( __FILE__, array( \WooCommerceCustobar\Plugin::class, 'activate' ) );
+register_deactivation_hook( __FILE__, array( \WooCommerceCustobar\Plugin::class, 'deactivate' ) );

@@ -2,7 +2,7 @@
 
 namespace WooCommerceCustobar\Synchronization;
 
-defined('ABSPATH') or exit;
+defined( 'ABSPATH' ) or exit;
 
 use WooCommerceCustobar\DataUpload;
 use WooCommerceCustobar\Synchronization\CustomerSync;
@@ -14,9 +14,9 @@ use WooCommerceCustobar\Synchronization\SaleSync;
  *
  * @package WooCommerceCustobar\Synchronization
  */
-class SyncTracker
-{
+class SyncTracker {
 
-  
+
+
 
 }

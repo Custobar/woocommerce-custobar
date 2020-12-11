@@ -6,7 +6,7 @@
  * Author: 10up, Eric Mann, Luke Gedeon, John P. Bloch
  * License: MIT
  */
-defined('ABSPATH') or exit;
+defined( 'ABSPATH' ) or exit;
 
 if ( ! class_exists( 'WP_Async_Task' ) ) {
 	abstract class WP_Async_Task {
@@ -165,7 +165,12 @@ if ( ! class_exists( 'WP_Async_Task' ) ) {
 				$this->run_action();
 			}
 
-			add_filter( 'wp_die_handler', function() { die(); } );
+			add_filter(
+				'wp_die_handler',
+				function() {
+					die();
+				}
+			);
 			wp_die();
 		}
 

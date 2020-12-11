@@ -2,70 +2,69 @@
 
 namespace WooCommerceCustobar\DataSource;
 
-defined('ABSPATH') or exit;
+defined( 'ABSPATH' ) or exit;
 
-abstract class AbstractDataSource
-{
-    protected $defaultKeys = array();
+abstract class AbstractDataSource {
 
-    protected $fields = array();
+	protected $defaultKeys = array();
 
-    public static $sourceKey = 'common';
+	protected $fields = array();
 
-    public function __construct()
-    {
-        $this->defaultKeys = static::getDefaultKeys();
-    }
+	public static $sourceKey = 'common';
 
-    protected static function getDefaultKeys()
-    {
-        $reflection = new \ReflectionClass(get_called_class());
-        return array_values($reflection->getConstants());
-    }
+	public function __construct() {
+		$this->defaultKeys = static::getDefaultKeys();
+	}
 
-    public function getFields()
-    {
-        $fields = array_reduce($this->defaultKeys, function($carry, $key) {
-            $method = static::getMethodByKey($key);
+	protected static function getDefaultKeys() {
+		$reflection = new \ReflectionClass( get_called_class() );
+		return array_values( $reflection->getConstants() );
+	}
 
-            if (!method_exists($this, $method))
-            {
-                return $carry;
-            }
+	public function getFields() {
+		$fields = array_reduce(
+			$this->defaultKeys,
+			function( $carry, $key ) {
+				$method = static::getMethodByKey( $key );
 
-            $carry[$key] = $method;
+				if ( ! method_exists( $this, $method ) ) {
+					return $carry;
+				}
 
-            return $carry;
-        }, array());
+				$carry[ $key ] = $method;
 
-        /**
-         * @param array $fields
-         * array(key => callback)
-         * key = predefined field key or user/dev defined key
-         * static::$sourceKey = product | sale | customer
-         * 
-         * To customize the product fields
-         * add_filter('woocommerce_custobar_get_product_fields', function($fields, $CustobarProductInstance) {
-         *      // lets say our new key is - awesome_product_id and we want to add a callback
-         *      $fields['awesome_product_id'] = function() {
-         *      };
-         * 
-         *      // lets say our old key is - product_id and we want to override the callback
-         *      $fields['product_id'] = function() {
-         *      };
-         *      return $fields;
-         * }, 10, 2);
-         */             
-        $fields = apply_filters('woocommerce_custobar_get_'. static::$sourceKey . '_fields', $fields, $this);
+				return $carry;
+			},
+			array()
+		);
 
-        return $fields;
-    }
+		/**
+		 * @param array $fields
+		 * array(key => callback)
+		 * key = predefined field key or user/dev defined key
+		 * static::$sourceKey = product | sale | customer
+		 *
+		 * To customize the product fields
+		 * add_filter('woocommerce_custobar_get_product_fields', function($fields, $CustobarProductInstance) {
+		 *      // lets say our new key is - awesome_product_id and we want to add a callback
+		 *      $fields['awesome_product_id'] = function() {
+		 *      };
+		 *
+		 *      // lets say our old key is - product_id and we want to override the callback
+		 *      $fields['product_id'] = function() {
+		 *      };
+		 *      return $fields;
+		 * }, 10, 2);
+		 */
+		$fields = apply_filters( 'woocommerce_custobar_get_' . static::$sourceKey . '_fields', $fields, $this );
 
-    protected static function getMethodByKey($key)
-    {
-        $key = str_replace('_', ' ', $key);
-        $key = ucwords($key);
-        $key = str_replace(' ', '', $key);
-        return "get{$key}";
-    }
+		return $fields;
+	}
+
+	protected static function getMethodByKey( $key ) {
+		$key = str_replace( '_', ' ', $key );
+		$key = ucwords( $key );
+		$key = str_replace( ' ', '', $key );
+		return "get{$key}";
+	}
 }
