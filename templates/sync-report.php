@@ -18,7 +18,7 @@
       <tr class="sync-report-product">
         <td>Products</td>
         <td class="custobar-center"><?php print $productStat->total; ?> / <?php print $productStat->variant_total; ?></td>
-        <td class="custobar-center"><?php print $productStat->synced; ?></td>
+        <td class="custobar-center"><?php print $productStat->synced; ?> / <?php print $productStat->variant_synced; ?></td>
         <td class="custobar-center"><?php print $productStat->synced_percent; ?></td>
         <td><?php print $productStat->last_updated; ?></td>
         <td><input name="reset-product" type="checkbox" value="1"></td>

@@ -42,7 +42,8 @@ class DataUpload {
 
     // do wc logging
     if (!in_array($response_code, array(200, 201)) || is_wp_error($response_body)) {
-      wc_get_logger()->warning('Custobar data upload failed', array(
+
+      wc_get_logger()->warning("Custobar data upload failed. code: $response_code", array(
         'source'        => 'woocommerce-custobar'
       ));
     }
@@ -69,21 +70,24 @@ class DataUpload {
       switch( $recordType ) {
         case 'customer':
           if ($resetOffset) {
-            CustomerSync::trackerSave(0);
+            // Pass false as total to trigger total count update
+            CustomerSync::trackerSave(0, false);
           }
           $apiResponse = CustomerSync::batchUpdate();
           $apiResponse->stats = self::fetchSyncStatCustomers();
           break;
         case 'sale':
           if ($resetOffset) {
-            SaleSync::trackerSave(0);
+            // Pass false as total to trigger total count update
+            SaleSync::trackerSave(0, false);
           }
           $apiResponse = SaleSync::batchUpdate();
           $apiResponse->stats = self::fetchSyncStatSales();
           break;
         case 'product':
           if ($resetOffset) {
-            ProductSync::trackerSave(0, 0);
+            // Pass false as totals to trigger total count update
+            ProductSync::trackerSave(0, 0, false, false);
           }
           $apiResponse = ProductSync::batchUpdate();
           $apiResponse->stats = self::fetchSyncStatProducts();
@@ -119,9 +123,9 @@ class DataUpload {
     $tracker = ProductSync::trackerFetch();
 
     // get total product count
-    if (isset($tracker['total'])) {
+    if (isset($tracker['total'], $tracker['variant_total']) && is_int($tracker['total']) && is_int($tracker['variant_total'])) {
       $stat->total = $tracker['total'];
-      $stat->variant_total = $variant_count;
+      $stat->variant_total = $tracker['variant_total'];
     } else {
 
       $product_count = 0;
@@ -137,7 +141,7 @@ class DataUpload {
       }
 
       $stat->variant_total = $variant_count;
-      CustomerSync::trackerSave(null, null, $product_count, $variant_count);
+      ProductSync::trackerSave(null, null, $stat->total, $stat->variant_total);
     }
 
     $stat->synced = $tracker['offset'];
@@ -170,7 +174,7 @@ class DataUpload {
     $tracker = SaleSync::trackerFetch();
 
     // Cache total count
-    if (isset($tracker['total'])) {
+    if (isset($tracker['total']) && is_int($tracker['total'])) {
       $stat->total = $tracker['total'];
     } else {
       $order_count = 0;
@@ -206,14 +210,13 @@ class DataUpload {
     $tracker = CustomerSync::trackerFetch();
 
     // Cache total count
-    if (isset($tracker['total'])) {
+    if (isset($tracker['total']) && is_int($tracker['total'])) {
       $stat->total = $tracker['total'];
     } else {
       $query = new \WP_User_Query(
         array(
           'role'   => 'customer',
-          'fields'  => 'ID',
-          'number' => 0
+          'fields' => 'ID'
         )
       );
       

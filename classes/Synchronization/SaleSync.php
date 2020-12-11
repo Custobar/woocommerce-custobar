@@ -74,21 +74,22 @@ class SaleSync extends AbstractDataSync
     public static function batchUpdate() {
 
       $response = new \stdClass;
-      $limit = 350;
       $tracker = self::trackerFetch();
       $offset = $tracker['offset'];
 
-      // fetch random orders
-      $orders = \wc_get_orders(array(
-        'limit'   => $limit,
+      // Get orders by offset and limit
+      $args = array(
+        'type'    => 'shop_order', // skip shop_order_refund
+        'limit'   => 350,
         'offset'  => $offset,
         'orderby' => 'ID',
         'order'   => 'ASC'
-      ));
+      );
 
-      wc_get_logger()->warning('Orders count:' . count($orders), array(
-        'source'        => 'woocommerce-custobar'
-      ));
+      // Allow 3rd parties to modify args
+      $args = apply_filters('woocommerce_custobar_batch_update_orders_args', $args);
+
+      $orders = \wc_get_orders($args);
 
       $orderRows = [];
 
@@ -105,7 +106,7 @@ class SaleSync extends AbstractDataSync
 
       }
 
-      # No rows
+      // No rows to export
       if( empty( $orderRows )) {
         $response->code = 220;
         return $response;
@@ -126,8 +127,7 @@ class SaleSync extends AbstractDataSync
     }
 
     public static function trackerFetch() {
-      $trackerKey = 'custobar_export_sale';
-      $tracker = get_option($trackerKey);
+      $tracker = get_option('custobar_export_sale');
       if( !is_array( $tracker )) {
         $tracker = [];
       }
@@ -175,7 +175,8 @@ class SaleSync extends AbstractDataSync
     {
         if (function_exists('wcs_order_contains_subscription') && wcs_order_contains_subscription($order)) {
             $product_id = $order_item->get_product_id();
-            $prefix = WOOCOMMERCE_CUSTOBAR_API_PREFIX;
+            $prefix = \WC_Admin_Settings::get_option( 'custobar_api_setting_company', false );
+
             foreach (wcs_get_subscriptions_for_order($order) as $subscription) {
                 foreach ($subscription->get_items() as $line_item) {
                     if ($line_item->get_product_id() === $product_id) {
