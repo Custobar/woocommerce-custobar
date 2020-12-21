@@ -49,7 +49,7 @@ class DataUpload {
 			wc_get_logger()->warning(
 				"Custobar data upload failed. code: $response_code",
 				array(
-					'source' => 'woocommerce-custobar',
+					'source' => 'custobar',
 				)
 			);
 		}

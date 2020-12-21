@@ -6,7 +6,6 @@ defined( 'ABSPATH' ) or exit;
 
 use WooCommerceCustobar\DataType\CustobarSale;
 use WooCommerceCustobar\DataType\Utilities;
-use WooCommerceCustobar\AsyncTasks\CustobarAsyncTask;
 
 /**
  * Class SaleSync
@@ -18,43 +17,73 @@ class SaleSync extends AbstractDataSync {
 	protected static $endpoint = '/sales/upload/';
 
 	public static function addHooks() {
+		// Schedule actions
+		add_action('woocommerce_new_order', array( __CLASS__, 'schedule_single_update' ), 10, 1);
+		add_action('woocommerce_update_order', array( __CLASS__, 'schedule_single_update' ), 10, 1);
+		add_action('woocommerce_subscription_status_updated', array( __CLASS__, 'schedule_subscription_status_updated'), 10, 3);
+		add_action('woocommerce_subscription_renewal_payment_complete', array( __CLASS__, 'schedule_subscription_renewal_payment_complete'), 10, 2);
 
-		add_action( 'wp_async_woocommerce_new_order', array( __CLASS__, 'singleUpdate' ) );
-		add_action( 'wp_async_woocommerce_update_order', array( __CLASS__, 'singleUpdate' ) );
-		add_action( 'wp_async_woocommerce_subscription_renewal_payment_complete', array( __CLASS__, 'updateOnSubscriptionRenewal' ) );
-		add_action( 'wp_async_woocommerce_subscription_status_updated', array( __CLASS__, 'updateOnSubscriptionStatusChange' ) );
-		add_action(
-			'plugins_loaded',
-			function () {
-				new CustobarAsyncTask( 'woocommerce_new_order' );
-				new CustobarAsyncTask( 'woocommerce_update_order' );
-				new CustobarAsyncTask( 'woocommerce_subscription_renewal_payment_complete' );
-				new CustobarAsyncTask( 'woocommerce_subscription_status_updated' );
-			}
+		// Hook into scheduled actions
+		add_action('woocommerce_custobar_salesync_single_update', array( __CLASS__, 'singleUpdate' ), 10, 1);
+		
+		add_filter('woocommerce_custobar_sale_properties', array( __CLASS__, 'addSubscriptionFields' ), 10, 3);
+	}
+
+	public static function schedule_single_update($order_id) {
+		wc_get_logger()->info(
+			'schedule_single_update called with $order_id: ' . $order_id,
+			array('source' => 'custobar')
 		);
-		add_filter( 'woocommerce_custobar_sale_properties', array( __CLASS__, 'addSubscriptionFields' ), 10, 3 );
 
-		// WooCommerce Subscriptions
-		// add_action('woocommerce_subscription_renewal_payment_complete', [__CLASS__, 'updateOnSubscriptionRenewal'], 10, 2);
-		// add_action('woocommerce_subscription_status_updated', [__CLASS__, 'updateOnSubscriptionStatusChange'], 10, 3);
-	}
+		$hook = 'woocommerce_custobar_salesync_single_update';
+		$args = array('order_id' => $order_id);
+		$group = 'custobar';
 
-	public static function updateOnSubscriptionRenewal( $args ) {
-		// args: 0 => subscription, 1 => last_order
-		self::singleUpdate( $args[1]->get_id() );
-	}
-
-	public static function updateOnSubscriptionStatusChange( $args ) {
-		// args: subscription
-		self::singleUpdate( $args->get_parent_id() );
-	}
-
-	public static function singleUpdate( $args ) {
-		if ( is_array( $args ) ) {
-			$order = wc_get_order( $args[0] );
-		} else {
-			$order = wc_get_order( $args );
+		// We need only one action scheduled
+		if (!as_next_scheduled_action( $hook, $args, $group )) {
+			as_enqueue_async_action( $hook, $args, $group );
 		}
+	}
+
+	public static function schedule_subscription_renewal_payment_complete($subscription, $order) {
+		wc_get_logger()->info(
+			'schedule_subscription_renewal_payment_complete called with $subscription: '.$subscription->get_id().' $order: ' . $order->get_id(),
+			array('source' => 'custobar')
+		);
+
+		$hook = 'woocommerce_custobar_salesync_single_update';
+		$args = array('order_id' => $order->get_id());
+		$group = 'custobar';
+
+		// We need only one action scheduled
+		if (!as_next_scheduled_action( $hook, $args, $group )) {
+			as_enqueue_async_action( $hook, $args, $group );
+		}
+	}
+
+	public static function schedule_subscription_status_updated($subscription, $new_status, $old_status) {
+		wc_get_logger()->info(
+			'schedule_subscription_status_updated called with $subscription: '.$subscription->get_id()." new_status: $new_status, old_status: $old_status",
+			array('source' => 'custobar')
+		);
+
+		$hook = 'woocommerce_custobar_salesync_single_update';
+		$args = array('order_id' => $subscription->get_parent_id());
+		$group = 'custobar';
+
+		// We need only one action scheduled
+		if (!as_next_scheduled_action( $hook, $args, $group )) {
+			as_enqueue_async_action( $hook, $args, $group );
+		}
+	}
+
+	public static function singleUpdate( $order_id ) {
+		wc_get_logger()->info(
+			'salesync singleUpdate called with $order_id: ' . $order_id,
+			array('source' => 'custobar')
+		);
+
+		$order = wc_get_order( $order_id );
 
 		// Would sometimes be triggered twice without the class check, because
 		// Subscriptions plugin also creates additional order instance.
@@ -175,7 +204,7 @@ class SaleSync extends AbstractDataSync {
 	public static function addSubscriptionFields( $properties, $order, $order_item ) {
 		if ( function_exists( 'wcs_order_contains_subscription' ) && wcs_order_contains_subscription( $order ) ) {
 			$product_id = $order_item->get_product_id();
-			$prefix     = \WC_Admin_Settings::get_option( 'custobar_api_setting_company', false );
+			$prefix     = apply_filters( 'woocommerce_custobar_company_field_prefix', get_option( 'custobar_api_setting_company' ) );
 
 			foreach ( wcs_get_subscriptions_for_order( $order ) as $subscription ) {
 				foreach ( $subscription->get_items() as $line_item ) {

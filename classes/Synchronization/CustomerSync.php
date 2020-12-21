@@ -5,7 +5,6 @@ namespace WooCommerceCustobar\Synchronization;
 defined( 'ABSPATH' ) or exit;
 
 use WooCommerceCustobar\DataType\CustobarCustomer;
-use WooCommerceCustobar\AsyncTasks\CustobarAsyncTask;
 
 /**
  * Class CustomerSync
@@ -17,33 +16,45 @@ class CustomerSync extends AbstractDataSync {
 	protected static $endpoint = '/customers/upload/';
 
 	public static function addHooks() {
-		add_action( 'wp_async_user_register', array( __CLASS__, 'singleUpdate' ) );
-		add_action( 'wp_async_profile_update', array( __CLASS__, 'singleUpdate' ) );
-		add_action( 'wp_async_woocommerce_new_customer', array( __CLASS__, 'singleUpdate' ) );
-		add_action( 'wp_async_woocommerce_created_customer', array( __CLASS__, 'singleUpdate' ) );
-		add_action( 'wp_async_woocommerce_update_customer', array( __CLASS__, 'singleUpdate' ) );
-		add_action(
-			'plugins_loaded',
-			function () {
-				new CustobarAsyncTask( 'user_register' );
-				new CustobarAsyncTask( 'profile_update' );
-				new CustobarAsyncTask( 'woocommerce_new_customer' );
-				new CustobarAsyncTask( 'woocommerce_created_customer' );
-				new CustobarAsyncTask( 'woocommerce_update_customer' );
-			}
-		);
+		// Schedule actions
+		add_action( 'user_register', array( __CLASS__, 'schedule_single_update' ), 10, 1 );
+		add_action( 'profile_update', array( __CLASS__, 'schedule_single_update' ), 10, 1 );
+		add_action( 'woocommerce_new_customer', array( __CLASS__, 'schedule_single_update', 10, 1 ) );
+		add_action( 'woocommerce_created_customer', array( __CLASS__, 'schedule_single_update' ), 10, 1 );
+		add_action( 'woocommerce_update_customer', array( __CLASS__, 'schedule_single_update' ), 10, 1 );
+
+		// Hook into scheduled actions
+		add_action('woocommerce_custobar_customersync_single_update', array( __CLASS__, 'singleUpdate' ), 10, 1);
 	}
 
-	public static function singleUpdate( $args ) {
-
+	public static function schedule_single_update($user_id) {
 		wc_get_logger()->info(
-			'CustomerSync single update called with $args: ' . print_r( $args[0], 1 ),
+			'CustomerSync schedule_single_update called with $user_id: '.$user_id,
 			array(
-				'source' => 'woocommerce-custobar',
+				'source' => 'custobar',
 			)
 		);
 
-		$customer = new \WC_Customer( $args[0] );
+		$hook = 'woocommerce_custobar_customersync_single_update';
+		$args = array('user_id' => $user_id);
+		$group = 'custobar';
+
+		// We need only one action scheduled
+		if (!as_next_scheduled_action( $hook, $args, $group )) {
+			as_enqueue_async_action( $hook, $args, $group );
+		}
+	}
+
+	public static function singleUpdate( $user_id ) {
+
+		wc_get_logger()->info(
+			'CustomerSync single update called with $user_id: ' . $user_id,
+			array(
+				'source' => 'custobar',
+			)
+		);
+
+		$customer = new \WC_Customer( $user_id );
 
 		// Update only customers
 		if ( $customer->get_role() == 'customer' ) {
