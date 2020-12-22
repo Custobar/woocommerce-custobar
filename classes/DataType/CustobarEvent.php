@@ -2,34 +2,32 @@
 
 namespace WooCommerceCustobar\DataType;
 
-defined('ABSPATH') or exit;
+defined( 'ABSPATH' ) or exit;
 
 /**
  * Class CustobarEvent
  *
  * @package WooCommerceCustobar\DataType
  */
-class CustobarEvent extends AbstractCustobarDataType
-{
+class CustobarEvent extends AbstractCustobarDataType {
 
-    CONST TYPE = 'type';
-    CONST DATE = 'date';
-    CONST CUSTOMER_ID = 'customer_id';
-    CONST PRODUCT_ID = 'product_id';
-    CONST MAILING_LISTS = 'mailing_lists';
 
-    protected $type;
-    protected $date;
-    protected $customer_id;
-    protected $product_id;
-    protected $mailing_lists;
+	const TYPE          = 'type';
+	const DATE          = 'date';
+	const CUSTOMER_ID   = 'customer_id';
+	const PRODUCT_ID    = 'product_id';
+	const MAILING_LISTS = 'mailing_lists';
 
-    public function __construct()
-    {
-    }
-    
-    public static function getFieldsMap()
-    {
-        return array();
-    }
+	protected $type;
+	protected $date;
+	protected $customer_id;
+	protected $product_id;
+	protected $mailing_lists;
+
+	public function __construct() {
+	}
+
+	public static function getFieldsMap() {
+		return array();
+	}
 }

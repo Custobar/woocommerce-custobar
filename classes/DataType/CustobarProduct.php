@@ -5,7 +5,7 @@ namespace WooCommerceCustobar\DataType;
 use WooCommerceCustobar\FieldsMap;
 use WooCommerceCustobar\DataSource\Product;
 
-defined('ABSPATH') or exit;
+defined( 'ABSPATH' ) or exit;
 
 /**
  * Class CustobarProduct
@@ -14,41 +14,40 @@ defined('ABSPATH') or exit;
  *
  * @package WooCommerceCustobar\DataType
  */
-class CustobarProduct extends AbstractCustobarDataType
-{
-    CONST EXTERNAL_ID = 'external_id';
-    CONST PRICE = 'price';
-    CONST TYPE = 'type';
-    CONST CATEGORY = 'category';
-    CONST CATEGORY_ID = 'category_id';
-    CONST VENDOR = 'vendor';
-    CONST BRAND = 'brand';
-    CONST TITLE = 'title';
-    CONST IMAGE = 'image';
-    CONST DATE = 'date';
-    CONST URL = 'url';
-    CONST SALE_PRICE = 'sale_price';
-    CONST DESCRIPTION = 'description';
-    CONST LANGUAGE = 'language';
-    CONST VISIBLE = 'visible';
-    CONST EXCLUDE_FROM_RECOMMENDATIONS = 'exclude_from_recommendations';
-    CONST TAGS = 'tags';
-    CONST UNIT = 'unit';
-    CONST WEIGHT = 'weight';
+class CustobarProduct extends AbstractCustobarDataType {
 
-    /**
-     * Maps WC_Product object's properties to match the ones used in Custobar.
-     *
-     * @param \WC_Product $product
-     */
-    public function __construct($product)
-    {
-        parent::__construct();
-        
-        $this->dataSource = new Product($product);
-    }
+	const EXTERNAL_ID                  = 'external_id';
+	const PRICE                        = 'price';
+	const TYPE                         = 'type';
+	const CATEGORY                     = 'category';
+	const CATEGORY_ID                  = 'category_id';
+	const VENDOR                       = 'vendor';
+	const BRAND                        = 'brand';
+	const TITLE                        = 'title';
+	const IMAGE                        = 'image';
+	const DATE                         = 'date';
+	const URL                          = 'url';
+	const SALE_PRICE                   = 'sale_price';
+	const DESCRIPTION                  = 'description';
+	const LANGUAGE                     = 'language';
+	const VISIBLE                      = 'visible';
+	const EXCLUDE_FROM_RECOMMENDATIONS = 'exclude_from_recommendations';
+	const TAGS                         = 'tags';
+	const UNIT                         = 'unit';
+	const WEIGHT                       = 'weight';
 
-    public static function getFieldsMap() {
-        return FieldsMap::getProductFields();
-    }
+	/**
+	 * Maps WC_Product object's properties to match the ones used in Custobar.
+	 *
+	 * @param \WC_Product $product
+	 */
+	public function __construct( $product ) {
+		parent::__construct();
+
+		$this->dataSource = new Product( $product );
+	}
+
+	public static function getFieldsMap() {
+		return FieldsMap::getProductFields();
+	}
 }

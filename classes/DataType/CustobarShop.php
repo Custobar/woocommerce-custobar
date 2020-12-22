@@ -2,33 +2,31 @@
 
 namespace WooCommerceCustobar\DataType;
 
-defined('ABSPATH') or exit;
+defined( 'ABSPATH' ) or exit;
 
 /**
  * Class CustobarShop
  *
  * @package WooCommerceCustobar\DataType
  */
-class CustobarShop extends AbstractCustobarDataType
-{
-    CONST EXTERNAL_ID = 'external_id';
-    CONST NAME = 'name';
-    CONST EMAIL = 'email';
-    CONST SHOP_TYPE = 'shop_type';
-    CONST PHONE_NUMBER = 'phone_number';
+class CustobarShop extends AbstractCustobarDataType {
 
-    protected $external_id;
-    protected $name;
-    protected $email;
-    protected $shop_type;
-    protected $phone_number;
+	const EXTERNAL_ID  = 'external_id';
+	const NAME         = 'name';
+	const EMAIL        = 'email';
+	const SHOP_TYPE    = 'shop_type';
+	const PHONE_NUMBER = 'phone_number';
 
-    public function __construct()
-    {
-    }
+	protected $external_id;
+	protected $name;
+	protected $email;
+	protected $shop_type;
+	protected $phone_number;
 
-    public static function getFieldsMap()
-    {
-        return array();
-    }
+	public function __construct() {
+	}
+
+	public static function getFieldsMap() {
+		return array();
+	}
 }
