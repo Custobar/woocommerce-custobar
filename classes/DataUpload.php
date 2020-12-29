@@ -183,12 +183,20 @@ class DataUpload {
 		if ( isset( $tracker['total'] ) && is_int( $tracker['total'] ) ) {
 			$stat->total = $tracker['total'];
 		} else {
-			$order_count = 0;
-			foreach ( wp_count_posts( 'shop_order' ) as $state => $count ) {
-				$order_count += $count;
-			}
+			// Get orders
+			$args = array(
+				'type'   => 'shop_order', // skip shop_order_refund
+				'limit'  => -1,
+				'offset' => 0,
+				'return' => 'ids'
+			);
 
-			$stat->total = $order_count;
+			// Allow 3rd parties to modify args
+			$args = apply_filters( 'woocommerce_custobar_batch_update_orders_args', $args );
+
+			$orders = \wc_get_orders( $args );
+
+			$stat->total = count($orders);
 			SaleSync::trackerSave( null, $stat->total );
 		}
 
