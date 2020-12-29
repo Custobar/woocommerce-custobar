@@ -23,9 +23,6 @@ class CustobarShop extends AbstractCustobarDataType {
 	protected $shop_type;
 	protected $phone_number;
 
-	public function __construct() {
-	}
-
 	public static function getFieldsMap() {
 		return array();
 	}

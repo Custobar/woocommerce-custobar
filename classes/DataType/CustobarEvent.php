@@ -24,9 +24,6 @@ class CustobarEvent extends AbstractCustobarDataType {
 	protected $product_id;
 	protected $mailing_lists;
 
-	public function __construct() {
-	}
-
 	public static function getFieldsMap() {
 		return array();
 	}

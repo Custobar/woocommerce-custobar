@@ -5,7 +5,6 @@ defined( 'ABSPATH' ) or exit;
 require_once WOOCOMMERCE_CUSTOBAR_PATH . '/includes/functions.php';
 require_once WOOCOMMERCE_CUSTOBAR_PATH . '/classes/Plugin.php';
 require_once WOOCOMMERCE_CUSTOBAR_PATH . '/classes/DataUpload.php';
-require_once WOOCOMMERCE_CUSTOBAR_PATH . '/classes/API.php';
 
 add_filter(
 	'woocommerce_get_settings_pages',
@@ -29,7 +28,6 @@ require_once WOOCOMMERCE_CUSTOBAR_PATH . '/classes/Synchronization/AbstractDataS
 require_once WOOCOMMERCE_CUSTOBAR_PATH . '/classes/Synchronization/CustomerSync.php';
 require_once WOOCOMMERCE_CUSTOBAR_PATH . '/classes/Synchronization/ProductSync.php';
 require_once WOOCOMMERCE_CUSTOBAR_PATH . '/classes/Synchronization/SaleSync.php';
-require_once WOOCOMMERCE_CUSTOBAR_PATH . '/classes/Synchronization/SyncTracker.php';
 require_once WOOCOMMERCE_CUSTOBAR_PATH . '/classes/Template.php';
 require_once WOOCOMMERCE_CUSTOBAR_PATH . '/classes/FieldsMap.php';
 require_once WOOCOMMERCE_CUSTOBAR_PATH . '/classes/DataSource/AbstractDataSource.php';
