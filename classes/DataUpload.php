@@ -229,8 +229,8 @@ class DataUpload {
 		} else {
 			$query = new \WP_User_Query(
 				array(
-					'role'   => 'customer',
-					'fields' => 'ID',
+					'role__in' => CustomerSync::get_allowed_roles(),
+					'fields'   => 'ID',
 				)
 			);
 

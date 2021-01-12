@@ -56,8 +56,7 @@ class CustomerSync extends AbstractDataSync {
 
 		$customer = new \WC_Customer( $user_id );
 
-		// Update only customers
-		if ( $customer->get_role() == 'customer' ) {
+		if (in_array($customer->get_role(), self::get_allowed_roles())) {
 			$properties = self::formatSingleItem( $customer );
 			self::uploadDataTypeData( $properties, true );
 		}
@@ -77,12 +76,12 @@ class CustomerSync extends AbstractDataSync {
 
 		$query = new \WP_User_Query(
 			array(
-				'role'    => 'customer',
-				'fields'  => 'ID',
-				'orderby' => 'ID',
-				'order'   => 'ASC',
-				'number'  => $limit,
-				'offset'  => $offset,
+				'role__in' => self::get_allowed_roles(),
+				'fields'   => 'ID',
+				'orderby'  => 'ID',
+				'order'    => 'ASC',
+				'number'   => $limit,
+				'offset'   => $offset,
 			)
 		);
 
@@ -122,6 +121,18 @@ class CustomerSync extends AbstractDataSync {
 		$response->count   = $count;
 		return $response;
 
+	}
+
+	/**
+	 * Get allowed user roles that will be synced
+	 * By default only users with the role 'customer' are synced
+	 *
+	 * @return array Allowed user roles
+	 */
+	public static function get_allowed_roles() {
+		// Allow 3rd parties filter roles to be synced
+		$roles = apply_filters('woocommerce_custobar_customersync_roles', array('customer'));
+		return array_filter(array_unique($roles));
 	}
 
 	public static function trackerFetch() {
