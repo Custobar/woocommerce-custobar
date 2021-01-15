@@ -11,7 +11,7 @@
  * Requires PHP 7.2+
  */
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 if ( ! defined( 'WOOCOMMERCE_CUSTOBAR_PATH' ) ) {
 	define( 'WOOCOMMERCE_CUSTOBAR_PATH', plugin_dir_path( __FILE__ ) );

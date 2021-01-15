@@ -2,7 +2,7 @@
 
 namespace WooCommerceCustobar;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 class Template {
 

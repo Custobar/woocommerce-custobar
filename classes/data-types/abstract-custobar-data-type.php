@@ -2,7 +2,7 @@
 
 namespace WooCommerceCustobar\DataType;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Class Custobar_Data_Type
@@ -11,19 +11,19 @@ defined( 'ABSPATH' ) or exit;
  *
  * @package WooCommerceCustobar\DataType
  */
-abstract class Custobar_Data_Type
-{
+abstract class Custobar_Data_Type {
+
 
 	protected static $defaultKeys = array();
 
 	public function __construct() {
-		static::$defaultKeys = static::getDefaultKeys();
+		static::$defaultKeys = static::get_default_keys();
 	}
 
-	public function getAssignedProperties() {
-		$dataSourceFields = $this->dataSource->getFields();
-		$fieldsMap        = static::getFieldsMap();
-		$properties       = array();
+	public function get_assigned_properties() {
+		 $dataSourceFields = $this->dataSource->get_fields();
+		$fieldsMap         = static::get_fields_map();
+		$properties        = array();
 
 		foreach ( $fieldsMap as $custobarKey => $sourceKey ) {
 			if ( ! in_array( $custobarKey, static::$defaultKeys, true ) ) {
@@ -56,9 +56,9 @@ abstract class Custobar_Data_Type
 		return $properties;
 	}
 
-	abstract static function getFieldsMap();
+	abstract static function get_fields_map();
 
-	protected static function getDefaultKeys() {
+	protected static function get_default_keys() {
 		$reflection = new \ReflectionClass( get_called_class() );
 		return array_values( $reflection->getConstants() );
 	}

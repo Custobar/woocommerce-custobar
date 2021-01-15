@@ -2,7 +2,7 @@
 
 namespace WooCommerceCustobar\DataType;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Class Utilities
@@ -18,7 +18,7 @@ class Utilities {
 	 *
 	 * @return int
 	 */
-	public static function getPriceInCents( $price ) {
+	public static function get_price_in_cents( $price ) {
 		return (int) round( (float) $price * 100 );
 	}
 
@@ -29,7 +29,7 @@ class Utilities {
 	 *
 	 * @return string
 	 */
-	public static function formatDateTime( $datetime ) {
+	public static function format_datetime( $datetime ) {
 		if ( ! $datetime || ! is_a( $datetime, 'DateTime' ) ) {
 			return null;
 		}

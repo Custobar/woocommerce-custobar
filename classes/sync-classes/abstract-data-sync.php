@@ -2,7 +2,7 @@
 
 namespace WooCommerceCustobar\Synchronization;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 use WooCommerceCustobar\Data_Upload;
 
@@ -11,43 +11,43 @@ use WooCommerceCustobar\Data_Upload;
  *
  * @package WooCommerceCustobar\Synchronization
  */
-abstract class Data_Sync
-{
+abstract class Data_Sync {
 
-	abstract public static function singleUpdate( $item_id);
-	abstract public static function batchUpdate();
-	abstract protected static function formatSingleItem( $item);
-	abstract protected static function uploadDataTypeData( $data);
 
-	protected static function uploadCustobarData( $data ) {
+	abstract public static function single_update( $item_id);
+	abstract public static function batch_update();
+	abstract protected static function format_single_item( $item);
+	abstract protected static function upload_data_type_data( $data);
+
+	protected static function upload_custobar_data( $data ) {
 
 		$endpoint = static::$endpoint;
 
 		$cds           = new \WooCommerceCustobar\DataSource\Custobar_Data_Source();
-		$integrationId = $cds->getIntegrationId();
+		$integrationId = $cds->get_integration_id();
 		if ( ! $integrationId ) {
-			$integrationId = $cds->createIntegration();
+			$integrationId = $cds->create_integration();
 		}
 
 		if ( $integrationId ) {
 
 			switch ( $endpoint ) {
 				case '/customers/upload/':
-					$dataSourceId = $cds->getCustomerDataSourceId();
+					$dataSourceId = $cds->get_customer_data_source_id();
 					if ( ! $dataSourceId ) {
-						$dataSourceId = $cds->createDataSource( 'WooCommerce customers', 'customers' );
+						$dataSourceId = $cds->create_data_source( 'WooCommerce customers', 'customers' );
 					}
 					break;
 				case '/products/upload/':
-					$dataSourceId = $cds->getProductDataSourceId();
+					$dataSourceId = $cds->get_product_data_source_id();
 					if ( ! $dataSourceId ) {
-						$dataSourceId = $cds->createDataSource( 'WooCommerce products', 'products' );
+						$dataSourceId = $cds->create_data_source( 'WooCommerce products', 'products' );
 					}
 					break;
 				case '/sales/upload/':
-					$dataSourceId = $cds->getSaleDataSourceId();
+					$dataSourceId = $cds->get_sale_data_source_id();
 					if ( ! $dataSourceId ) {
-						$dataSourceId = $cds->createDataSource( 'WooCommerce sales', 'sales' );
+						$dataSourceId = $cds->create_data_source( 'WooCommerce sales', 'sales' );
 					}
 					break;
 			}
@@ -57,7 +57,7 @@ abstract class Data_Sync
 			}
 		}
 
-		return Data_Upload::uploadCustobarData($endpoint, $data);
+		return Data_Upload::upload_custobar_data( $endpoint, $data );
 
 	}
 }

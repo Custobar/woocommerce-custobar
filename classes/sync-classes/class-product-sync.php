@@ -2,7 +2,7 @@
 
 namespace WooCommerceCustobar\Synchronization;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 use WooCommerceCustobar\DataType\Custobar_Product;
 
@@ -11,60 +11,57 @@ use WooCommerceCustobar\DataType\Custobar_Product;
  *
  * @package WooCommerceCustobar\Synchronization
  */
-class Product_Sync extends Data_Sync
-{
+class Product_Sync extends Data_Sync {
+
 
 	protected static $endpoint = '/products/upload/';
 
-	public static function addHooks() {
+	public static function add_hooks() {
 		// Schedule actions
 		add_action( 'woocommerce_new_product', array( __CLASS__, 'schedule_single_update' ), 10, 1 );
 		add_action( 'woocommerce_update_product', array( __CLASS__, 'schedule_single_update' ), 10, 1 );
 
 		// Hook into scheduled actions
-		add_action('woocommerce_custobar_productsync_single_update', array( __CLASS__, 'singleUpdate' ), 10, 1);
+		add_action( 'woocommerce_custobar_productsync_single_update', array( __CLASS__, 'single_update' ), 10, 1 );
 	}
 
-	public static function schedule_single_update($product_id) {
+	public static function schedule_single_update( $product_id ) {
 		wc_get_logger()->info(
 			'Product_Sync schedule_single_update called with $product_id: ' . $product_id,
-			array('source' => 'custobar')
+			array( 'source' => 'custobar' )
 		);
 
-		$hook = 'woocommerce_custobar_productsync_single_update';
-		$args = array('product_id' => $product_id);
+		$hook  = 'woocommerce_custobar_productsync_single_update';
+		$args  = array( 'product_id' => $product_id );
 		$group = 'custobar';
 
 		// We need only one action scheduled
-		if (!as_next_scheduled_action( $hook, $args, $group )) {
+		if ( ! as_next_scheduled_action( $hook, $args, $group ) ) {
 			as_enqueue_async_action( $hook, $args, $group );
 		}
 	}
 
-	public static function singleUpdate( $product_id ) {
-
+	public static function single_update( $product_id ) {
 		wc_get_logger()->info(
 			'Product_Sync single update called with $product_id: ' . $product_id,
-			array('source' => 'custobar')
+			array( 'source' => 'custobar' )
 		);
 
 		$product    = wc_get_product( $product_id );
-		$properties = self::formatSingleItem( $product );
-		self::uploadDataTypeData( $properties, true );
-
+		$properties = self::format_single_item( $product );
+		self::upload_data_type_data( $properties, true );
 	}
 
-	public static function batchUpdate() {
+	public static function batch_update() {
+		 $response      = new \stdClass();
+		$limit          = 500;
+		$tracker        = self::tracker_fetch();
+		$offset         = $tracker['offset'];
+		$variant_offset = $tracker['variant_offset'];
+		$product_list   = array();
+		$variant_list   = array();
 
-		$response      = new \stdClass();
-		$limit         = 500;
-		$tracker       = self::trackerFetch();
-		$offset        = $tracker['offset'];
-		$variantOffset = $tracker['variant_offset'];
-		$productList   = array();
-		$variantList   = array();
-
-		if ( $variantOffset == 0 ) {
+		if ( $variant_offset == 0 ) {
 
 			$products = wc_get_products(
 				array(
@@ -76,11 +73,11 @@ class Product_Sync extends Data_Sync
 			);
 
 			foreach ( $products as $product ) {
-				$productList[] = self::formatSingleItem( $product );
+				$product_list[] = self::format_single_item( $product );
 			}
 		}
 
-		$count   = count( $productList );
+		$count   = count( $product_list );
 		$offset += $count;
 
 		// Fetch variants
@@ -90,46 +87,42 @@ class Product_Sync extends Data_Sync
 				array(
 					'type'    => 'variation',
 					'limit'   => $limit,
-					'offset'  => $variantOffset,
+					'offset'  => $variant_offset,
 					'orderby' => 'ID',
 					'order'   => 'ASC',
 				)
 			);
 
 			foreach ( $variants as $variant ) {
-
-				$variantList[] = self::formatSingleVariant( $variant );
-
+				$variant_list[] = self::format_single_variant( $variant );
 			}
 
-			$count          = count( $variantList );
-			$variantOffset += $count;
+			$count           = count( $variant_list );
+			$variant_offset += $count;
 
-			$productList = array_merge( $productList, $variantList );
+			$product_list = array_merge( $product_list, $variant_list );
 		}
 
 		// no products
-		if ( empty( $productList ) ) {
+		if ( empty( $product_list ) ) {
 			$response->code = 220;
 			return $response;
 		}
 
-		$apiResponse = self::uploadDataTypeData( $productList );
+		$api_response = self::upload_data_type_data( $product_list );
 
-		self::trackerSave( $offset, $variantOffset );
+		self::tracker_save( $offset, $variant_offset );
 
 		// return response
-		$response->code    = $apiResponse->code;
-		$response->body    = $apiResponse->body;
-		$response->tracker = self::trackerFetch();
+		$response->code    = $api_response->code;
+		$response->body    = $api_response->body;
+		$response->tracker = self::tracker_fetch();
 		$response->count   = $count;
 		return $response;
-
 	}
 
-	public static function trackerFetch() {
-		$trackerKey = 'custobar_export_product';
-		$tracker    = get_option( $trackerKey );
+	public static function tracker_fetch() {
+		$tracker = get_option( 'custobar_export_product' );
 		if ( ! is_array( $tracker ) ) {
 			$tracker = array();
 		}
@@ -145,35 +138,35 @@ class Product_Sync extends Data_Sync
 		return $tracker;
 	}
 
-	public static function trackerSave( $offset, $variantOffset, $total = null, $variantTotal = null ) {
-		$tracker = self::trackerFetch();
-		if ( isset( $offset ) && isset( $variantOffset ) ) {
+	public static function tracker_save( $offset, $variant_offset, $total = null, $variant_total = null ) {
+		$tracker = self::tracker_fetch();
+		if ( isset( $offset ) && isset( $variant_offset ) ) {
 			$tracker['offset']         = $offset;
-			$tracker['variant_offset'] = $variantOffset;
+			$tracker['variant_offset'] = $variant_offset;
 			$tracker['updated']        = time();
 		}
-		if ( isset( $total ) && isset( $variantTotal ) ) {
+		if ( isset( $total ) && isset( $variant_total ) ) {
 			$tracker['total']         = $total;
-			$tracker['variant_total'] = $variantTotal;
+			$tracker['variant_total'] = $variant_total;
 		}
 		update_option( 'custobar_export_product', $tracker );
 	}
 
-	protected static function formatSingleItem( $product ) {
-		$custobar_product = new Custobar_Product($product);
-		$properties       = $custobar_product->getAssignedProperties();
+	protected static function format_single_item( $product ) {
+		$custobar_product = new Custobar_Product( $product );
+		$properties       = $custobar_product->get_assigned_properties();
 		return apply_filters( 'woocommerce_custobar_product_properties', $properties, $product );
 	}
 
-	protected static function formatSingleVariant( $variant ) {
-		$custobar_product               = new Custobar_Product($variant);
-		$properties                     = $custobar_product->getAssignedProperties();
+	protected static function format_single_variant( $variant ) {
+		$custobar_product               = new Custobar_Product( $variant );
+		$properties                     = $custobar_product->get_assigned_properties();
 		$properties['main_product_ids'] = array( $variant->get_parent_id() );
 		return apply_filters( 'woocommerce_custobar_product_properties', $properties, $variant );
 	}
 
 
-	protected static function uploadDataTypeData( $data, $single = false ) {
+	protected static function upload_data_type_data( $data, $single = false ) {
 		$formatted_data = array(
 			'products' => array(),
 		);
@@ -182,6 +175,6 @@ class Product_Sync extends Data_Sync
 		} else {
 			$formatted_data['products'] = $data;
 		}
-		return self::uploadCustobarData( $formatted_data );
+		return self::upload_custobar_data( $formatted_data );
 	}
 }

@@ -4,10 +4,10 @@ namespace WooCommerceCustobar\DataSource;
 
 use WooCommerceCustobar\DataType\Utilities;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
-class Sale extends Abstract_Data_Source
-{
+class Sale extends Abstract_Data_Source {
+
 
 	const ORDER_ID             = 'order_id';
 	const ORDER_NUMBER         = 'order_number';
@@ -34,39 +34,39 @@ class Sale extends Abstract_Data_Source
 		$this->order_item = $order_item;
 	}
 
-	public function getOrderId() {
+	public function get_order_id() {
 		return (string) $this->order_item->get_id();
 	}
 
-	public function getOrderNumber() {
+	public function get_order_number() {
 		return $this->order->get_order_number();
 	}
 
-	public function getOrderDate() {
-		return Utilities::formatDateTime( $this->order->get_date_created() );
+	public function get_order_date() {
+		return Utilities::format_datetime( $this->order->get_date_created() );
 	}
 
-	public function getTotal() {
-		return Utilities::getPriceInCents( $this->order_item->get_total() );
+	public function get_total() {
+		return Utilities::get_price_in_cents( $this->order_item->get_total() );
 	}
 
-	public function getOrderTotal() {
-		return Utilities::getPriceInCents( $this->order->get_total() );
+	public function get_order_total() {
+		 return Utilities::get_price_in_cents( $this->order->get_total() );
 	}
 
-	public function getCustomerId() {
-		return ( $this->order->get_user_id() ) ? (string) $this->order->get_user_id() : null;
+	public function get_customer_id() {
+		 return ( $this->order->get_user_id() ) ? (string) $this->order->get_user_id() : null;
 	}
 
-	public function getCustomerPhone() {
+	public function get_customer_phone() {
 		return $this->order->get_billing_phone();
 	}
 
-	public function getCustomerEmail() {
+	public function get_customer_email() {
 		return $this->order->get_billing_email();
 	}
 
-	public function getProductId() {
+	public function get_product_id() {
 		$variation_id = $this->order_item->get_variation_id();
 
 		if ( isset( $variation_id ) && $variation_id ) {
@@ -76,27 +76,27 @@ class Sale extends Abstract_Data_Source
 		}
 	}
 
-	public function getQuantity() {
+	public function get_quantity() {
 		return $this->order_item->get_quantity();
 	}
 
-	public function getPrice() {
-		return Utilities::getPriceInCents( $this->order_item->get_total() / $this->order_item->get_quantity() );
+	public function get_price() {
+		return Utilities::get_price_in_cents( $this->order_item->get_total() / $this->order_item->get_quantity() );
 	}
 
-	public function getTotalDiscount() {
-		return Utilities::getPriceInCents( $this->order->get_total_discount() );
+	public function get_total_discount() {
+		return Utilities::get_price_in_cents( $this->order->get_total_discount() );
 	}
 
-	public function getSaleShipping() {
-		return Utilities::getPriceInCents( $this->order->get_shipping_total() );
+	public function get_sale_shipping() {
+		return Utilities::get_price_in_cents( $this->order->get_shipping_total() );
 	}
 
-	public function getStatus() {
+	public function get_status() {
 		return strtoupper( $this->order->get_status() );
 	}
 
-	public function getPaymentMethodTitle() {
+	public function get_payment_method_title() {
 		return $this->order->get_payment_method_title();
 	}
 }

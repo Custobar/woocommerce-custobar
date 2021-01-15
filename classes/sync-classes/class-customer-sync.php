@@ -2,7 +2,7 @@
 
 namespace WooCommerceCustobar\Synchronization;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 use WooCommerceCustobar\DataType\Custobar_Customer;
 
@@ -11,12 +11,12 @@ use WooCommerceCustobar\DataType\Custobar_Customer;
  *
  * @package WooCommerceCustobar\Synchronization
  */
-class Customer_Sync extends Data_Sync
-{
+class Customer_Sync extends Data_Sync {
+
 
 	protected static $endpoint = '/customers/upload/';
 
-	public static function addHooks() {
+	public static function add_hooks() {
 		// Schedule actions
 		add_action( 'user_register', array( __CLASS__, 'schedule_single_update' ), 10, 1 );
 		add_action( 'profile_update', array( __CLASS__, 'schedule_single_update' ), 10, 1 );
@@ -25,10 +25,10 @@ class Customer_Sync extends Data_Sync
 		add_action( 'woocommerce_update_customer', array( __CLASS__, 'schedule_single_update' ), 10, 1 );
 
 		// Hook into scheduled actions
-		add_action('woocommerce_custobar_customersync_single_update', array( __CLASS__, 'singleUpdate' ), 10, 1);
+		add_action( 'woocommerce_custobar_customersync_single_update', array( __CLASS__, 'single_update' ), 10, 1 );
 	}
 
-	public static function schedule_single_update($user_id) {
+	public static function schedule_single_update( $user_id ) {
 		wc_get_logger()->info(
 			'Customer_Sync schedule_single_update called with $user_id: ' . $user_id,
 			array(
@@ -36,17 +36,17 @@ class Customer_Sync extends Data_Sync
 			)
 		);
 
-		$hook = 'woocommerce_custobar_customersync_single_update';
-		$args = array('user_id' => $user_id);
+		$hook  = 'woocommerce_custobar_customersync_single_update';
+		$args  = array( 'user_id' => $user_id );
 		$group = 'custobar';
 
 		// We need only one action scheduled
-		if (!as_next_scheduled_action( $hook, $args, $group )) {
+		if ( ! as_next_scheduled_action( $hook, $args, $group ) ) {
 			as_enqueue_async_action( $hook, $args, $group );
 		}
 	}
 
-	public static function singleUpdate( $user_id ) {
+	public static function single_update( $user_id ) {
 
 		wc_get_logger()->info(
 			'Customer_Sync single update called with $user_id: ' . $user_id,
@@ -57,16 +57,15 @@ class Customer_Sync extends Data_Sync
 
 		$customer = new \WC_Customer( $user_id );
 
-		if (in_array($customer->get_role(), self::get_allowed_roles())) {
-			$properties = self::formatSingleItem( $customer );
-			self::uploadDataTypeData( $properties, true );
+		if ( in_array( $customer->get_role(), self::get_allowed_roles(), true ) ) {
+			$properties = self::format_single_item( $customer );
+			self::upload_data_type_data( $properties, true );
 		}
 	}
 
-	public static function batchUpdate() {
-
+	public static function batch_update() {
 		$response = new \stdClass();
-		$tracker  = self::trackerFetch();
+		$tracker  = self::tracker_fetch();
 		$offset   = $tracker['offset'];
 
 		$limit = 500;
@@ -98,7 +97,7 @@ class Customer_Sync extends Data_Sync
 		$customers = array();
 		foreach ( $users as $user_id ) {
 			$customer    = new \WC_Customer( $user_id );
-			$customers[] = self::formatSingleItem( $customer );
+			$customers[] = self::format_single_item( $customer );
 		}
 
 		// no data
@@ -110,15 +109,15 @@ class Customer_Sync extends Data_Sync
 		$count = count( $customers );
 
 		// track the export
-		self::trackerSave( $offset + $count );
+		self::tracker_save( $offset + $count );
 
 		// do upload to custobar API
-		$apiResponse = self::uploadDataTypeData( $customers );
+		$api_response = self::upload_data_type_data( $customers );
 
 		// return response
-		$response->code    = $apiResponse->code;
-		$response->body    = $apiResponse->body;
-		$response->tracker = self::trackerFetch();
+		$response->code    = $api_response->code;
+		$response->body    = $api_response->body;
+		$response->tracker = self::tracker_fetch();
 		$response->count   = $count;
 		return $response;
 
@@ -132,11 +131,11 @@ class Customer_Sync extends Data_Sync
 	 */
 	public static function get_allowed_roles() {
 		// Allow 3rd parties filter roles to be synced
-		$roles = apply_filters('woocommerce_custobar_customersync_roles', array('customer'));
-		return array_filter(array_unique($roles));
+		$roles = apply_filters( 'woocommerce_custobar_customersync_roles', array( 'customer' ) );
+		return array_filter( array_unique( $roles ) );
 	}
 
-	public static function trackerFetch() {
+	public static function tracker_fetch() {
 		$tracker = get_option( 'custobar_export_customer' );
 		if ( ! is_array( $tracker ) ) {
 			$tracker = array();
@@ -150,8 +149,8 @@ class Customer_Sync extends Data_Sync
 		return $tracker;
 	}
 
-	public static function trackerSave( $offset, $total = null ) {
-		$tracker = self::trackerFetch();
+	public static function tracker_save( $offset, $total = null ) {
+		$tracker = self::tracker_fetch();
 		if ( isset( $offset ) ) {
 			$tracker['offset']  = $offset;
 			$tracker['updated'] = time();
@@ -162,13 +161,13 @@ class Customer_Sync extends Data_Sync
 		update_option( 'custobar_export_customer', $tracker );
 	}
 
-	protected static function formatSingleItem( $user ) {
-		$custobar_customer = new Custobar_Customer($user);
-		$properties        = $custobar_customer->getAssignedProperties();
+	protected static function format_single_item( $user ) {
+		$custobar_customer = new Custobar_Customer( $user );
+		$properties        = $custobar_customer->get_assigned_properties();
 		return apply_filters( 'woocommerce_custobar_customer_properties', $properties, $user );
 	}
 
-	protected static function uploadDataTypeData( $data, $single = false ) {
+	protected static function upload_data_type_data( $data, $single = false ) {
 
 		$formatted_data = array(
 			'customers' => array(),
@@ -179,7 +178,7 @@ class Customer_Sync extends Data_Sync
 			$formatted_data['customers'] = $data;
 		}
 
-		return self::uploadCustobarData( $formatted_data );
+		return self::upload_custobar_data( $formatted_data );
 
 	}
 }

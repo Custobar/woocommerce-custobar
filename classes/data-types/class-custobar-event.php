@@ -2,15 +2,15 @@
 
 namespace WooCommerceCustobar\DataType;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Class Custobar_Event
  *
  * @package WooCommerceCustobar\DataType
  */
-class Custobar_Event extends Custobar_Data_Type
-{
+class Custobar_Event extends Custobar_Data_Type {
+
 
 
 	const TYPE          = 'type';
@@ -25,7 +25,7 @@ class Custobar_Event extends Custobar_Data_Type
 	protected $product_id;
 	protected $mailing_lists;
 
-	public static function getFieldsMap() {
+	public static function get_fields_map() {
 		return array();
 	}
 }

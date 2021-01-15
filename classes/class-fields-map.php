@@ -9,18 +9,18 @@ use WooCommerceCustobar\DataType\Custobar_Sale as CBSale;
 use WooCommerceCustobar\DataType\Custobar_Product as CBProduct;
 use WooCommerceCustobar\DataType\Custobar_Customer as CBCustomer;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
-class Fields_Map
-{
+class Fields_Map {
+
 
 	/**
 	 * Get custobar to woocommer fields map
 	 *
-	 * @param string $fieldGroup
+	 * @param string $field_group
 	 * @return array
 	 */
-	public static function getDefaults( $fieldGroup = 'all' ) {
+	public static function get_defaults( $field_group = 'all' ) {
 		$groups = array(
 			/**
 			 * Customer fields map
@@ -106,11 +106,11 @@ class Fields_Map
 
 		/**
 		 * @param array $group
-		 * @param string $fieldGroup
+		 * @param string $field_group
 		 */
-		$groups = apply_filters( 'woocommerce_custobar_get_fields_map', $groups, $fieldGroup );
+		$groups = apply_filters( 'woocommerce_custobar_get_fields_map', $groups, $field_group );
 
-		return isset( $groups[ $fieldGroup ] ) ? $groups[ $fieldGroup ] : $groups;
+		return isset( $groups[ $field_group ] ) ? $groups[ $field_group ] : $groups;
 	}
 
 	/**
@@ -118,8 +118,8 @@ class Fields_Map
 	 *
 	 * @return array
 	 */
-	public static function getFieldsMapForFront() {
-		$groups = self::getDefaults();
+	public static function get_fields_map_for_front() {
+		$groups = self::get_defaults();
 		$out    = array();
 
 		foreach ( $groups as $key => $group ) {
@@ -144,8 +144,8 @@ class Fields_Map
 	 *
 	 * @return array
 	 */
-	public static function getProductFields() {
-		return self::getSavedFields( 'custobar_product_fields' );
+	public static function get_product_fields() {
+		return self::get_saved_fields( 'custobar_product_fields' );
 	}
 
 	/**
@@ -153,8 +153,8 @@ class Fields_Map
 	 *
 	 * @return array
 	 */
-	public static function getSaleFields() {
-		return self::getSavedFields( 'custobar_sale_fields' );
+	public static function get_sale_fields() {
+		return self::get_saved_fields( 'custobar_sale_fields' );
 	}
 
 	/**
@@ -162,22 +162,22 @@ class Fields_Map
 	 *
 	 * @return array
 	 */
-	public static function getCustomerFields() {
-		return self::getSavedFields( 'custobar_customer_fields' );
+	public static function get_customer_fields() {
+		return self::get_saved_fields( 'custobar_customer_fields' );
 	}
 
 	/**
 	 * Get processed fields map
 	 *
-	 * @param string $fieldsId
+	 * @param string $fields_id
 	 * @return array
 	 */
-	protected static function getSavedFields( $fieldsId ) {
-		$fieldsStr = get_option( $fieldsId, '' );
-		$fieldsArr = explode( PHP_EOL, $fieldsStr );
+	protected static function get_saved_fields( $fields_id ) {
+		$fields_str = get_option( $fields_id, '' );
+		$fields_arr = explode( PHP_EOL, $fields_str );
 
 		$out = array_reduce(
-			$fieldsArr,
+			$fields_arr,
 			function( $carry, $field ) {
 				$arr = explode( ':', $field );
 
@@ -187,11 +187,11 @@ class Fields_Map
 				}
 
 				// Trim white spaces around keys
-				$loadKey   = trim( $arr[0] );
-				$sourceKey = trim( $arr[1] );
+				$load_key   = trim( $arr[0] );
+				$source_key = trim( $arr[1] );
 
 				// Set actual null for stirng null
-				$carry[ $loadKey ] = $sourceKey !== 'null' ? $sourceKey : null;
+				$carry[ $load_key ] = 'null' !== $source_key ? $source_key : null;
 
 				return $carry;
 			},

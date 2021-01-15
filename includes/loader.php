@@ -1,6 +1,6 @@
 <?php
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 require_once WOOCOMMERCE_CUSTOBAR_PATH . '/includes/functions.php';
 require_once WOOCOMMERCE_CUSTOBAR_PATH . '/classes/class-plugin.php';
@@ -8,12 +8,10 @@ require_once WOOCOMMERCE_CUSTOBAR_PATH . '/classes/class-data-upload.php';
 
 add_filter(
 	'woocommerce_get_settings_pages',
-	function( $settings ) {
-
+	function ( $settings ) {
 		require_once WOOCOMMERCE_CUSTOBAR_PATH . '/classes/class-settings.php';
 		$settings[] = new \WooCommerceCustobar\WC_Settings_Custobar();
 		return $settings;
-
 	}
 );
 

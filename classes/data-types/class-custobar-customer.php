@@ -5,7 +5,7 @@ namespace WooCommerceCustobar\DataType;
 use WooCommerceCustobar\Fields_Map;
 use WooCommerceCustobar\DataSource\Customer;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Class Custobar_Customer
@@ -14,8 +14,8 @@ defined( 'ABSPATH' ) or exit;
  *
  * @package WooCommerceCustobar\DataType
  */
-class Custobar_Customer extends Custobar_Data_Type
-{
+class Custobar_Customer extends Custobar_Data_Type {
+
 
 	const EXTERNAL_ID    = 'external_id';
 	const EMAIL          = 'email';
@@ -51,7 +51,7 @@ class Custobar_Customer extends Custobar_Data_Type
 		$this->dataSource = new Customer( $order );
 	}
 
-	public static function getFieldsMap() {
-		return Fields_Map::getCustomerFields();
+	public static function get_fields_map() {
+		return Fields_Map::get_customer_fields();
 	}
 }

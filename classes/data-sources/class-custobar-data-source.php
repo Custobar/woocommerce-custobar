@@ -2,42 +2,39 @@
 
 namespace WooCommerceCustobar\DataSource;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
-class Custobar_Data_Source
-{
+class Custobar_Data_Source {
+
 
 	const CUSTOBAR_INTEGRATION_KEY           = 'custobar_integration';
 	const CUSTOBAR_SALES_DATA_SOURCE_KEY     = 'custobar_data_source_sale';
 	const CUSTOBAR_CUSTOMERS_DATA_SOURCE_KEY = 'custobar_data_source_customer';
 	const CUSTOBAR_PRODUCTS_DATA_SOURCE_KEY  = 'custobar_data_source_product';
 
-	public function getIntegrationId() {
+	public function get_integration_id() {
 		return get_option( self::CUSTOBAR_INTEGRATION_KEY, false );
 	}
 
-	public function getSaleDataSourceId() {
+	public function get_sale_data_source_id() {
 		return get_option( self::CUSTOBAR_SALES_DATA_SOURCE_KEY, false );
 	}
 
-	public function getCustomerDataSourceId() {
+	public function get_customer_data_source_id() {
 		return get_option( self::CUSTOBAR_CUSTOMERS_DATA_SOURCE_KEY, false );
 	}
 
-	public function getProductDataSourceId() {
+	public function get_product_data_source_id() {
 		return get_option( self::CUSTOBAR_PRODUCTS_DATA_SOURCE_KEY, false );
 	}
 
-	public function createIntegration() {
-
-		$data          = array(
-			'name' => 'WooCommerce',
-		);
-		$body          = json_encode( $data );
-		$endpoint      = '/integrations/';
-		$apiToken      = get_option( 'custobar_api_setting_token' );
-		$companyDomain = get_option( 'custobar_api_setting_company' );
-		$url           = sprintf( 'https://%s.custobar.com/api', $companyDomain ) . $endpoint;
+	public function create_integration() {
+		$data           = array( 'name' => 'WooCommerce' );
+		$body           = json_encode( $data );
+		$endpoint       = '/integrations/';
+		$api_token      = get_option( 'custobar_api_setting_token' );
+		$company_domain = get_option( 'custobar_api_setting_company' );
+		$url            = sprintf( 'https://%s.custobar.com/api', $company_domain ) . $endpoint;
 
 		$response = wp_remote_request(
 			$url,
@@ -45,7 +42,7 @@ class Custobar_Data_Source
 				'method'  => 'POST',
 				'headers' => array(
 					'Content-Type'  => 'application/json',
-					'Authorization' => 'Token ' . $apiToken,
+					'Authorization' => 'Token ' . $api_token,
 				),
 				'body'    => $body,
 			)
@@ -56,7 +53,7 @@ class Custobar_Data_Source
 
 		$response = json_decode( $response_body );
 
-		if ( $response_code == 200 ) {
+		if ( 200 == $response_code ) {
 			update_option( self::CUSTOBAR_INTEGRATION_KEY, $response->integration->id );
 			return $response->integration->id;
 		}
@@ -65,19 +62,18 @@ class Custobar_Data_Source
 
 	}
 
-	public function createDataSource( $name, $type ) {
-
+	public function create_data_source( $name, $type ) {
 		$data = array(
 			'name'        => $name,
-			'integration' => $this->getIntegrationId(),
+			'integration' => $this->get_integration_id(),
 			'datatype'    => $type,
 		);
 
-		$body          = json_encode( $data );
-		$endpoint      = '/datasources/';
-		$apiToken      = get_option( 'custobar_api_setting_token' );
-		$companyDomain = get_option( 'custobar_api_setting_company' );
-		$url           = sprintf( 'https://%s.custobar.com/api', $companyDomain ) . $endpoint;
+		$body           = json_encode( $data );
+		$endpoint       = '/datasources/';
+		$api_token      = get_option( 'custobar_api_setting_token' );
+		$company_domain = get_option( 'custobar_api_setting_company' );
+		$url            = sprintf( 'https://%s.custobar.com/api', $company_domain ) . $endpoint;
 
 		$response = wp_remote_request(
 			$url,
@@ -85,7 +81,7 @@ class Custobar_Data_Source
 				'method'  => 'POST',
 				'headers' => array(
 					'Content-Type'  => 'application/json',
-					'Authorization' => 'Token ' . $apiToken,
+					'Authorization' => 'Token ' . $api_token,
 				),
 				'body'    => $body,
 			)
@@ -95,7 +91,7 @@ class Custobar_Data_Source
 		$response_body = wp_remote_retrieve_body( $response );
 
 		$response = json_decode( $response_body );
-		if ( $response_code == 200 ) {
+		if ( 200 == $response_code ) {
 			switch ( $type ) {
 				case 'products':
 					update_option( self::CUSTOBAR_PRODUCTS_DATA_SOURCE_KEY, $response->datasource->id );
@@ -110,9 +106,5 @@ class Custobar_Data_Source
 		}
 
 		return $response->datasource->id;
-
 	}
-
-
-
 }

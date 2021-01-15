@@ -5,7 +5,7 @@ namespace WooCommerceCustobar\DataType;
 use WooCommerceCustobar\Fields_Map;
 use WooCommerceCustobar\DataSource\Sale;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 /**
  * Class Custobar_Sale
@@ -14,8 +14,8 @@ defined( 'ABSPATH' ) or exit;
  *
  * @package WooCommerceCustobar\DataType
  */
-class Custobar_Sale extends Custobar_Data_Type
-{
+class Custobar_Sale extends Custobar_Data_Type {
+
 
 	const SALE_EXTERNAL_ID    = 'sale_external_id';
 	const SALE_DATE           = 'sale_date';
@@ -48,7 +48,7 @@ class Custobar_Sale extends Custobar_Data_Type
 		$this->dataSource = new Sale( $order, $order_item );
 	}
 
-	public static function getFieldsMap() {
-		return Fields_Map::getSaleFields();
+	public static function get_fields_map() {
+		return Fields_Map::get_sale_fields();
 	}
 }

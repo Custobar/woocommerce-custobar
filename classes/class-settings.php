@@ -2,7 +2,7 @@
 
 namespace WooCommerceCustobar;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 use WC_Settings_Page;
 use WC_Admin_Settings;
@@ -173,9 +173,9 @@ class WC_Settings_Custobar extends WC_Settings_Page {
 			$dataUpload = new Data_Upload();
 			$template   = new Template();
 
-			$productStat  = $dataUpload->fetchSyncStatProducts();
-			$saleStat     = $dataUpload->fetchSyncStatSales();
-			$customerStat = $dataUpload->fetchSyncStatCustomers();
+			$productStat  = $dataUpload->fetch_sync_stat_products();
+			$saleStat     = $dataUpload->fetch_sync_stat_sales();
+			$customerStat = $dataUpload->fetch_sync_stat_customers();
 
 			$template       = new Template();
 			$template->name = 'sync-report';
@@ -199,15 +199,14 @@ class WC_Settings_Custobar extends WC_Settings_Page {
 
 			WC_Admin_Settings::output_fields( $this->get_settings_fields() );
 
-			$this->actionButtons();
+			$this->output_action_buttons();
 		}
 
 		print '</div>'; // close settings wrap
 
 	}
 
-	protected function actionButtons() {
-		?>
+	protected function output_action_buttons() {        ?>
 	<div id="fields-action">
 		<button type="button" class="button button-lock" data-tip="<?php esc_attr_e( 'Click here to edit fields map', 'woocommerce-custobar' ); ?>"><span class="dashicons dashicons-lock"></span></button>
 		<button type="button" class="button button-restore" data-tip="<?php esc_attr_e( 'Restore to default fields map', 'woocommerce-custobar' ); ?>"><span class="dashicons dashicons-undo"></span></button>
@@ -221,7 +220,7 @@ class WC_Settings_Custobar extends WC_Settings_Page {
 			'custobar-admin-js',
 			WOOCOMMERCE_CUSTOBAR_URL . 'assets/custobar.admin.js',
 			array( 'jquery' ),
-			'1.4.0',
+			WOOCOMMERCE_CUSTOBAR_VERSION,
 			true
 		);
 
@@ -229,7 +228,7 @@ class WC_Settings_Custobar extends WC_Settings_Page {
 			'custobar-admin-js',
 			'Custobar',
 			array(
-				'fieldsMap' => Fields_Map::getFieldsMapForFront(),
+				'fieldsMap' => Fields_Map::get_fields_map_for_front(),
 			)
 		);
 
@@ -237,7 +236,7 @@ class WC_Settings_Custobar extends WC_Settings_Page {
 			'custobar-admin-style',
 			WOOCOMMERCE_CUSTOBAR_URL . 'assets/custobar.admin.css',
 			array(),
-			'1.4.0'
+			WOOCOMMERCE_CUSTOBAR_VERSION
 		);
 
 	}

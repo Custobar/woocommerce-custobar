@@ -2,7 +2,7 @@
 
 namespace WooCommerceCustobar;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 use WooCommerceCustobar\Synchronization\Product_Sync;
 use WooCommerceCustobar\Synchronization\Customer_Sync;
@@ -13,17 +13,17 @@ use WooCommerceCustobar\Synchronization\Sale_Sync;
  *
  * @package WooCommerceCustobar
  */
-class Data_Upload
-{
+class Data_Upload {
 
-	public static function uploadCustobarData( $endpoint, $data ) {
+
+	public static function upload_custobar_data( $endpoint, $data ) {
 
 		$responseData = new \stdClass();
 
-		$body          = json_encode( $data );
-		$apiToken      = \WC_Admin_Settings::get_option( 'custobar_api_setting_token', false );
-		$companyDomain = \WC_Admin_Settings::get_option( 'custobar_api_setting_company', false );
-		$url           = sprintf( 'https://%s.custobar.com/api', $companyDomain ) . $endpoint;
+		$body           = json_encode( $data );
+		$api_token      = \WC_Admin_Settings::get_option( 'custobar_api_setting_token', false );
+		$company_domain = \WC_Admin_Settings::get_option( 'custobar_api_setting_company', false );
+		$url            = sprintf( 'https://%s.custobar.com/api', $company_domain ) . $endpoint;
 
 		$response = wp_remote_request(
 			$url,
@@ -31,7 +31,7 @@ class Data_Upload
 				'method'  => 'POST',
 				'headers' => array(
 					'Content-Type'  => 'application/json',
-					'Authorization' => 'Token ' . $apiToken,
+					'Authorization' => 'Token ' . $api_token,
 				),
 				'body'    => $body,
 			)
@@ -60,48 +60,47 @@ class Data_Upload
 
 	}
 
-	public static function addHooks() {
-		add_action( 'wp_ajax_custobar_export', __CLASS__ . '::jxExport' );
-		add_action( 'wp_ajax_custobar_api_test', __CLASS__ . '::apiTest' );
+	public static function add_hooks() {
+		add_action( 'wp_ajax_custobar_export', __CLASS__ . '::jx_export' );
+		add_action( 'wp_ajax_custobar_api_test', __CLASS__ . '::api_test' );
 	}
 
-	public static function jxExport() {
-
+	public static function jx_export() {
 		// environment checks
 		$plugin = new Plugin();
-		if ( $plugin::isWooCommerceActived() && $plugin::hasAllSettingsDefined() ) {
+		if ( $plugin::is_woocommerce_activated() && $plugin::has_all_settings_defined() ) {
 
-			$recordType  = sanitize_text_field( $_POST['recordType'] );
-			$resetOffset = ! empty( $_POST['reset'] );
+			$record_type  = sanitize_text_field( $_POST['recordType'] );
+			$reset_offset = ! empty( $_POST['reset'] );
 
-			switch ( $recordType ) {
+			switch ( $record_type ) {
 				case 'customer':
-					if ( $resetOffset ) {
+					if ( $reset_offset ) {
 						// Pass false as total to trigger total count update
-						Customer_Sync::trackerSave(0, false);
+						Customer_Sync::tracker_save( 0, false );
 					}
-					$apiResponse        = Customer_Sync::batchUpdate();
-					$apiResponse->stats = self::fetchSyncStatCustomers();
+					$api_response        = Customer_Sync::batch_update();
+					$api_response->stats = self::fetch_sync_stat_customers();
 					break;
 				case 'sale':
-					if ( $resetOffset ) {
+					if ( $reset_offset ) {
 						// Pass false as total to trigger total count update
-						Sale_Sync::trackerSave(0, false);
+						Sale_Sync::tracker_save( 0, false );
 					}
-					$apiResponse        = Sale_Sync::batchUpdate();
-					$apiResponse->stats = self::fetchSyncStatSales();
+					$api_response        = Sale_Sync::batch_update();
+					$api_response->stats = self::fetch_sync_stat_sales();
 					break;
 				case 'product':
-					if ( $resetOffset ) {
+					if ( $reset_offset ) {
 						// Pass false as totals to trigger total count update
-						Product_Sync::trackerSave(0, 0, false, false);
+						Product_Sync::tracker_save( 0, 0, false, false );
 					}
-					$apiResponse        = Product_Sync::batchUpdate();
-					$apiResponse->stats = self::fetchSyncStatProducts();
+					$api_response        = Product_Sync::batch_update();
+					$api_response->stats = self::fetch_sync_stat_products();
 					break;
 			}
 
-			$apiResponse->recordType = $recordType;
+			$api_response->recordType = $record_type;
 
 		} else {
 			$response = array(
@@ -111,8 +110,8 @@ class Data_Upload
 			wp_die();
 		}
 
-		if ( $apiResponse ) {
-			print json_encode( $apiResponse );
+		if ( $api_response ) {
+			print json_encode( $api_response );
 		} else {
 			$response = array(
 				'code' => 440,
@@ -124,10 +123,9 @@ class Data_Upload
 
 	}
 
-	public static function fetchSyncStatProducts() {
-
+	public static function fetch_sync_stat_products() {
 		$stat    = new \stdClass();
-		$tracker = Product_Sync::trackerFetch();
+		$tracker = Product_Sync::tracker_fetch();
 
 		// get total product count
 		if ( isset( $tracker['total'], $tracker['variant_total'] ) && is_int( $tracker['total'] ) && is_int( $tracker['variant_total'] ) ) {
@@ -148,7 +146,7 @@ class Data_Upload
 			}
 
 			$stat->variant_total = $variant_count;
-			Product_Sync::trackerSave(null, null, $stat->total, $stat->variant_total);
+			Product_Sync::tracker_save( null, null, $stat->total, $stat->variant_total );
 		}
 
 		$stat->synced = $tracker['offset'];
@@ -175,10 +173,9 @@ class Data_Upload
 
 	}
 
-	public static function fetchSyncStatSales() {
-
+	public static function fetch_sync_stat_sales() {
 		$stat    = new \stdClass();
-		$tracker = Sale_Sync::trackerFetch();
+		$tracker = Sale_Sync::tracker_fetch();
 
 		// Cache total count
 		if ( isset( $tracker['total'] ) && is_int( $tracker['total'] ) ) {
@@ -189,7 +186,7 @@ class Data_Upload
 				'type'   => 'shop_order', // skip shop_order_refund
 				'limit'  => -1,
 				'offset' => 0,
-				'return' => 'ids'
+				'return' => 'ids',
 			);
 
 			// Allow 3rd parties to modify args
@@ -197,8 +194,8 @@ class Data_Upload
 
 			$orders = \wc_get_orders( $args );
 
-			$stat->total = count($orders);
-			Sale_Sync::trackerSave(null, $stat->total);
+			$stat->total = count( $orders );
+			Sale_Sync::tracker_save( null, $stat->total );
 		}
 
 		$stat->synced = $tracker['offset'];
@@ -219,10 +216,9 @@ class Data_Upload
 
 	}
 
-	public static function fetchSyncStatCustomers() {
-
+	public static function fetch_sync_stat_customers() {
 		$stat    = new \stdClass();
-		$tracker = Customer_Sync::trackerFetch();
+		$tracker = Customer_Sync::tracker_fetch();
 
 		// Cache total count
 		if ( isset( $tracker['total'] ) && is_int( $tracker['total'] ) ) {
@@ -236,7 +232,7 @@ class Data_Upload
 			);
 
 			$stat->total = $query->get_total();
-			Customer_Sync::trackerSave(null, $stat->total);
+			Customer_Sync::tracker_save( null, $stat->total );
 		}
 
 		$stat->synced = $tracker['offset'];
@@ -256,11 +252,10 @@ class Data_Upload
 
 	}
 
-	public static function apiTest() {
-
-		$apiToken      = \WC_Admin_Settings::get_option( 'custobar_api_setting_token', false );
-		$companyDomain = \WC_Admin_Settings::get_option( 'custobar_api_setting_company', false );
-		$url           = sprintf( 'https://%s.custobar.com/api', $companyDomain ) . '/data/customers/';
+	public static function api_test() {
+		$api_token      = \WC_Admin_Settings::get_option( 'custobar_api_setting_token', false );
+		$company_domain = \WC_Admin_Settings::get_option( 'custobar_api_setting_company', false );
+		$url            = sprintf( 'https://%s.custobar.com/api', $company_domain ) . '/data/customers/';
 
 		$response = wp_remote_request(
 			$url,
@@ -268,7 +263,7 @@ class Data_Upload
 				'method'  => 'GET',
 				'headers' => array(
 					'Content-Type'  => 'application/json',
-					'Authorization' => 'Token ' . $apiToken,
+					'Authorization' => 'Token ' . $api_token,
 				),
 			)
 		);

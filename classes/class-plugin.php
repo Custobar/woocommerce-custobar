@@ -2,7 +2,7 @@
 
 namespace WooCommerceCustobar;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
 use WooCommerceCustobar\Synchronization\Product_Sync;
 use WooCommerceCustobar\Synchronization\Customer_Sync;
@@ -39,18 +39,18 @@ class Plugin {
 
 		$this->initialized = true;
 
-		if ( self::isWooCommerceActived() && self::hasAllSettingsDefined() ) {
+		if ( self::is_woocommerce_activated() && self::has_all_settings_defined() ) {
 
 			// Data type hooks
-			Product_Sync::addHooks();
-			Customer_Sync::addHooks();
-			Sale_Sync::addHooks();
-			Data_Upload::addHooks();
+			Product_Sync::add_hooks();
+			Customer_Sync::add_hooks();
+			Sale_Sync::add_hooks();
+			Data_Upload::add_hooks();
 
 			// Add other
 
-			// add_action('woocommerce_after_checkout_registration_form', [__CLASS__, 'askPermissionForMarketing']);
-			// add_action('woocommerce_checkout_update_order_meta', [__CLASS__, 'savePermissionForMarketing']);
+			// add_action('woocommerce_after_checkout_registration_form', [__CLASS__, 'ask_permission_for_marketing']);
+			// add_action('woocommerce_checkout_update_order_meta', [__CLASS__, 'save_permission_for_marketing']);
 		}
 
 	}
@@ -59,7 +59,7 @@ class Plugin {
 	 * Adds a checkbox field to the checkout asking for permissions for
 	 * marketing.
 	 */
-	public static function askPermissionForMarketing( $checkout ) {
+	public static function ask_permission_for_marketing( $checkout ) {
 		woocommerce_form_field(
 			'marketing_permission',
 			array(
@@ -74,7 +74,7 @@ class Plugin {
 		);
 	}
 
-	public static function savePermissionForMarketing( $order_id ) {
+	public static function save_permission_for_marketing( $order_id ) {
 		if ( isset( $_POST['marketing_permission'] ) && $_POST['marketing_permission'] ) {
 			update_post_meta( $order_id, '_woocommerce_custobar_can_email', esc_attr( $_POST['marketing_permission'] ) );
 			update_post_meta( $order_id, '_woocommerce_custobar_can_sms', esc_attr( $_POST['marketing_permission'] ) );
@@ -86,7 +86,7 @@ class Plugin {
 	 *
 	 * @return boolean
 	 */
-	public static function isWooCommerceActived() {
+	public static function is_woocommerce_activated() {
 		if ( in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
 			return true;
 		}
@@ -98,8 +98,8 @@ class Plugin {
 	 *
 	 * @return boolean
 	 */
-	public static function hasAllSettingsDefined() {
-		// removed all checks here temporarily - add check for API connection
+	public static function has_all_settings_defined() {
+		 // removed all checks here temporarily - add check for API connection
 		return true;
 	}
 
@@ -108,12 +108,11 @@ class Plugin {
 	 *
 	 * @return void
 	 */
-	protected static function runBatchUploadForAllDataTypes() {
-
-		if ( self::isWooCommerceActived() && self::hasAllSettingsDefined() ) {
-			Customer_Sync::batchUpdate();
-			Product_Sync::batchUpdate();
-			Sale_Sync::batchUpdate();
+	protected static function run_batch_upload_for_all_data_types() {
+		if ( self::is_woocommerce_activated() && self::has_all_settings_defined() ) {
+			Customer_Sync::batch_update();
+			Product_Sync::batch_update();
+			Sale_Sync::batch_update();
 		}
 	}
 
@@ -125,10 +124,10 @@ class Plugin {
 	public static function activate() {
 
 		// setup default field maps
-		$fieldMaps = \WooCommerceCustobar\Fields_Map::getFieldsMapForFront();
-		update_option( 'custobar_product_fields', $fieldMaps['custobar_product_fields'] );
-		update_option( 'custobar_customer_fields', $fieldMaps['custobar_customer_fields'] );
-		update_option( 'custobar_sale_fields', $fieldMaps['custobar_sale_fields'] );
+		$field_maps = \WooCommerceCustobar\Fields_Map::get_fields_map_for_front();
+		update_option( 'custobar_product_fields', $field_maps['custobar_product_fields'] );
+		update_option( 'custobar_customer_fields', $field_maps['custobar_customer_fields'] );
+		update_option( 'custobar_sale_fields', $field_maps['custobar_sale_fields'] );
 
 	}
 

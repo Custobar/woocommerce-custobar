@@ -4,10 +4,10 @@ namespace WooCommerceCustobar\DataSource;
 
 use WooCommerceCustobar\DataType\Utilities;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
-class Customer extends Abstract_Data_Source
-{
+class Customer extends Abstract_Data_Source {
+
 
 	const ID             = 'id';
 	const FIRST_NAME     = 'first_name';
@@ -38,47 +38,47 @@ class Customer extends Abstract_Data_Source
 		$this->customer = $customer;
 	}
 
-	public function getId() {
+	public function get_id() {
 		return (string) $this->customer->get_id();
 	}
 
-	public function getFirstName() {
+	public function get_first_name() {
 		return $this->customer->get_first_name();
 	}
 
-	public function getLastName() {
+	public function get_last_name() {
 		return $this->customer->get_last_name();
 	}
 
-	public function getEmail() {
+	public function get_email() {
 		return $this->customer->get_email();
 	}
 
-	public function getPhone() {
+	public function get_phone() {
 		return $this->customer->get_billing_phone();
 	}
 
-	public function getCompany() {
-		return $this->customer->get_billing_company();
+	public function get_company() {
+		 return $this->customer->get_billing_company();
 	}
 
-	public function getCity() {
+	public function get_city() {
 		return $this->customer->get_billing_city();
 	}
 
-	public function getPostcode() {
+	public function get_postcode() {
 		return $this->customer->get_billing_postcode();
 	}
 
-	public function getState() {
+	public function get_state() {
 		return $this->customer->get_billing_state();
 	}
 
-	public function getCountry() {
-		return $this->customer->get_billing_country();
+	public function get_country() {
+		 return $this->customer->get_billing_country();
 	}
 
-	public function getCanEmail() {
+	public function get_can_email() {
 		$can_email = get_post_meta( $this->customer->get_id(), '_woocommerce_custobar_can_email', true );
 		if ( $can_email ) {
 			return true;
@@ -89,8 +89,8 @@ class Customer extends Abstract_Data_Source
 		return null;
 	}
 
-	public function getCanSms() {
-		$can_sms = get_post_meta( $this->customer->get_id(), '_woocommerce_custobar_can_sms', true );
+	public function get_can_sms() {
+		 $can_sms = get_post_meta( $this->customer->get_id(), '_woocommerce_custobar_can_sms', true );
 		if ( $can_sms ) {
 			return true;
 		}
@@ -100,7 +100,7 @@ class Customer extends Abstract_Data_Source
 		return null;
 	}
 
-	public function getStreetAddress() {
+	public function get_street_address() {
 		$address = $this->customer->get_billing_address_1();
 		if ( $billing_address_2 = $this->customer->get_billing_address_2() ) {
 			$address .= '\n' . $billing_address_2;
@@ -108,10 +108,10 @@ class Customer extends Abstract_Data_Source
 		return $address;
 	}
 
-	public function getDateJoined() {
+	public function get_date_joined() {
 		if ( isset( $this->created_at ) ) {
 			$created_at = new \DateTime( $this->created_at );
-			return Utilities::formatDateTime( $created_at );
+			return Utilities::format_datetime( $created_at );
 		} else {
 			return null;
 		}

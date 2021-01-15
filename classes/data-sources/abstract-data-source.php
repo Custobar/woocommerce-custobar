@@ -2,10 +2,9 @@
 
 namespace WooCommerceCustobar\DataSource;
 
-defined( 'ABSPATH' ) or exit;
+defined( 'ABSPATH' ) || exit;
 
-abstract class Abstract_Data_Source
-{
+abstract class Abstract_Data_Source {
 
 	protected $defaultKeys = array();
 
@@ -14,19 +13,19 @@ abstract class Abstract_Data_Source
 	public static $sourceKey = 'common';
 
 	public function __construct() {
-		$this->defaultKeys = static::getDefaultKeys();
+		$this->defaultKeys = static::get_default_keys();
 	}
 
-	protected static function getDefaultKeys() {
+	protected static function get_default_keys() {
 		$reflection = new \ReflectionClass( get_called_class() );
 		return array_values( $reflection->getConstants() );
 	}
 
-	public function getFields() {
+	public function get_fields() {
 		$fields = array_reduce(
 			$this->defaultKeys,
 			function( $carry, $key ) {
-				$method = static::getMethodByKey( $key );
+				$method = static::get_method_by_key( $key );
 
 				if ( ! method_exists( $this, $method ) ) {
 					return $carry;
@@ -62,7 +61,7 @@ abstract class Abstract_Data_Source
 		return $fields;
 	}
 
-	protected static function getMethodByKey( $key ) {
+	protected static function get_method_by_key( $key ) {
 		$key = str_replace( '_', ' ', $key );
 		$key = ucwords( $key );
 		$key = str_replace( ' ', '', $key );
