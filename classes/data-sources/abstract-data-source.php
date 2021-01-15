@@ -6,14 +6,14 @@ defined( 'ABSPATH' ) || exit;
 
 abstract class Abstract_Data_Source {
 
-	protected $defaultKeys = array();
+	protected $default_keys = array();
 
 	protected $fields = array();
 
-	public static $sourceKey = 'common';
+	public static $source_key = 'common';
 
 	public function __construct() {
-		$this->defaultKeys = static::get_default_keys();
+		$this->default_keys = static::get_default_keys();
 	}
 
 	protected static function get_default_keys() {
@@ -23,7 +23,7 @@ abstract class Abstract_Data_Source {
 
 	public function get_fields() {
 		$fields = array_reduce(
-			$this->defaultKeys,
+			$this->default_keys,
 			function( $carry, $key ) {
 				$method = static::get_method_by_key( $key );
 
@@ -42,7 +42,7 @@ abstract class Abstract_Data_Source {
 		 * @param array $fields
 		 * array(key => callback)
 		 * key = predefined field key or user/dev defined key
-		 * static::$sourceKey = product | sale | customer
+		 * static::$source_key = product | sale | customer
 		 *
 		 * To customize the product fields
 		 * add_filter('woocommerce_custobar_get_product_fields', function($fields, $CustobarProductInstance) {
@@ -56,7 +56,7 @@ abstract class Abstract_Data_Source {
 		 *      return $fields;
 		 * }, 10, 2);
 		 */
-		$fields = apply_filters( 'woocommerce_custobar_get_' . static::$sourceKey . '_fields', $fields, $this );
+		$fields = apply_filters( 'woocommerce_custobar_get_' . static::$source_key . '_fields', $fields, $this );
 
 		return $fields;
 	}

@@ -18,7 +18,7 @@ class Data_Upload {
 
 	public static function upload_custobar_data( $endpoint, $data ) {
 
-		$responseData = new \stdClass();
+		$response_data = new \stdClass();
 
 		$body           = json_encode( $data );
 		$api_token      = \WC_Admin_Settings::get_option( 'custobar_api_setting_token', false );
@@ -41,8 +41,8 @@ class Data_Upload {
 		$response_body = wp_remote_retrieve_body( $response );
 
 		// form response data
-		$responseData->code = $response_code;
-		$responseData->body = $response_body;
+		$response_data->code = $response_code;
+		$response_data->body = $response_body;
 
 		// do wc logging
 		if ( ! in_array( $response_code, array( 200, 201 ) ) || is_wp_error( $response_body ) ) {
@@ -56,7 +56,7 @@ class Data_Upload {
 		}
 
 		// return response
-		return $responseData;
+		return $response_data;
 
 	}
 
@@ -70,7 +70,11 @@ class Data_Upload {
 		$plugin = new Plugin();
 		if ( $plugin::is_woocommerce_activated() && $plugin::has_all_settings_defined() ) {
 
-			$record_type  = sanitize_text_field( $_POST['recordType'] );
+			if ( ! isset( $_POST['recordType'] ) ) {
+				wp_die( 'No recordType specified.' );
+			}
+
+			$record_type  = sanitize_text_field( wp_unslash( $_POST['recordType'] ) );
 			$reset_offset = ! empty( $_POST['reset'] );
 
 			switch ( $record_type ) {
@@ -164,7 +168,7 @@ class Data_Upload {
 		}
 
 		if ( is_int( $tracker['updated'] ) && $tracker['updated'] ) {
-			$stat->last_updated = date( wc_date_format(), $tracker['updated'] ) . ' ' . date( wc_time_format(), $tracker['updated'] );
+			$stat->last_updated = gmdate( wc_date_format(), $tracker['updated'] ) . ' ' . gmdate( wc_time_format(), $tracker['updated'] );
 		} else {
 			$stat->last_updated = '';
 		}
@@ -207,7 +211,7 @@ class Data_Upload {
 		}
 
 		if ( is_int( $tracker['updated'] ) && $tracker['updated'] ) {
-			$stat->last_updated = date( wc_date_format(), $tracker['updated'] ) . ' ' . date( wc_time_format(), $tracker['updated'] );
+			$stat->last_updated = gmdate( wc_date_format(), $tracker['updated'] ) . ' ' . gmdate( wc_time_format(), $tracker['updated'] );
 		} else {
 			$stat->last_updated = '';
 		}
@@ -243,7 +247,7 @@ class Data_Upload {
 		}
 
 		if ( is_int( $tracker['updated'] ) && $tracker['updated'] ) {
-			$stat->last_updated = date( wc_date_format(), $tracker['updated'] ) . ' ' . date( wc_time_format(), $tracker['updated'] );
+			$stat->last_updated = gmdate( wc_date_format(), $tracker['updated'] ) . ' ' . gmdate( wc_time_format(), $tracker['updated'] );
 		} else {
 			$stat->last_updated = '';
 		}
@@ -271,7 +275,7 @@ class Data_Upload {
 		$response_code = wp_remote_retrieve_response_code( $response );
 		$response_body = wp_remote_retrieve_body( $response );
 
-		if ( $response_code == 200 ) {
+		if ( 200 === $response_code ) {
 			$message = 'Successful test, your site is connected to Custobar.';
 		} else {
 			$message = 'Sorry the test failed, please check your API token and domain and try again. If the problems persists please contact Custobar support.';

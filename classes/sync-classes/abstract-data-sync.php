@@ -23,37 +23,37 @@ abstract class Data_Sync {
 
 		$endpoint = static::$endpoint;
 
-		$cds           = new \WooCommerceCustobar\DataSource\Custobar_Data_Source();
-		$integrationId = $cds->get_integration_id();
-		if ( ! $integrationId ) {
-			$integrationId = $cds->create_integration();
+		$cds            = new \WooCommerceCustobar\DataSource\Custobar_Data_Source();
+		$integration_id = $cds->get_integration_id();
+		if ( ! $integration_id ) {
+			$integration_id = $cds->create_integration();
 		}
 
-		if ( $integrationId ) {
+		if ( $integration_id ) {
 
 			switch ( $endpoint ) {
 				case '/customers/upload/':
-					$dataSourceId = $cds->get_customer_data_source_id();
-					if ( ! $dataSourceId ) {
-						$dataSourceId = $cds->create_data_source( 'WooCommerce customers', 'customers' );
+					$data_source_id = $cds->get_customer_data_source_id();
+					if ( ! $data_source_id ) {
+						$data_source_id = $cds->create_data_source( 'WooCommerce customers', 'customers' );
 					}
 					break;
 				case '/products/upload/':
-					$dataSourceId = $cds->get_product_data_source_id();
-					if ( ! $dataSourceId ) {
-						$dataSourceId = $cds->create_data_source( 'WooCommerce products', 'products' );
+					$data_source_id = $cds->get_product_data_source_id();
+					if ( ! $data_source_id ) {
+						$data_source_id = $cds->create_data_source( 'WooCommerce products', 'products' );
 					}
 					break;
 				case '/sales/upload/':
-					$dataSourceId = $cds->get_sale_data_source_id();
-					if ( ! $dataSourceId ) {
-						$dataSourceId = $cds->create_data_source( 'WooCommerce sales', 'sales' );
+					$data_source_id = $cds->get_sale_data_source_id();
+					if ( ! $data_source_id ) {
+						$data_source_id = $cds->create_data_source( 'WooCommerce sales', 'sales' );
 					}
 					break;
 			}
 
-			if ( $dataSourceId ) {
-				$endpoint = '/datasources/' . $dataSourceId . '/import/';
+			if ( $data_source_id ) {
+				$endpoint = '/datasources/' . $data_source_id . '/import/';
 			}
 		}
 

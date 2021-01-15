@@ -24,7 +24,7 @@ class Product extends Abstract_Data_Source {
 	const URL          = 'url';
 	const VISIBLE      = 'visible';
 
-	public static $sourceKey = 'product';
+	public static $source_key = 'product';
 
 	public function __construct( \WC_Product $product ) {
 		parent::__construct();
@@ -50,7 +50,8 @@ class Product extends Abstract_Data_Source {
 
 	public function get_image() {
 		$image_id = $this->product->get_image_id();
-		return ( $image = wp_get_attachment_image_url( $image_id, 'woocommerce_single' ) ) ? $image : null;
+		$image    = wp_get_attachment_image_url( $image_id, 'woocommerce_single' );
+		return $image ?: null;
 	}
 
 	public function get_type() {
@@ -91,8 +92,8 @@ class Product extends Abstract_Data_Source {
 		return $this->product->get_weight() ?: null;
 	}
 
-	public function get_categories( $productId ) {
-		$terms = get_the_terms( $productId, 'product_cat' );
+	public function get_categories( $product_id ) {
+		$terms = get_the_terms( $product_id, 'product_cat' );
 
 		if ( is_wp_error( $terms ) || empty( $terms ) ) {
 			return null;

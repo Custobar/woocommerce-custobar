@@ -43,10 +43,6 @@ class WC_Settings_Custobar extends WC_Settings_Page {
 
 	}
 
-	public function add_settings_page( $pages ) {
-		return parent::add_settings_page( $pages );
-	}
-
 	public function get_sections() {
 
 		return array(
@@ -170,19 +166,19 @@ class WC_Settings_Custobar extends WC_Settings_Page {
 
 			$hide_save_button = true;
 
-			$dataUpload = new Data_Upload();
-			$template   = new Template();
+			$data_upload = new Data_Upload();
+			$template    = new Template();
 
-			$productStat  = $dataUpload->fetch_sync_stat_products();
-			$saleStat     = $dataUpload->fetch_sync_stat_sales();
-			$customerStat = $dataUpload->fetch_sync_stat_customers();
+			$product_stat  = $data_upload->fetch_sync_stat_products();
+			$sale_stat     = $data_upload->fetch_sync_stat_sales();
+			$customer_stat = $data_upload->fetch_sync_stat_customers();
 
 			$template       = new Template();
 			$template->name = 'sync-report';
 			$template->data = array(
-				'productStat'  => $productStat,
-				'saleStat'     => $saleStat,
-				'customerStat' => $customerStat,
+				'product_stat'  => $product_stat,
+				'sale_stat'     => $sale_stat,
+				'customer_stat' => $customer_stat,
 			);
 			print $template->get();
 
@@ -206,7 +202,8 @@ class WC_Settings_Custobar extends WC_Settings_Page {
 
 	}
 
-	protected function output_action_buttons() {        ?>
+	protected function output_action_buttons() {
+		?>
 	<div id="fields-action">
 		<button type="button" class="button button-lock" data-tip="<?php esc_attr_e( 'Click here to edit fields map', 'woocommerce-custobar' ); ?>"><span class="dashicons dashicons-lock"></span></button>
 		<button type="button" class="button button-restore" data-tip="<?php esc_attr_e( 'Restore to default fields map', 'woocommerce-custobar' ); ?>"><span class="dashicons dashicons-undo"></span></button>
@@ -228,7 +225,7 @@ class WC_Settings_Custobar extends WC_Settings_Page {
 			'custobar-admin-js',
 			'Custobar',
 			array(
-				'fieldsMap' => Fields_Map::get_fields_map_for_front(),
+				'fields_map' => Fields_Map::get_fields_map_for_front(),
 			)
 		);
 

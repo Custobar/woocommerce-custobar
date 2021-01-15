@@ -25,7 +25,7 @@ class Sale extends Abstract_Data_Source {
 	const PAYMENT_METHOD_TITLE = 'payment_method_title';
 	const STATUS               = 'status';
 
-	public static $sourceKey = 'sale';
+	public static $source_key = 'sale';
 
 	public function __construct( $order, $order_item ) {
 		parent::__construct();
@@ -51,11 +51,11 @@ class Sale extends Abstract_Data_Source {
 	}
 
 	public function get_order_total() {
-		 return Utilities::get_price_in_cents( $this->order->get_total() );
+		return Utilities::get_price_in_cents( $this->order->get_total() );
 	}
 
 	public function get_customer_id() {
-		 return ( $this->order->get_user_id() ) ? (string) $this->order->get_user_id() : null;
+		return ( $this->order->get_user_id() ) ? (string) $this->order->get_user_id() : null;
 	}
 
 	public function get_customer_phone() {

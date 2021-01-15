@@ -29,7 +29,7 @@ function plugin() {
  * @return string
  */
 function get_plugin_dir() {
-	 return dirname( __DIR__ );
+	return dirname( __DIR__ );
 }
 
 /**

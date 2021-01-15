@@ -53,7 +53,7 @@ class Product_Sync extends Data_Sync {
 	}
 
 	public static function batch_update() {
-		 $response      = new \stdClass();
+		$response       = new \stdClass();
 		$limit          = 500;
 		$tracker        = self::tracker_fetch();
 		$offset         = $tracker['offset'];
@@ -61,7 +61,7 @@ class Product_Sync extends Data_Sync {
 		$product_list   = array();
 		$variant_list   = array();
 
-		if ( $variant_offset == 0 ) {
+		if ( 0 == $variant_offset ) {
 
 			$products = wc_get_products(
 				array(

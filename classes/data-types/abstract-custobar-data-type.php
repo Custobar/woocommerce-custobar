@@ -14,49 +14,49 @@ defined( 'ABSPATH' ) || exit;
 abstract class Custobar_Data_Type {
 
 
-	protected static $defaultKeys = array();
+	protected static $default_keys = array();
 
 	public function __construct() {
-		static::$defaultKeys = static::get_default_keys();
+		static::$default_keys = static::get_default_keys();
 	}
 
 	public function get_assigned_properties() {
-		 $dataSourceFields = $this->dataSource->get_fields();
-		$fieldsMap         = static::get_fields_map();
-		$properties        = array();
+		$data_source_fields = $this->data_source->get_fields();
+		$fields_map         = static::get_fields_map();
+		$properties         = array();
 
-		foreach ( $fieldsMap as $custobarKey => $sourceKey ) {
-			if ( ! in_array( $custobarKey, static::$defaultKeys, true ) ) {
+		foreach ( $fields_map as $custobar_key => $source_key ) {
+			if ( ! in_array( $custobar_key, static::$default_keys, true ) ) {
 				continue;
 			}
 
-			if ( ! array_key_exists( $sourceKey, $dataSourceFields ) ) {
+			if ( ! array_key_exists( $source_key, $data_source_fields ) ) {
 				continue;
 			}
 
-			$methodOrFn = $dataSourceFields[ $sourceKey ];
+			$method_or_fn = $data_source_fields[ $source_key ];
 
-			if ( ! is_callable( $methodOrFn ) && ! is_string( $methodOrFn ) ) {
+			if ( ! is_callable( $method_or_fn ) && ! is_string( $method_or_fn ) ) {
 				continue;
 			}
 
-			if ( is_string( $methodOrFn ) && method_exists( $this->dataSource, $methodOrFn ) ) {
-				$methodOrFn = array( $this->dataSource, $methodOrFn );
+			if ( is_string( $method_or_fn ) && method_exists( $this->data_source, $method_or_fn ) ) {
+				$method_or_fn = array( $this->data_source, $method_or_fn );
 			}
 
-			$value = call_user_func( $methodOrFn, $this );
+			$value = call_user_func( $method_or_fn, $this );
 
 			if ( is_null( $value ) ) {
 				continue;
 			}
 
-			$properties[ $custobarKey ] = $value;
+			$properties[ $custobar_key ] = $value;
 		}
 
 		return $properties;
 	}
 
-	abstract static function get_fields_map();
+	abstract public static function get_fields_map();
 
 	protected static function get_default_keys() {
 		$reflection = new \ReflectionClass( get_called_class() );

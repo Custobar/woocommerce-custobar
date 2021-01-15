@@ -16,6 +16,8 @@ class Template {
 
 	public function get() {
 		if ( is_array( $this->data ) && ! empty( $this->data ) ) {
+			// extract() is fine with templates
+			// phpcs:ignore WordPress.PHP.DontExtract.extract_extract
 			extract( $this->data );
 		}
 		ob_start();

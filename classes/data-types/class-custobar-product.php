@@ -45,7 +45,7 @@ class Custobar_Product extends Custobar_Data_Type {
 	public function __construct( $product ) {
 		parent::__construct();
 
-		$this->dataSource = new Product( $product );
+		$this->data_source = new Product( $product );
 	}
 
 	public static function get_fields_map() {

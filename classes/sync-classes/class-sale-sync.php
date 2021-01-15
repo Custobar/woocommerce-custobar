@@ -183,8 +183,16 @@ class Sale_Sync extends Data_Sync {
 		update_option( 'custobar_export_sale', $tracker );
 	}
 
+	/**
+	 * Format single item
+	 * Single argument required according to inherited abstract
+	 *
+	 * @param array $args containing order and order_item
+	 * @return array
+	 */
 	protected static function format_single_item( $args ) {
-		extract( $args );  // A hackish way to circumvent the number of parameters defined for inherited abstact method
+		$order         = $args['order'];
+		$order_item    = $args['order_item'];
 		$custobar_sale = new Custobar_Sale( $order, $order_item );
 		$properties    = $custobar_sale->get_assigned_properties();
 

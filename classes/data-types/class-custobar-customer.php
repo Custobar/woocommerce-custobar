@@ -48,7 +48,7 @@ class Custobar_Customer extends Custobar_Data_Type {
 	public function __construct( $order ) {
 		parent::__construct();
 
-		$this->dataSource = new Customer( $order );
+		$this->data_source = new Customer( $order );
 	}
 
 	public static function get_fields_map() {

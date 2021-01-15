@@ -99,7 +99,7 @@ class Plugin {
 	 * @return boolean
 	 */
 	public static function has_all_settings_defined() {
-		 // removed all checks here temporarily - add check for API connection
+		// removed all checks here temporarily - add check for API connection
 		return true;
 	}
 

@@ -24,7 +24,7 @@ class Customer extends Abstract_Data_Source {
 	const CAN_SMS        = 'can_sms';
 	const CAN_EMAIL      = 'can_email';
 
-	public static $sourceKey = 'customer';
+	public static $source_key = 'customer';
 
 	/**
 	 * Maps the customer properties found in the WC_Customer object to match
@@ -59,7 +59,7 @@ class Customer extends Abstract_Data_Source {
 	}
 
 	public function get_company() {
-		 return $this->customer->get_billing_company();
+		return $this->customer->get_billing_company();
 	}
 
 	public function get_city() {
@@ -75,7 +75,7 @@ class Customer extends Abstract_Data_Source {
 	}
 
 	public function get_country() {
-		 return $this->customer->get_billing_country();
+		return $this->customer->get_billing_country();
 	}
 
 	public function get_can_email() {
@@ -90,7 +90,7 @@ class Customer extends Abstract_Data_Source {
 	}
 
 	public function get_can_sms() {
-		 $can_sms = get_post_meta( $this->customer->get_id(), '_woocommerce_custobar_can_sms', true );
+		$can_sms = get_post_meta( $this->customer->get_id(), '_woocommerce_custobar_can_sms', true );
 		if ( $can_sms ) {
 			return true;
 		}
@@ -101,8 +101,9 @@ class Customer extends Abstract_Data_Source {
 	}
 
 	public function get_street_address() {
-		$address = $this->customer->get_billing_address_1();
-		if ( $billing_address_2 = $this->customer->get_billing_address_2() ) {
+		$address           = $this->customer->get_billing_address_1();
+		$billing_address_2 = $this->customer->get_billing_address_2();
+		if ( $billing_address_2 ) {
 			$address .= '\n' . $billing_address_2;
 		}
 		return $address;

@@ -33,8 +33,8 @@
         $submit.on('click', '.button-restore', function(event) {
             event.preventDefault();
 
-            for (var fieldKey in Custobar.fieldsMap) {
-                $('#'+fieldKey).val(Custobar.fieldsMap[fieldKey]);
+            for (var fieldKey in Custobar.fields_map) {
+                $('#'+fieldKey).val(Custobar.fields_map[fieldKey]);
             }
 
             $submit.find('.woocommerce-save-button').click();

@@ -14,11 +14,17 @@
 
     <!-- Exclude paths -->
     <exclude-pattern>includes/libraries/</exclude-pattern>
+    <exclude-pattern>templates/*</exclude-pattern>
     <exclude-pattern>*/node_modules/*</exclude-pattern>
     <exclude-pattern>*/vendor/*</exclude-pattern>
 
     <!-- Coding standard to use -->
-    <rule ref="WordPress" />
+    <rule ref="WordPress">
+      <exclude name="Squiz.Commenting"/>
+      <exclude name="Generic.Commenting"/>
+      <exclude name="WordPress.PHP.StrictInArray.MissingTrueStrict"/>
+      <exclude name="WordPress.PHP.DisallowShortTernary"/>
+    </rule>
 
     <rule ref="WordPress.WP.I18n">
       <properties>

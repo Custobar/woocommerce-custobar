@@ -45,7 +45,7 @@ class Custobar_Sale extends Custobar_Data_Type {
 	public function __construct( $order, $order_item ) {
 		parent::__construct();
 
-		$this->dataSource = new Sale( $order, $order_item );
+		$this->data_source = new Sale( $order, $order_item );
 	}
 
 	public static function get_fields_map() {

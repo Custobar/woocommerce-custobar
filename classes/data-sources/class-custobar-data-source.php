@@ -53,7 +53,7 @@ class Custobar_Data_Source {
 
 		$response = json_decode( $response_body );
 
-		if ( 200 == $response_code ) {
+		if ( 200 === $response_code ) {
 			update_option( self::CUSTOBAR_INTEGRATION_KEY, $response->integration->id );
 			return $response->integration->id;
 		}
@@ -91,7 +91,7 @@ class Custobar_Data_Source {
 		$response_body = wp_remote_retrieve_body( $response );
 
 		$response = json_decode( $response_body );
-		if ( 200 == $response_code ) {
+		if ( 200 === $response_code ) {
 			switch ( $type ) {
 				case 'products':
 					update_option( self::CUSTOBAR_PRODUCTS_DATA_SOURCE_KEY, $response->datasource->id );
