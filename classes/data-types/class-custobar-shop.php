@@ -5,11 +5,12 @@ namespace WooCommerceCustobar\DataType;
 defined( 'ABSPATH' ) or exit;
 
 /**
- * Class CustobarShop
+ * Class Custobar_Shop
  *
  * @package WooCommerceCustobar\DataType
  */
-class CustobarShop extends AbstractCustobarDataType {
+class Custobar_Shop extends Custobar_Data_Type
+{
 
 	const EXTERNAL_ID  = 'external_id';
 	const NAME         = 'name';

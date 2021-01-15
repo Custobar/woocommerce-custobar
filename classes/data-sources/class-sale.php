@@ -6,7 +6,8 @@ use WooCommerceCustobar\DataType\Utilities;
 
 defined( 'ABSPATH' ) or exit;
 
-class Sale extends AbstractDataSource {
+class Sale extends Abstract_Data_Source
+{
 
 	const ORDER_ID             = 'order_id';
 	const ORDER_NUMBER         = 'order_number';

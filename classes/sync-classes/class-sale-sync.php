@@ -4,15 +4,16 @@ namespace WooCommerceCustobar\Synchronization;
 
 defined( 'ABSPATH' ) or exit;
 
-use WooCommerceCustobar\DataType\CustobarSale;
+use WooCommerceCustobar\DataType\Custobar_Sale;
 use WooCommerceCustobar\DataType\Utilities;
 
 /**
- * Class SaleSync
+ * Class Sale_Sync
  *
  * @package WooCommerceCustobar\Synchronization
  */
-class SaleSync extends AbstractDataSync {
+class Sale_Sync extends Data_Sync
+{
 
 	protected static $endpoint = '/sales/upload/';
 
@@ -185,7 +186,7 @@ class SaleSync extends AbstractDataSync {
 
 	protected static function formatSingleItem( $args ) {
 		extract( $args );  // A hackish way to circumvent the number of parameters defined for inherited abstact method
-		$custobar_sale = new CustobarSale( $order, $order_item );
+		$custobar_sale = new Custobar_Sale($order, $order_item);
 		$properties    = $custobar_sale->getAssignedProperties();
 		return apply_filters( 'woocommerce_custobar_sale_properties', $properties, $order, $order_item );
 	}

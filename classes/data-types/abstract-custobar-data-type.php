@@ -5,13 +5,14 @@ namespace WooCommerceCustobar\DataType;
 defined( 'ABSPATH' ) or exit;
 
 /**
- * Class AbstractCustobarDataType
+ * Class Custobar_Data_Type
  *
  * Base class for all custobar datatypes.
  *
  * @package WooCommerceCustobar\DataType
  */
-abstract class AbstractCustobarDataType {
+abstract class Custobar_Data_Type
+{
 
 	protected static $defaultKeys = array();
 

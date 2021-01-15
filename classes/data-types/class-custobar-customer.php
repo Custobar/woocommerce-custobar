@@ -2,19 +2,20 @@
 
 namespace WooCommerceCustobar\DataType;
 
-use WooCommerceCustobar\FieldsMap;
+use WooCommerceCustobar\Fields_Map;
 use WooCommerceCustobar\DataSource\Customer;
 
 defined( 'ABSPATH' ) or exit;
 
 /**
- * Class CustobarCustomer
+ * Class Custobar_Customer
  *
  * Check field descriptions here: https://www.custobar.com/api/docs/customers/
  *
  * @package WooCommerceCustobar\DataType
  */
-class CustobarCustomer extends AbstractCustobarDataType {
+class Custobar_Customer extends Custobar_Data_Type
+{
 
 	const EXTERNAL_ID    = 'external_id';
 	const EMAIL          = 'email';
@@ -51,6 +52,6 @@ class CustobarCustomer extends AbstractCustobarDataType {
 	}
 
 	public static function getFieldsMap() {
-		return FieldsMap::getCustomerFields();
+		return Fields_Map::getCustomerFields();
 	}
 }

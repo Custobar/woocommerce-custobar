@@ -4,7 +4,8 @@ namespace WooCommerceCustobar\DataSource;
 
 defined( 'ABSPATH' ) or exit;
 
-class CustobarDataSource {
+class Custobar_Data_Source
+{
 
 	const CUSTOBAR_INTEGRATION_KEY           = 'custobar_integration';
 	const CUSTOBAR_SALES_DATA_SOURCE_KEY     = 'custobar_data_source_sale';

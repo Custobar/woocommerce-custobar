@@ -5,11 +5,12 @@ namespace WooCommerceCustobar\DataType;
 defined( 'ABSPATH' ) or exit;
 
 /**
- * Class CustobarEvent
+ * Class Custobar_Event
  *
  * @package WooCommerceCustobar\DataType
  */
-class CustobarEvent extends AbstractCustobarDataType {
+class Custobar_Event extends Custobar_Data_Type
+{
 
 
 	const TYPE          = 'type';

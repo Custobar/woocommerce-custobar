@@ -170,7 +170,7 @@ class WC_Settings_Custobar extends WC_Settings_Page {
 
 			$hide_save_button = true;
 
-			$dataUpload = new DataUpload();
+			$dataUpload = new Data_Upload();
 			$template   = new Template();
 
 			$productStat  = $dataUpload->fetchSyncStatProducts();
@@ -229,7 +229,7 @@ class WC_Settings_Custobar extends WC_Settings_Page {
 			'custobar-admin-js',
 			'Custobar',
 			array(
-				'fieldsMap' => FieldsMap::getFieldsMapForFront(),
+				'fieldsMap' => Fields_Map::getFieldsMapForFront(),
 			)
 		);
 

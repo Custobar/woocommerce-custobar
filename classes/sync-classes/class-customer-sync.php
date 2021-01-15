@@ -4,14 +4,15 @@ namespace WooCommerceCustobar\Synchronization;
 
 defined( 'ABSPATH' ) or exit;
 
-use WooCommerceCustobar\DataType\CustobarCustomer;
+use WooCommerceCustobar\DataType\Custobar_Customer;
 
 /**
- * Class CustomerSync
+ * Class Customer_Sync
  *
  * @package WooCommerceCustobar\Synchronization
  */
-class CustomerSync extends AbstractDataSync {
+class Customer_Sync extends Data_Sync
+{
 
 	protected static $endpoint = '/customers/upload/';
 
@@ -29,7 +30,7 @@ class CustomerSync extends AbstractDataSync {
 
 	public static function schedule_single_update($user_id) {
 		wc_get_logger()->info(
-			'CustomerSync schedule_single_update called with $user_id: '.$user_id,
+			'Customer_Sync schedule_single_update called with $user_id: ' . $user_id,
 			array(
 				'source' => 'custobar',
 			)
@@ -48,7 +49,7 @@ class CustomerSync extends AbstractDataSync {
 	public static function singleUpdate( $user_id ) {
 
 		wc_get_logger()->info(
-			'CustomerSync single update called with $user_id: ' . $user_id,
+			'Customer_Sync single update called with $user_id: ' . $user_id,
 			array(
 				'source' => 'custobar',
 			)
@@ -162,7 +163,7 @@ class CustomerSync extends AbstractDataSync {
 	}
 
 	protected static function formatSingleItem( $user ) {
-		$custobar_customer = new CustobarCustomer( $user );
+		$custobar_customer = new Custobar_Customer($user);
 		$properties        = $custobar_customer->getAssignedProperties();
 		return apply_filters( 'woocommerce_custobar_customer_properties', $properties, $user );
 	}

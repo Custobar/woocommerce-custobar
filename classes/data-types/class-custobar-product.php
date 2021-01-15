@@ -2,19 +2,20 @@
 
 namespace WooCommerceCustobar\DataType;
 
-use WooCommerceCustobar\FieldsMap;
+use WooCommerceCustobar\Fields_Map;
 use WooCommerceCustobar\DataSource\Product;
 
 defined( 'ABSPATH' ) or exit;
 
 /**
- * Class CustobarProduct
+ * Class Custobar_Product
  *
  * Check field descriptions here: https://www.custobar.com/api/docs/products/
  *
  * @package WooCommerceCustobar\DataType
  */
-class CustobarProduct extends AbstractCustobarDataType {
+class Custobar_Product extends Custobar_Data_Type
+{
 
 	const EXTERNAL_ID                  = 'external_id';
 	const PRICE                        = 'price';
@@ -48,6 +49,6 @@ class CustobarProduct extends AbstractCustobarDataType {
 	}
 
 	public static function getFieldsMap() {
-		return FieldsMap::getProductFields();
+		return Fields_Map::getProductFields();
 	}
 }

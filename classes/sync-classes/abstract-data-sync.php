@@ -4,14 +4,15 @@ namespace WooCommerceCustobar\Synchronization;
 
 defined( 'ABSPATH' ) or exit;
 
-use WooCommerceCustobar\DataUpload;
+use WooCommerceCustobar\Data_Upload;
 
 /**
- * Class AbstractDataSync
+ * Class Data_Sync
  *
  * @package WooCommerceCustobar\Synchronization
  */
-abstract class AbstractDataSync {
+abstract class Data_Sync
+{
 
 	abstract public static function singleUpdate( $item_id);
 	abstract public static function batchUpdate();
@@ -22,7 +23,7 @@ abstract class AbstractDataSync {
 
 		$endpoint = static::$endpoint;
 
-		$cds           = new \WooCommerceCustobar\DataSource\CustobarDataSource();
+		$cds           = new \WooCommerceCustobar\DataSource\Custobar_Data_Source();
 		$integrationId = $cds->getIntegrationId();
 		if ( ! $integrationId ) {
 			$integrationId = $cds->createIntegration();
@@ -56,7 +57,7 @@ abstract class AbstractDataSync {
 			}
 		}
 
-		return DataUpload::uploadCustobarData( $endpoint, $data );
+		return Data_Upload::uploadCustobarData($endpoint, $data);
 
 	}
 }

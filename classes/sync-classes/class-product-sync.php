@@ -4,14 +4,15 @@ namespace WooCommerceCustobar\Synchronization;
 
 defined( 'ABSPATH' ) or exit;
 
-use WooCommerceCustobar\DataType\CustobarProduct;
+use WooCommerceCustobar\DataType\Custobar_Product;
 
 /**
- * Class ProductSync
+ * Class Product_Sync
  *
  * @package WooCommerceCustobar\Synchronization
  */
-class ProductSync extends AbstractDataSync {
+class Product_Sync extends Data_Sync
+{
 
 	protected static $endpoint = '/products/upload/';
 
@@ -26,7 +27,7 @@ class ProductSync extends AbstractDataSync {
 
 	public static function schedule_single_update($product_id) {
 		wc_get_logger()->info(
-			'ProductSync schedule_single_update called with $product_id: '.$product_id,
+			'Product_Sync schedule_single_update called with $product_id: ' . $product_id,
 			array('source' => 'custobar')
 		);
 
@@ -43,7 +44,7 @@ class ProductSync extends AbstractDataSync {
 	public static function singleUpdate( $product_id ) {
 
 		wc_get_logger()->info(
-			'ProductSync single update called with $product_id: '.$product_id,
+			'Product_Sync single update called with $product_id: ' . $product_id,
 			array('source' => 'custobar')
 		);
 
@@ -159,13 +160,13 @@ class ProductSync extends AbstractDataSync {
 	}
 
 	protected static function formatSingleItem( $product ) {
-		$custobar_product = new CustobarProduct( $product );
+		$custobar_product = new Custobar_Product($product);
 		$properties       = $custobar_product->getAssignedProperties();
 		return apply_filters( 'woocommerce_custobar_product_properties', $properties, $product );
 	}
 
 	protected static function formatSingleVariant( $variant ) {
-		$custobar_product               = new CustobarProduct( $variant );
+		$custobar_product               = new Custobar_Product($variant);
 		$properties                     = $custobar_product->getAssignedProperties();
 		$properties['main_product_ids'] = array( $variant->get_parent_id() );
 		return apply_filters( 'woocommerce_custobar_product_properties', $properties, $variant );

@@ -6,7 +6,8 @@ use WooCommerceCustobar\DataType\Utilities;
 
 defined( 'ABSPATH' ) or exit;
 
-class Customer extends AbstractDataSource {
+class Customer extends Abstract_Data_Source
+{
 
 	const ID             = 'id';
 	const FIRST_NAME     = 'first_name';

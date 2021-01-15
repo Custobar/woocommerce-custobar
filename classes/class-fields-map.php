@@ -5,14 +5,14 @@ namespace WooCommerceCustobar;
 use WooCommerceCustobar\DataSource\Sale;
 use WooCommerceCustobar\DataSource\Product;
 use WooCommerceCustobar\DataSource\Customer;
-use WooCommerceCustobar\DataType\CustobarSale as CBSale;
-use WooCommerceCustobar\DataType\CustobarProduct as CBProduct;
-use WooCommerceCustobar\DataType\CustobarCustomer as CBCustomer;
+use WooCommerceCustobar\DataType\Custobar_Sale as CBSale;
+use WooCommerceCustobar\DataType\Custobar_Product as CBProduct;
+use WooCommerceCustobar\DataType\Custobar_Customer as CBCustomer;
 
 defined( 'ABSPATH' ) or exit;
 
-class FieldsMap {
-
+class Fields_Map
+{
 
 	/**
 	 * Get custobar to woocommer fields map

@@ -4,7 +4,8 @@ namespace WooCommerceCustobar\DataSource;
 
 defined( 'ABSPATH' ) or exit;
 
-abstract class AbstractDataSource {
+abstract class Abstract_Data_Source
+{
 
 	protected $defaultKeys = array();
 

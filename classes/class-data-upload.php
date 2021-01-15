@@ -4,16 +4,17 @@ namespace WooCommerceCustobar;
 
 defined( 'ABSPATH' ) or exit;
 
-use WooCommerceCustobar\Synchronization\ProductSync;
-use WooCommerceCustobar\Synchronization\CustomerSync;
-use WooCommerceCustobar\Synchronization\SaleSync;
+use WooCommerceCustobar\Synchronization\Product_Sync;
+use WooCommerceCustobar\Synchronization\Customer_Sync;
+use WooCommerceCustobar\Synchronization\Sale_Sync;
 
 /**
- * Class DataUpload
+ * Class Data_Upload
  *
  * @package WooCommerceCustobar
  */
-class DataUpload {
+class Data_Upload
+{
 
 	public static function uploadCustobarData( $endpoint, $data ) {
 
@@ -77,25 +78,25 @@ class DataUpload {
 				case 'customer':
 					if ( $resetOffset ) {
 						// Pass false as total to trigger total count update
-						CustomerSync::trackerSave( 0, false );
+						Customer_Sync::trackerSave(0, false);
 					}
-					$apiResponse        = CustomerSync::batchUpdate();
+					$apiResponse        = Customer_Sync::batchUpdate();
 					$apiResponse->stats = self::fetchSyncStatCustomers();
 					break;
 				case 'sale':
 					if ( $resetOffset ) {
 						// Pass false as total to trigger total count update
-						SaleSync::trackerSave( 0, false );
+						Sale_Sync::trackerSave(0, false);
 					}
-					$apiResponse        = SaleSync::batchUpdate();
+					$apiResponse        = Sale_Sync::batchUpdate();
 					$apiResponse->stats = self::fetchSyncStatSales();
 					break;
 				case 'product':
 					if ( $resetOffset ) {
 						// Pass false as totals to trigger total count update
-						ProductSync::trackerSave( 0, 0, false, false );
+						Product_Sync::trackerSave(0, 0, false, false);
 					}
-					$apiResponse        = ProductSync::batchUpdate();
+					$apiResponse        = Product_Sync::batchUpdate();
 					$apiResponse->stats = self::fetchSyncStatProducts();
 					break;
 			}
@@ -126,7 +127,7 @@ class DataUpload {
 	public static function fetchSyncStatProducts() {
 
 		$stat    = new \stdClass();
-		$tracker = ProductSync::trackerFetch();
+		$tracker = Product_Sync::trackerFetch();
 
 		// get total product count
 		if ( isset( $tracker['total'], $tracker['variant_total'] ) && is_int( $tracker['total'] ) && is_int( $tracker['variant_total'] ) ) {
@@ -147,7 +148,7 @@ class DataUpload {
 			}
 
 			$stat->variant_total = $variant_count;
-			ProductSync::trackerSave( null, null, $stat->total, $stat->variant_total );
+			Product_Sync::trackerSave(null, null, $stat->total, $stat->variant_total);
 		}
 
 		$stat->synced = $tracker['offset'];
@@ -177,7 +178,7 @@ class DataUpload {
 	public static function fetchSyncStatSales() {
 
 		$stat    = new \stdClass();
-		$tracker = SaleSync::trackerFetch();
+		$tracker = Sale_Sync::trackerFetch();
 
 		// Cache total count
 		if ( isset( $tracker['total'] ) && is_int( $tracker['total'] ) ) {
@@ -197,7 +198,7 @@ class DataUpload {
 			$orders = \wc_get_orders( $args );
 
 			$stat->total = count($orders);
-			SaleSync::trackerSave( null, $stat->total );
+			Sale_Sync::trackerSave(null, $stat->total);
 		}
 
 		$stat->synced = $tracker['offset'];
@@ -221,7 +222,7 @@ class DataUpload {
 	public static function fetchSyncStatCustomers() {
 
 		$stat    = new \stdClass();
-		$tracker = CustomerSync::trackerFetch();
+		$tracker = Customer_Sync::trackerFetch();
 
 		// Cache total count
 		if ( isset( $tracker['total'] ) && is_int( $tracker['total'] ) ) {
@@ -229,13 +230,13 @@ class DataUpload {
 		} else {
 			$query = new \WP_User_Query(
 				array(
-					'role__in' => CustomerSync::get_allowed_roles(),
+					'role__in' => Customer_Sync::get_allowed_roles(),
 					'fields'   => 'ID',
 				)
 			);
 
 			$stat->total = $query->get_total();
-			CustomerSync::trackerSave( null, $stat->total );
+			Customer_Sync::trackerSave(null, $stat->total);
 		}
 
 		$stat->synced = $tracker['offset'];

@@ -4,9 +4,9 @@ namespace WooCommerceCustobar;
 
 defined( 'ABSPATH' ) or exit;
 
-use WooCommerceCustobar\Synchronization\ProductSync;
-use WooCommerceCustobar\Synchronization\CustomerSync;
-use WooCommerceCustobar\Synchronization\SaleSync;
+use WooCommerceCustobar\Synchronization\Product_Sync;
+use WooCommerceCustobar\Synchronization\Customer_Sync;
+use WooCommerceCustobar\Synchronization\Sale_Sync;
 
 /**
  * Class Plugin
@@ -42,10 +42,10 @@ class Plugin {
 		if ( self::isWooCommerceActived() && self::hasAllSettingsDefined() ) {
 
 			// Data type hooks
-			ProductSync::addHooks();
-			CustomerSync::addHooks();
-			SaleSync::addHooks();
-			DataUpload::addHooks();
+			Product_Sync::addHooks();
+			Customer_Sync::addHooks();
+			Sale_Sync::addHooks();
+			Data_Upload::addHooks();
 
 			// Add other
 
@@ -111,9 +111,9 @@ class Plugin {
 	protected static function runBatchUploadForAllDataTypes() {
 
 		if ( self::isWooCommerceActived() && self::hasAllSettingsDefined() ) {
-			CustomerSync::batchUpdate();
-			ProductSync::batchUpdate();
-			SaleSync::batchUpdate();
+			Customer_Sync::batchUpdate();
+			Product_Sync::batchUpdate();
+			Sale_Sync::batchUpdate();
 		}
 	}
 
@@ -125,7 +125,7 @@ class Plugin {
 	public static function activate() {
 
 		// setup default field maps
-		$fieldMaps = \WooCommerceCustobar\FieldsMap::getFieldsMapForFront();
+		$fieldMaps = \WooCommerceCustobar\Fields_Map::getFieldsMapForFront();
 		update_option( 'custobar_product_fields', $fieldMaps['custobar_product_fields'] );
 		update_option( 'custobar_customer_fields', $fieldMaps['custobar_customer_fields'] );
 		update_option( 'custobar_sale_fields', $fieldMaps['custobar_sale_fields'] );
