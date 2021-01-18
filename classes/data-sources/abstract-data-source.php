@@ -25,7 +25,7 @@ abstract class Abstract_Data_Source {
 		$fields = array_reduce(
 			$this->default_keys,
 			function( $carry, $key ) {
-				$method = static::get_method_by_key( $key );
+				$method = "get_{$key}";
 
 				if ( ! method_exists( $this, $method ) ) {
 					return $carry;
@@ -59,12 +59,5 @@ abstract class Abstract_Data_Source {
 		$fields = apply_filters( 'woocommerce_custobar_get_' . static::$source_key . '_fields', $fields, $this );
 
 		return $fields;
-	}
-
-	protected static function get_method_by_key( $key ) {
-		$key = str_replace( '_', ' ', $key );
-		$key = ucwords( $key );
-		$key = str_replace( ' ', '', $key );
-		return "get{$key}";
 	}
 }
