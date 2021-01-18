@@ -22,7 +22,7 @@ class Product_Sync extends Data_Sync {
 		add_action( 'woocommerce_update_product', array( __CLASS__, 'schedule_single_update' ), 10, 1 );
 
 		// Hook into scheduled actions
-		add_action( 'woocommerce_custobar_productsync_single_update', array( __CLASS__, 'single_update' ), 10, 1 );
+		add_action( 'woocommerce_custobar_product_sync', array( __CLASS__, 'single_update' ), 10, 1 );
 	}
 
 	public static function schedule_single_update( $product_id ) {
@@ -31,7 +31,7 @@ class Product_Sync extends Data_Sync {
 			array( 'source' => 'custobar' )
 		);
 
-		$hook  = 'woocommerce_custobar_productsync_single_update';
+		$hook  = 'woocommerce_custobar_product_sync';
 		$args  = array( 'product_id' => $product_id );
 		$group = 'custobar';
 

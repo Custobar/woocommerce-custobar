@@ -25,7 +25,7 @@ class Sale_Sync extends Data_Sync {
 		add_action( 'woocommerce_subscription_renewal_payment_complete', array( __CLASS__, 'schedule_subscription_renewal_payment_complete' ), 10, 2 );
 
 		// Hook into scheduled actions
-		add_action( 'woocommerce_custobar_salesync_single_update', array( __CLASS__, 'single_update' ), 10, 1 );
+		add_action( 'woocommerce_custobar_sale_sync', array( __CLASS__, 'single_update' ), 10, 1 );
 
 		add_filter( 'woocommerce_custobar_sale_properties', array( __CLASS__, 'add_subscription_fields' ), 10, 3 );
 	}
@@ -36,7 +36,7 @@ class Sale_Sync extends Data_Sync {
 			array( 'source' => 'custobar' )
 		);
 
-		$hook  = 'woocommerce_custobar_salesync_single_update';
+		$hook  = 'woocommerce_custobar_sale_sync';
 		$args  = array( 'order_id' => $order_id );
 		$group = 'custobar';
 
@@ -52,7 +52,7 @@ class Sale_Sync extends Data_Sync {
 			array( 'source' => 'custobar' )
 		);
 
-		$hook  = 'woocommerce_custobar_salesync_single_update';
+		$hook  = 'woocommerce_custobar_sale_sync';
 		$args  = array( 'order_id' => $order->get_id() );
 		$group = 'custobar';
 
@@ -68,7 +68,7 @@ class Sale_Sync extends Data_Sync {
 			array( 'source' => 'custobar' )
 		);
 
-		$hook  = 'woocommerce_custobar_salesync_single_update';
+		$hook  = 'woocommerce_custobar_sale_sync';
 		$args  = array( 'order_id' => $subscription->get_parent_id() );
 		$group = 'custobar';
 
@@ -223,16 +223,16 @@ class Sale_Sync extends Data_Sync {
 							$properties[ $prefix . '__subscription_date_created' ] = Utilities::format_datetime( new \DateTime( $subscription->get_date( 'date_created' ) ) );
 						}
 						if ( $subscription->get_date( 'trial_end' ) ) {
-							$properties[ $prefix . '__subscription_trial_end' ] = Utilities::format_datetime( $subscription->get_date( 'trial_end' ) );
+							$properties[ $prefix . '__subscription_trial_end' ] = Utilities::format_datetime( new \DateTime( $subscription->get_date( 'trial_end' ) ) );
 						}
 						if ( $subscription->get_date( 'next_payment' ) ) {
-							$properties[ $prefix . '__subscription_next_payment' ] = Utilities::format_datetime( $subscription->get_date( 'next_payment' ) );
+							$properties[ $prefix . '__subscription_next_payment' ] = Utilities::format_datetime( new \DateTime( $subscription->get_date( 'next_payment' ) ) );
 						}
 						if ( $subscription->get_date( 'last_order_date_paid' ) ) {
 							$properties[ $prefix . '__subscription_last_order_date_paid' ] = Utilities::format_datetime( new \DateTime( $subscription->get_date( 'last_order_date_paid' ) ) );
 						}
 						if ( $subscription->get_date( 'cancelled' ) ) {
-							$properties[ $prefix . '__subscription_cancelled' ] = Utilities::format_datetime( $subscription->get_date( 'cancelled' ) );
+							$properties[ $prefix . '__subscription_cancelled' ] = Utilities::format_datetime( new \DateTime( $subscription->get_date( 'cancelled' ) ) );
 						}
 						if ( $subscription->get_date( 'end' ) ) {
 							$properties[ $prefix . '__subscription_end' ] = Utilities::format_datetime( new \DateTime( $subscription->get_date( 'end' ) ) );

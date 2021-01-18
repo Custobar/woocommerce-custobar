@@ -25,7 +25,7 @@ class Customer_Sync extends Data_Sync {
 		add_action( 'woocommerce_update_customer', array( __CLASS__, 'schedule_single_update' ), 10, 1 );
 
 		// Hook into scheduled actions
-		add_action( 'woocommerce_custobar_customersync_single_update', array( __CLASS__, 'single_update' ), 10, 1 );
+		add_action( 'woocommerce_custobar_customer_sync', array( __CLASS__, 'single_update' ), 10, 1 );
 	}
 
 	public static function schedule_single_update( $user_id ) {
@@ -36,7 +36,7 @@ class Customer_Sync extends Data_Sync {
 			)
 		);
 
-		$hook  = 'woocommerce_custobar_customersync_single_update';
+		$hook  = 'woocommerce_custobar_customer_sync';
 		$args  = array( 'user_id' => $user_id );
 		$group = 'custobar';
 
@@ -131,7 +131,7 @@ class Customer_Sync extends Data_Sync {
 	 */
 	public static function get_allowed_roles() {
 		// Allow 3rd parties filter roles to be synced
-		$roles = apply_filters( 'woocommerce_custobar_customersync_roles', array( 'customer' ) );
+		$roles = apply_filters( 'woocommerce_custobar_customer_sync_roles', array( 'customer' ) );
 		return array_filter( array_unique( $roles ) );
 	}
 
