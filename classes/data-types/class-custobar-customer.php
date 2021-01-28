@@ -40,15 +40,15 @@ class Custobar_Customer extends Custobar_Data_Type {
 	const LAST_LOGIN     = 'last_login';
 
 	/**
-	 * Maps the customer properties found in the WC_Order object to match
+	 * Maps the customer properties found in the WC_Customer object to match
 	 * the ones used in Custobar.
 	 *
-	 * @param \WC_Order $order
+	 * @param \WC_Customer $customer
 	 */
-	public function __construct( $order ) {
+	public function __construct( $customer ) {
 		parent::__construct();
 
-		$this->data_source = new Customer( $order );
+		$this->data_source = new Customer( $customer );
 	}
 
 	public static function get_fields_map() {

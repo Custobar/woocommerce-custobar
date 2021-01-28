@@ -161,10 +161,16 @@ class Customer_Sync extends Data_Sync {
 		update_option( 'custobar_export_customer', $tracker );
 	}
 
-	protected static function format_single_item( $user ) {
-		$custobar_customer = new Custobar_Customer( $user );
+	/**
+	 * Format single item
+	 *
+	 * @param \WC_Customer $customer
+	 * @return array filtered properties
+	 */
+	protected static function format_single_item( $customer ) {
+		$custobar_customer = new Custobar_Customer( $customer );
 		$properties        = $custobar_customer->get_assigned_properties();
-		return apply_filters( 'woocommerce_custobar_customer_properties', $properties, $user );
+		return apply_filters( 'woocommerce_custobar_customer_properties', $properties, $customer );
 	}
 
 	protected static function upload_data_type_data( $data, $single = false ) {
