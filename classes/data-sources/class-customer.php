@@ -30,7 +30,7 @@ class Customer extends Abstract_Data_Source {
 	 * Maps the customer properties found in the WC_Customer object to match
 	 * the ones used in Custobar.
 	 *
-	 * @param \WC_Customer $order
+	 * @param \WC_Customer $customer
 	 */
 	public function __construct( $customer ) {
 		parent::__construct();
@@ -109,12 +109,14 @@ class Customer extends Abstract_Data_Source {
 		return $address;
 	}
 
+	/**
+	 * Get the date user registered
+	 *
+	 * @return \DateTime
+	 */
 	public function get_date_joined() {
-		if ( isset( $this->created_at ) ) {
-			$created_at = new \DateTime( $this->created_at );
-			return Utilities::format_datetime( $created_at );
-		} else {
-			return null;
-		}
+		$date_registered = get_userdata( $this->customer->get_id() )->user_registered;
+		$dt = new \DateTime($date_registered);
+		return Utilities::format_datetime( $dt );
 	}
 }

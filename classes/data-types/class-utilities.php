@@ -33,6 +33,8 @@ class Utilities {
 		if ( ! $datetime || ! is_a( $datetime, 'DateTime' ) ) {
 			return null;
 		}
-		return $datetime->setTimezone( new \DateTimeZone( 'UTC' ) )->format( 'Y-m-d\TH:i:s' );
+
+		// ISO8601 formatted datetime
+		return $datetime->setTimezone( new \DateTimeZone( 'UTC' ) )->format( 'c' );
 	}
 }

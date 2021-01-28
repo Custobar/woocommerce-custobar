@@ -43,7 +43,8 @@ class Sale extends Abstract_Data_Source {
 	}
 
 	public function get_order_date() {
-		return Utilities::format_datetime( $this->order->get_date_created() );
+		$created_at = new \DateTime( $this->order->get_date_created() );
+		return Utilities::format_datetime( $created_at );
 	}
 
 	public function get_total() {
