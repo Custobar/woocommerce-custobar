@@ -16,14 +16,6 @@ use WooCommerceCustobar\Synchronization\Sale_Sync;
 class Plugin {
 
 	/**
-	 * Has this instance been initialized?
-	 *
-	 * @access protected
-	 * @var bool
-	 */
-	protected $initialized = false;
-
-	/**
 	 * Initialize this instance.
 	 *
 	 * Note: the WP `init` hook has presumably not run yet when calling this method,
@@ -31,13 +23,9 @@ class Plugin {
 	 *
 	 * @return void
 	 */
-	public function initialize() {
+	public static function initialize() {
 
-		if ( $this->initialized ) {
-			return;
-		}
-
-		$this->initialized = true;
+		\WooCommerceCustobar\load_localizations();
 
 		if ( self::is_woocommerce_activated() && self::has_all_settings_defined() ) {
 
@@ -47,12 +35,10 @@ class Plugin {
 			Sale_Sync::add_hooks();
 			Data_Upload::add_hooks();
 
-			// Add other
-
+			// Marketing permission
 			// add_action('woocommerce_after_checkout_registration_form', [__CLASS__, 'ask_permission_for_marketing']);
 			// add_action('woocommerce_checkout_update_order_meta', [__CLASS__, 'save_permission_for_marketing']);
 		}
-
 	}
 
 	/**

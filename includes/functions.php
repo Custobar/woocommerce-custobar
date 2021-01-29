@@ -9,21 +9,6 @@ defined( 'ABSPATH' ) || exit;
  */
 
 /**
- * Get plugin main class instance.
- *
- * @return Plugin
- */
-function plugin() {
-	global $plugin;
-
-	if ( ! $plugin instanceof Plugin ) {
-		$plugin = new Plugin();
-	}
-
-	return $plugin;
-}
-
-/**
  * Get the plugin directory.
  *
  * @return string
