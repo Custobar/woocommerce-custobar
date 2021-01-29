@@ -25,8 +25,6 @@ class Plugin {
 	 */
 	public static function initialize() {
 
-		\WooCommerceCustobar\load_localizations();
-
 		if ( self::is_woocommerce_activated() && self::has_all_settings_defined() ) {
 
 			// Data type hooks

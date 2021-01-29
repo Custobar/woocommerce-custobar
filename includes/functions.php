@@ -18,18 +18,8 @@ function get_plugin_dir() {
 }
 
 /**
- * Load the plugin text domain for this plugin.
- *
- * @return void
+ * Load plugin’s translated strings.
  */
-function load_localizations() {
-	add_action(
-		'plugins_loaded',
-		function () {
-			$domain = 'woocommerce-custobar';
-			$locale = apply_filters( 'plugin_locale', is_admin() ? get_user_locale() : get_locale(), $domain );
-			$mofile = $domain . '-' . $locale . '.mo';
-			load_textdomain( $domain, get_plugin_dir() . '/languages/' . $mofile );
-		}
-	);
+function load_textdomain() {
+	load_plugin_textdomain( 'woocommerce-custobar', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
 }

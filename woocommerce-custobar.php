@@ -62,3 +62,7 @@ register_deactivation_hook( __FILE__, array( 'WooCommerceCustobar\Plugin', 'deac
 
 // Initialize plugin after WooCommerce is loaded
 add_action( 'plugins_loaded', array( 'WooCommerceCustobar\Plugin', 'initialize' ) );
+
+// Load translations
+add_action( 'init', 'WooCommerceCustobar\load_textdomain' );
+
