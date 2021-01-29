@@ -20,7 +20,7 @@ class Data_Upload {
 
 		$response_data = new \stdClass();
 
-		$body           = json_encode( $data );
+		$body           = wp_json_encode( $data );
 		$api_token      = \WC_Admin_Settings::get_option( 'custobar_api_setting_token', false );
 		$company_domain = \WC_Admin_Settings::get_option( 'custobar_api_setting_company', false );
 		$url            = sprintf( 'https://%s.custobar.com/api', $company_domain ) . $endpoint;
@@ -110,21 +110,17 @@ class Data_Upload {
 			$response = array(
 				'code' => 420,
 			);
-			print json_encode( $response );
-			wp_die();
+			wp_send_json_success( $response );
 		}
 
 		if ( $api_response ) {
-			print json_encode( $api_response );
+			wp_send_json_success( $api_response );
 		} else {
 			$response = array(
 				'code' => 440,
 			);
-			print json_encode( $response );
+			wp_send_json_success( $response );
 		}
-
-		wp_die();
-
 	}
 
 	public static function fetch_sync_stat_products() {
@@ -196,7 +192,7 @@ class Data_Upload {
 			// Allow 3rd parties to modify args
 			$args = apply_filters( 'woocommerce_custobar_batch_update_orders_args', $args );
 
-			$orders = \wc_get_orders( $args );
+			$orders = wc_get_orders( $args );
 
 			$stat->total = count( $orders );
 			Sale_Sync::tracker_save( null, $stat->total );
@@ -287,10 +283,8 @@ class Data_Upload {
 			'body'    => $response_body,
 			'message' => $message,
 		);
-		print json_encode( $response );
 
-		wp_die();
-
+		wp_send_json_success( $response );
 	}
 
 }

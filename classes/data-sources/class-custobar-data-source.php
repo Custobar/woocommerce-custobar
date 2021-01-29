@@ -30,7 +30,7 @@ class Custobar_Data_Source {
 
 	public function create_integration() {
 		$data           = array( 'name' => 'WooCommerce' );
-		$body           = json_encode( $data );
+		$body           = wp_json_encode( $data );
 		$endpoint       = '/integrations/';
 		$api_token      = get_option( 'custobar_api_setting_token' );
 		$company_domain = get_option( 'custobar_api_setting_company' );
@@ -69,7 +69,7 @@ class Custobar_Data_Source {
 			'datatype'    => $type,
 		);
 
-		$body           = json_encode( $data );
+		$body           = wp_json_encode( $data );
 		$endpoint       = '/datasources/';
 		$api_token      = get_option( 'custobar_api_setting_token' );
 		$company_domain = get_option( 'custobar_api_setting_company' );
