@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Plugin name: Custobar for WooCommerce (dev)
+ * Plugin name: Custobar for WooCommerce
  * Description: Syncs your WooCommerce data with Custobar.
  * Author: Custobar
  * Text Domain: woocommerce-custobar
- * Version: 1.4.1
+ * Version: 2.0.0
  * Domain Path: /languages
  * WC requires at least: 4.0
  * Requires PHP 7.2+
@@ -22,7 +22,7 @@ if ( ! defined( 'WOOCOMMERCE_CUSTOBAR_URL' ) ) {
 }
 
 if ( ! defined( 'WOOCOMMERCE_CUSTOBAR_VERSION' ) ) {
-	define( 'WOOCOMMERCE_CUSTOBAR_VERSION', '1.4.1' );
+	define( 'WOOCOMMERCE_CUSTOBAR_VERSION', '2.0.0' );
 }
 
 require_once WOOCOMMERCE_CUSTOBAR_PATH . '/includes/functions.php';

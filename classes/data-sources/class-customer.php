@@ -115,8 +115,7 @@ class Customer extends Abstract_Data_Source {
 	 * @return \DateTime
 	 */
 	public function get_date_joined() {
-		$date_registered = get_userdata( $this->customer->get_id() )->user_registered;
-		$dt = new \DateTime($date_registered);
-		return Utilities::format_datetime( $dt );
+		$date = get_userdata( $this->customer->get_id() )->user_registered;
+		return Utilities::format_datetime( new \DateTime( $date ) );
 	}
 }
