@@ -1,0 +1,28 @@
+{
+  "name": "contrastfi/woocommerce-custobar",
+  "description": "Syncs your WooCommerce data with Custobar.",
+  "prefer-stable": true,
+  "minimum-stability": "dev",
+  "authors": [
+    {
+      "name": "Custobar"
+    },
+    {
+      "name": "contrast.fi"
+    }
+  ],
+  "type": "wordpress-plugin",
+  "require-dev": {
+    "squizlabs/php_codesniffer": "^3.5",
+    "wp-coding-standards/wpcs": "^2.3",
+    "dealerdirect/phpcodesniffer-composer-installer": "^0.7.0"
+  },
+  "scripts": {
+    "phpcs": [
+      "phpcs -s -p --extensions=php"
+    ],
+    "phpcbf": [
+      "phpcbf -p --extensions=php"
+    ]
+  }
+}
