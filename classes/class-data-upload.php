@@ -45,10 +45,15 @@ class Data_Upload {
 		$response_data->body = $response_body;
 
 		// do wc logging
-		if ( ! in_array( $response_code, array( 200, 201 ) ) || is_wp_error( $response_body ) ) {
+		if ( ! in_array( $response_code, array( 200, 201 ) ) || is_wp_error( $response ) ) {
+
+			$message = '';
+			if ( is_wp_error( $response ) ) {
+				$message = ', error message: ' . $response->get_error_message();
+			}
 
 			wc_get_logger()->warning(
-				"Custobar data upload failed. code: $response_code",
+				"Custobar data upload failed. Response code: $response_code $message",
 				array(
 					'source' => 'custobar',
 				)
