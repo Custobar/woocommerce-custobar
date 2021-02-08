@@ -70,6 +70,11 @@ class Data_Upload {
 		add_action( 'wp_ajax_custobar_api_test', __CLASS__ . '::api_test' );
 	}
 
+	/**
+	 * Historical data sync callback
+	 *
+	 * @return void
+	 */
 	public static function jx_export() {
 		// environment checks
 		$plugin = new Plugin();

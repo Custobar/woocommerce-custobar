@@ -21,7 +21,6 @@ class Customer_Sync extends Data_Sync {
 		add_action( 'user_register', array( __CLASS__, 'schedule_single_update' ), 10, 1 );
 		add_action( 'profile_update', array( __CLASS__, 'schedule_single_update' ), 10, 1 );
 		add_action( 'woocommerce_new_customer', array( __CLASS__, 'schedule_single_update', 10, 1 ) );
-		add_action( 'woocommerce_created_customer', array( __CLASS__, 'schedule_single_update' ), 10, 1 );
 		add_action( 'woocommerce_update_customer', array( __CLASS__, 'schedule_single_update' ), 10, 1 );
 
 		// Hook into scheduled actions
@@ -46,10 +45,17 @@ class Customer_Sync extends Data_Sync {
 		}
 	}
 
+	/**
+	 * Customer sync
+	 * Push initial marketing permissions with customer object
+	 *
+	 * @param int $user_id
+	 * @return void
+	 */
 	public static function single_update( $user_id ) {
 
 		wc_get_logger()->info(
-			'Customer_Sync single update called with $user_id: ' . $user_id,
+			'Customer_Sync single_update called with $user_id: ' . $user_id,
 			array(
 				'source' => 'custobar',
 			)
@@ -59,10 +65,35 @@ class Customer_Sync extends Data_Sync {
 
 		if ( in_array( $customer->get_role(), self::get_allowed_roles(), true ) ) {
 			$properties = self::format_single_item( $customer );
-			self::upload_data_type_data( $properties, true );
+			$initial_export = false;
+
+			// Have initial marketing permissions been exported?
+			if ( ! get_user_meta( $user_id, '_custobar_permissions_export', true ) ) {
+				$initial_export = true;
+
+				if ('yes' === get_option('custobar_initial_can_email')) {
+					$properties['can_email'] = true;
+				}
+
+				if ('yes' === get_option('custobar_initial_can_sms')) {
+					$properties['can_sms'] = true;
+				}
+			}
+
+			$response = self::upload_data_type_data( $properties, true );
+
+			if ( in_array( $response->code, array( 200, 201 ) ) && $initial_export) {
+				// Initial export done
+				update_user_meta( $user_id, '_custobar_permissions_export', gmdate('c') );
+			}
 		}
 	}
 
+	/**
+	 * Batch update customers, launched from admin
+	 *
+	 * @return $response
+	 */
 	public static function batch_update() {
 		$response = new \stdClass();
 		$tracker  = self::tracker_fetch();
@@ -92,12 +123,27 @@ class Customer_Sync extends Data_Sync {
 			return $response;
 		}
 
+		// Override marketing permissions?
+		$can_email = ! empty( $_POST['can_email'] );
+		$can_sms   = ! empty( $_POST['can_sms'] );
+
 		// loop over orders to find unique customers
 		// customer data organized into $data
 		$customers = array();
 		foreach ( $users as $user_id ) {
-			$customer    = new \WC_Customer( $user_id );
-			$customers[] = self::format_single_item( $customer );
+			$customer   = new \WC_Customer( $user_id );
+			$properties = self::format_single_item( $customer );
+
+			// Check settings for exporting marketing permissions
+			if ( $can_email ) {
+				$properties['can_email'] = true;
+			}
+
+			if ( $can_sms ) {
+				$properties['can_sms'] = true;
+			}
+
+			$customers[] = $properties;
 		}
 
 		// no data
@@ -113,6 +159,15 @@ class Customer_Sync extends Data_Sync {
 
 		// do upload to custobar API
 		$api_response = self::upload_data_type_data( $customers );
+
+		if ( in_array( $api_response->code, array( 200, 201 ) ) ) {
+			if ( $can_email || $can_sms ) {
+				// We have exported marketing permissions for these users
+				foreach ( $users as $user_id ) {
+					update_user_meta( $user_id, '_custobar_permissions_export', gmdate('c') );
+				}
+			}
+		}
 
 		// return response
 		$response->code    = $api_response->code;

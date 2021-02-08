@@ -79,7 +79,7 @@ class Customer extends Abstract_Data_Source {
 	}
 
 	public function get_can_email() {
-		$can_email = get_post_meta( $this->customer->get_id(), '_woocommerce_custobar_can_email', true );
+		$can_email = get_user_meta( $this->customer->get_id(), '_woocommerce_custobar_can_email', true );
 		if ( $can_email ) {
 			return true;
 		}
@@ -90,7 +90,7 @@ class Customer extends Abstract_Data_Source {
 	}
 
 	public function get_can_sms() {
-		$can_sms = get_post_meta( $this->customer->get_id(), '_woocommerce_custobar_can_sms', true );
+		$can_sms = get_user_meta( $this->customer->get_id(), '_woocommerce_custobar_can_sms', true );
 		if ( $can_sms ) {
 			return true;
 		}

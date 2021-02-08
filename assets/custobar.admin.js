@@ -56,7 +56,7 @@
 
 		if (!responseCell.length) {
 			$("#custobar-export-wrap table").append(
-				'<tr class="response"><td colspan="7">' + message + "</td></tr>"
+				'<tr class="response"><td colspan="9">' + message + "</td></tr>"
 			);
 		} else {
 			responseCell.html(message);
@@ -64,6 +64,8 @@
 
 		var _post = function () {
 			var resetCheck = $('input[name="reset-' + recordType + '"]');
+			var emailPermissionCheck = $('input[name="can-email-' + recordType + '"]');
+			var smsPermissionCheck = $('input[name="can-sms-' + recordType + '"]');
 
 			data = {
 				action: "custobar_export",
@@ -74,6 +76,14 @@
 			if (resetCheck.is(":checked")) {
 				data["reset"] = 1;
 				resetCheck.prop("checked", false);
+			}
+
+			if (emailPermissionCheck.is(":checked")) {
+				data["can_email"] = 1;
+			}
+
+			if (smsPermissionCheck.is(":checked")) {
+				data["can_sms"] = 1;
 			}
 
 			$.post(ajaxurl, data, function (response) {

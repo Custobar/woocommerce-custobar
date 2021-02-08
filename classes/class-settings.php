@@ -62,13 +62,15 @@ class WC_Settings_Custobar extends WC_Settings_Page {
 	public function save() {
 		woocommerce_update_options( $this->get_settings_api() );
 		woocommerce_update_options( $this->get_settings_fields() );
+		woocommerce_update_options( $this->get_settings_marketing() );
 	}
 
 
 	/**
-	 * Get all the settings for this plugin for @see woocommerce_admin_fields() function.
+	 * Get API settings
 	 *
-	 * @return array Array of settings for @see woocommerce_admin_fields() function.
+	 * @see woocommerce_admin_fields() function.
+	 * @return array Array of settings
 	 */
 	public function get_settings_api() {
 
@@ -102,9 +104,10 @@ class WC_Settings_Custobar extends WC_Settings_Page {
 	}
 
 	/**
-	 * Get all the settings for this plugin for @see woocommerce_admin_fields() function.
+	 * Get field map settings
 	 *
-	 * @return array Array of settings for @see woocommerce_admin_fields() function.
+	 * @see woocommerce_admin_fields() function.
+	 * @return array Array of settings
 	 */
 	public function get_settings_fields() {
 
@@ -113,7 +116,7 @@ class WC_Settings_Custobar extends WC_Settings_Page {
 				'name' => __( 'Field Mapping', 'woocommerce-custobar' ),
 				'type' => 'title',
 			),
-			self::CUSTOMER_FIELDS      => array(
+			self::CUSTOMER_FIELDS => array(
 				'name'              => __( 'Customer Field Map', 'woocommerce-custobar' ),
 				'type'              => 'textarea',
 				'desc'              => '',
@@ -124,7 +127,7 @@ class WC_Settings_Custobar extends WC_Settings_Page {
 				'class'             => 'input-text wide-input',
 				'id'                => self::CUSTOMER_FIELDS,
 			),
-			self::PRODUCT_FIELDS       => array(
+			self::PRODUCT_FIELDS  => array(
 				'name'              => __( 'Product Field Map', 'woocommerce-custobar' ),
 				'type'              => 'textarea',
 				'desc'              => '',
@@ -135,7 +138,7 @@ class WC_Settings_Custobar extends WC_Settings_Page {
 				'class'             => 'input-text wide-input',
 				'id'                => self::PRODUCT_FIELDS,
 			),
-			self::SALE_FIELDS          => array(
+			self::SALE_FIELDS => array(
 				'name'              => __( 'Sale Field Map', 'woocommerce-custobar' ),
 				'type'              => 'textarea',
 				'desc'              => '',
@@ -146,7 +149,44 @@ class WC_Settings_Custobar extends WC_Settings_Page {
 				'class'             => 'input-text wide-input',
 				'id'                => self::SALE_FIELDS,
 			),
-			'section_end'              => array(
+			'section_end'         => array(
+				'type' => 'sectionend',
+				'id'   => 'custobar_section_end',
+			),
+		);
+
+		return $settings;
+
+	}
+
+	/**
+	 * Get marketing settings
+	 *
+	 * @see woocommerce_admin_fields() function.
+	 * @return array Array of settings
+	 */
+	public function get_settings_marketing() {
+
+		$settings = array(
+			'custobar_marketing_settings' => array(
+				'name' => __( 'Marketing Settings', 'woocommerce-custobar' ),
+				'type' => 'title',
+				'desc' => '',
+				'id'   => 'custobar_marketing_settings',
+			),
+			'custobar_initial_can_email'  => array(
+				'name' => __( 'Initial email permission', 'woocommerce-custobar' ),
+				'type' => 'checkbox',
+				'desc' => __( 'Set can_email to "true" when exporting a new customer.', 'woocommerce-custobar' ),
+				'id'   => 'custobar_initial_can_email',
+			),
+			'custobar_initial_can_sms'    => array(
+				'name' => __( 'Initial SMS permission', 'woocommerce-custobar' ),
+				'type' => 'checkbox',
+				'desc' => __( 'Set can_sms to "true" when exporting a new customer.', 'woocommerce-custobar' ),
+				'id'   => 'custobar_initial_can_sms',
+			),
+			'section_end'                 => array(
 				'type' => 'sectionend',
 				'id'   => 'custobar_section_end',
 			),
@@ -192,6 +232,8 @@ class WC_Settings_Custobar extends WC_Settings_Page {
 			WC_Admin_Settings::output_fields( $this->get_settings_api() );
 
 		} else {
+
+			WC_Admin_Settings::output_fields( $this->get_settings_marketing() );
 
 			WC_Admin_Settings::output_fields( $this->get_settings_fields() );
 
