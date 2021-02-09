@@ -106,11 +106,16 @@ class Sale_Sync extends Data_Sync {
 		$response = new \stdClass();
 		$tracker  = self::tracker_fetch();
 		$offset   = $tracker['offset'];
+		$limit    = 250;
+
+		// Logging
+		$time_start = microtime( true );
+		$log = "Sale_Sync batch update: limit {$limit}, offset {$offset}. ";
 
 		// Get orders by offset and limit
 		$args = array(
 			'type'    => 'shop_order', // skip shop_order_refund
-			'limit'   => 350,
+			'limit'   => $limit,
 			'offset'  => $offset,
 			'orderby' => 'ID',
 			'order'   => 'ASC',
@@ -120,6 +125,11 @@ class Sale_Sync extends Data_Sync {
 		$args = apply_filters( 'woocommerce_custobar_batch_update_orders_args', $args );
 
 		$orders = wc_get_orders( $args );
+
+		// Logging
+		$e1 = microtime( true );
+		$et = number_format( ( $e1 - $time_start ), 5 );
+		$log .= "wc_get_orders: {$et}s. ";
 
 		$order_rows = array();
 
@@ -137,6 +147,11 @@ class Sale_Sync extends Data_Sync {
 			}
 		}
 
+		// Logging
+		$e2 = microtime( true );
+		$et = number_format( ( $e2 - $e1 ), 5 );
+		$log .= "Format items: {$et}s. ";
+
 		// No rows to export
 		if ( empty( $order_rows ) ) {
 			$response->code = 220;
@@ -147,12 +162,23 @@ class Sale_Sync extends Data_Sync {
 
 		$api_response = self::upload_data_type_data( $order_rows );
 
+		// Logging
+		$e3 = microtime( true );
+		$et = number_format( ( $e3 - $e2 ), 5 );
+		$log .= "Custobar upload: {$et}s. ";
+
 		self::tracker_save( $offset + $count );
 
 		$response->code    = $api_response->code;
 		$response->body    = $api_response->body;
 		$response->tracker = self::tracker_fetch();
 		$response->count   = $count;
+
+		// Logging
+		$et = number_format( ( microtime(true) - $time_start ), 5 );
+		$log .= "Returning, total time: {$et}s.";
+		wc_get_logger()->info( $log, array( 'source' => 'custobar-batch-update' ) );
+
 		return $response;
 
 	}
