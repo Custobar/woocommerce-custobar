@@ -15,6 +15,7 @@ class Product_Sync extends Data_Sync {
 
 
 	protected static $endpoint = '/products/upload/';
+	protected static $child = __CLASS__;
 
 	public static function add_hooks() {
 		// Schedule actions
@@ -22,14 +23,15 @@ class Product_Sync extends Data_Sync {
 		add_action( 'woocommerce_update_product', array( __CLASS__, 'schedule_single_update' ), 10, 1 );
 
 		// Hook into scheduled actions
-		add_action( 'woocommerce_custobar_product_sync', array( __CLASS__, 'single_update' ), 10, 1 );
+		// Call parent method to consider request limit
+		add_action( 'woocommerce_custobar_product_sync', array( __CLASS__, 'call_single_update' ), 10, 1 );
 	}
 
 	public static function schedule_single_update( $product_id ) {
-		wc_get_logger()->info(
-			'Product_Sync schedule_single_update called with $product_id: ' . $product_id,
-			array( 'source' => 'custobar' )
-		);
+		// Allow 3rd parties to decide if product should be synced
+		if ( ! apply_filters( 'woocommerce_custobar_product_should_sync', true, $product_id ) ) {
+			return;
+		}
 
 		$hook  = 'woocommerce_custobar_product_sync';
 		$args  = array( 'product_id' => $product_id );
@@ -37,13 +39,23 @@ class Product_Sync extends Data_Sync {
 
 		// We need only one action scheduled
 		if ( ! as_next_scheduled_action( $hook, $args, $group ) ) {
-			as_enqueue_async_action( $hook, $args, $group );
+			as_schedule_single_action( time(), $hook, $args, $group );
+
+			wc_get_logger()->info(
+				'#' . $product_id . ' NEW/UPDATE PRODUCT, SYNC SCHEDULED',
+				array( 'source' => 'custobar' )
+			);
+		} else {
+			wc_get_logger()->info(
+				'#' . $product_id . ' NEW/UPDATE PRODUCT, sync was already scheduled',
+				array( 'source' => 'custobar' )
+			);
 		}
 	}
 
 	public static function single_update( $product_id ) {
 		wc_get_logger()->info(
-			'Product_Sync single update called with $product_id: ' . $product_id,
+			'#' . $product_id . ' PRODUCT SYNC, UPLOADING TO CUSTOBAR',
 			array( 'source' => 'custobar' )
 		);
 

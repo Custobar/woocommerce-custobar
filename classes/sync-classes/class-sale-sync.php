@@ -16,6 +16,7 @@ class Sale_Sync extends Data_Sync {
 
 
 	protected static $endpoint = '/sales/upload/';
+	protected static $child = __CLASS__;
 
 	public static function add_hooks() {
 		// Schedule actions
@@ -25,16 +26,28 @@ class Sale_Sync extends Data_Sync {
 		add_action( 'woocommerce_subscription_renewal_payment_complete', array( __CLASS__, 'schedule_subscription_renewal_payment_complete' ), 10, 2 );
 
 		// Hook into scheduled actions
-		add_action( 'woocommerce_custobar_sale_sync', array( __CLASS__, 'single_update' ), 10, 1 );
+		// Call parent method to consider request limit
+		add_action( 'woocommerce_custobar_sale_sync', array( __CLASS__, 'call_single_update' ), 10, 1 );
 
 		add_filter( 'woocommerce_custobar_sale_properties', array( __CLASS__, 'add_subscription_fields' ), 10, 3 );
 	}
 
+	/**
+	 * New order / Order updated
+	 *
+	 * @param int/string $order_id
+	 * @return void
+	 */
 	public static function schedule_single_update( $order_id ) {
-		wc_get_logger()->info(
-			'schedule_single_update called with $order_id: ' . $order_id,
-			array( 'source' => 'custobar' )
-		);
+		// Allow 3rd parties to decide if order should be synced
+		if ( ! apply_filters( 'woocommerce_custobar_order_should_sync', true, $order_id ) ) {
+			return;
+		}
+
+		// Skip subscriptions
+		if ( 'shop_subscription' === get_post_type( $order_id ) ) {
+			return;
+		}
 
 		$hook  = 'woocommerce_custobar_sale_sync';
 		$args  = array( 'order_id' => $order_id );
@@ -42,15 +55,34 @@ class Sale_Sync extends Data_Sync {
 
 		// We need only one action scheduled
 		if ( ! as_next_scheduled_action( $hook, $args, $group ) ) {
-			as_enqueue_async_action( $hook, $args, $group );
+			as_schedule_single_action( time(), $hook, $args, $group );
+
+			wc_get_logger()->info(
+				'#' . $order_id . ' NEW/UPDATE ORDER, SYNC SCHEDULED',
+				array( 'source' => 'custobar' )
+			);
+		} else {
+			wc_get_logger()->info(
+				'#' . $order_id . ' NEW/UPDATE ORDER, sync was already scheduled',
+				array( 'source' => 'custobar' )
+			);
 		}
 	}
 
+	/**
+	 * Subscription renewal payment complete
+	 * We want to sync subscription's parent order, not the subscription itself.
+	 * Subscriptions are not orders themselves, they are promises of future orders.
+	 *
+	 * @param \WC_Subscription $subscription
+	 * @param \WC_Order $order
+	 * @return void
+	 */
 	public static function schedule_subscription_renewal_payment_complete( $subscription, $order ) {
-		wc_get_logger()->info(
-			'schedule_subscription_renewal_payment_complete called with $subscription: ' . $subscription->get_id() . ' $order: ' . $order->get_id(),
-			array( 'source' => 'custobar' )
-		);
+		// Allow 3rd parties to decide if order should be synced
+		if ( ! apply_filters( 'woocommerce_custobar_subscription_renewal_parent_should_sync', true, $subscription, $order ) ) {
+			return;
+		}
 
 		$hook  = 'woocommerce_custobar_sale_sync';
 		$args  = array( 'order_id' => $order->get_id() );
@@ -58,15 +90,35 @@ class Sale_Sync extends Data_Sync {
 
 		// We need only one action scheduled
 		if ( ! as_next_scheduled_action( $hook, $args, $group ) ) {
-			as_enqueue_async_action( $hook, $args, $group );
+			as_schedule_single_action( time(), $hook, $args, $group );
+
+			wc_get_logger()->info(
+				'#' . $order->get_id() . ' RENEWAL PAYMENT COMPLETE, SYNC SCHEDULED',
+				array( 'source' => 'custobar' )
+			);
+		} else {
+			wc_get_logger()->info(
+				'#' . $order->get_id() . ' RENEWAL payment complete, sync was already scheduled',
+				array( 'source' => 'custobar' )
+			);
 		}
 	}
 
+	/**
+	 * Subscription status update
+	 * We want to sync subscription's parent order, not the subscription itself.
+	 * Subscriptions are not orders themselves, they are promises of future orders.
+	 *
+	 * @param \WC_Subscription $subscription
+	 * @param string $new_status
+	 * @param string $old_status
+	 * @return void
+	 */
 	public static function schedule_subscription_status_updated( $subscription, $new_status, $old_status ) {
-		wc_get_logger()->info(
-			'schedule_subscription_status_updated called with $subscription: ' . $subscription->get_id() . " new_status: $new_status, old_status: $old_status",
-			array( 'source' => 'custobar' )
-		);
+		// Allow 3rd parties to decide if order should be synced
+		if ( ! apply_filters( 'woocommerce_custobar_subscription_status_parent_should_sync', true, $subscription, $new_status, $old_status ) ) {
+			return;
+		}
 
 		$hook  = 'woocommerce_custobar_sale_sync';
 		$args  = array( 'order_id' => $subscription->get_parent_id() );
@@ -74,21 +126,30 @@ class Sale_Sync extends Data_Sync {
 
 		// We need only one action scheduled
 		if ( ! as_next_scheduled_action( $hook, $args, $group ) ) {
-			as_enqueue_async_action( $hook, $args, $group );
+			as_schedule_single_action( time(), $hook, $args, $group );
+
+			wc_get_logger()->info(
+				'#' . $subscription->get_id() . " SUBSCRIPTION STATUS UPDATE, $old_status -> $new_status, PARENT ORDER SYNC SCHEDULED (#{$args['order_id']})",
+				array( 'source' => 'custobar' )
+			);
+		} else {
+			wc_get_logger()->info(
+				'#' . $subscription->get_id() . " SUBSCRIPTION STATUS UPDATE, $old_status -> $new_status, parent order sync was already scheduled (#{$args['order_id']})",
+				array( 'source' => 'custobar' )
+			);
 		}
 	}
 
 	public static function single_update( $order_id ) {
-		wc_get_logger()->info(
-			'salesync single_update called with $order_id: ' . $order_id,
-			array( 'source' => 'custobar' )
-		);
 
 		$order = wc_get_order( $order_id );
 
-		// Would sometimes be triggered twice without the class check, because
-		// Subscriptions plugin also creates additional order instance.
-		if ( $order && ( get_class( $order ) === 'WC_Order' || get_class( $order ) === 'Automattic\WooCommerce\Admin\Overrides\Order' ) ) {
+		if ( $order ) {
+			wc_get_logger()->info(
+				'#' . $order_id . ' ORDER SYNC, UPLOADING TO CUSTOBAR',
+				array( 'source' => 'custobar' )
+			);
+
 			$data = array();
 			foreach ( $order->get_items() as $order_item ) {
 				$data[] = self::format_single_item(
@@ -99,7 +160,13 @@ class Sale_Sync extends Data_Sync {
 				);
 			}
 			self::upload_data_type_data( $data );
+		} else {
+			wc_get_logger()->warning(
+				'#' . $order_id . ' tried to sync order, but order was not found',
+				array( 'source' => 'custobar' )
+			);
 		}
+
 	}
 
 	public static function batch_update() {

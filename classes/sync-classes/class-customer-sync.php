@@ -15,6 +15,7 @@ class Customer_Sync extends Data_Sync {
 
 
 	protected static $endpoint = '/customers/upload/';
+	protected static $child = __CLASS__;
 
 	public static function add_hooks() {
 		// Schedule actions
@@ -24,16 +25,15 @@ class Customer_Sync extends Data_Sync {
 		add_action( 'woocommerce_update_customer', array( __CLASS__, 'schedule_single_update' ), 10, 1 );
 
 		// Hook into scheduled actions
-		add_action( 'woocommerce_custobar_customer_sync', array( __CLASS__, 'single_update' ), 10, 1 );
+		// Call parent method to consider request limit
+		add_action( 'woocommerce_custobar_customer_sync', array( __CLASS__, 'call_single_update' ), 10, 1 );
 	}
 
 	public static function schedule_single_update( $user_id ) {
-		wc_get_logger()->info(
-			'Customer_Sync schedule_single_update called with $user_id: ' . $user_id,
-			array(
-				'source' => 'custobar',
-			)
-		);
+		// Allow 3rd parties to decide if customer should be synced
+		if ( ! apply_filters( 'woocommerce_custobar_customer_should_sync', true, $user_id ) ) {
+			return;
+		}
 
 		$hook  = 'woocommerce_custobar_customer_sync';
 		$args  = array( 'user_id' => $user_id );
@@ -41,13 +41,22 @@ class Customer_Sync extends Data_Sync {
 
 		// We need only one action scheduled
 		if ( ! as_next_scheduled_action( $hook, $args, $group ) ) {
-			as_enqueue_async_action( $hook, $args, $group );
+			as_schedule_single_action( time(), $hook, $args, $group );
+
+			wc_get_logger()->info(
+				'#' . $user_id . ' NEW/UPDATE CUSTOMER, SYNC SCHEDULED',
+				array( 'source' => 'custobar' )
+			);
+		} else {
+			wc_get_logger()->info(
+				'#' . $user_id . ' NEW/UPDATE CUSTOMER, sync was already scheduled',
+				array( 'source' => 'custobar' )
+			);
 		}
 	}
 
 	/**
 	 * Customer sync
-	 * Push initial marketing permissions with customer object
 	 *
 	 * @param int $user_id
 	 * @return void
@@ -55,10 +64,8 @@ class Customer_Sync extends Data_Sync {
 	public static function single_update( $user_id ) {
 
 		wc_get_logger()->info(
-			'Customer_Sync single_update called with $user_id: ' . $user_id,
-			array(
-				'source' => 'custobar',
-			)
+			'#' . $user_id . ' CUSTOMER SYNC, UPLOADING TO CUSTOBAR',
+			array( 'source' => 'custobar' )
 		);
 
 		$customer = new \WC_Customer( $user_id );
@@ -69,6 +76,7 @@ class Customer_Sync extends Data_Sync {
 
 			// Have initial marketing permissions been exported?
 			if ( ! get_user_meta( $user_id, '_custobar_permissions_export', true ) ) {
+				// Push initial marketing permissions with customer object
 				$initial_export = true;
 
 				if ('yes' === get_option('custobar_initial_can_email')) {
