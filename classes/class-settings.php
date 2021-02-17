@@ -116,7 +116,7 @@ class WC_Settings_Custobar extends WC_Settings_Page {
 				'name' => __( 'Field Mapping', 'woocommerce-custobar' ),
 				'type' => 'title',
 			),
-			self::CUSTOMER_FIELDS => array(
+			self::CUSTOMER_FIELDS      => array(
 				'name'              => __( 'Customer Field Map', 'woocommerce-custobar' ),
 				'type'              => 'textarea',
 				'desc'              => '',
@@ -127,7 +127,7 @@ class WC_Settings_Custobar extends WC_Settings_Page {
 				'class'             => 'input-text wide-input',
 				'id'                => self::CUSTOMER_FIELDS,
 			),
-			self::PRODUCT_FIELDS  => array(
+			self::PRODUCT_FIELDS       => array(
 				'name'              => __( 'Product Field Map', 'woocommerce-custobar' ),
 				'type'              => 'textarea',
 				'desc'              => '',
@@ -138,7 +138,7 @@ class WC_Settings_Custobar extends WC_Settings_Page {
 				'class'             => 'input-text wide-input',
 				'id'                => self::PRODUCT_FIELDS,
 			),
-			self::SALE_FIELDS => array(
+			self::SALE_FIELDS          => array(
 				'name'              => __( 'Sale Field Map', 'woocommerce-custobar' ),
 				'type'              => 'textarea',
 				'desc'              => '',
@@ -149,7 +149,7 @@ class WC_Settings_Custobar extends WC_Settings_Page {
 				'class'             => 'input-text wide-input',
 				'id'                => self::SALE_FIELDS,
 			),
-			'section_end'         => array(
+			'section_end'              => array(
 				'type' => 'sectionend',
 				'id'   => 'custobar_section_end',
 			),

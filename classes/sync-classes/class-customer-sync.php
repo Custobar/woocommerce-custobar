@@ -15,7 +15,7 @@ class Customer_Sync extends Data_Sync {
 
 
 	protected static $endpoint = '/customers/upload/';
-	protected static $child = __CLASS__;
+	protected static $child    = __CLASS__;
 
 	public static function add_hooks() {
 		// Schedule actions
@@ -26,7 +26,7 @@ class Customer_Sync extends Data_Sync {
 
 		// Hook into scheduled actions
 		// Call parent method to consider request limit
-		add_action( 'woocommerce_custobar_customer_sync', array( __CLASS__, 'call_single_update' ), 10, 1 );
+		add_action( 'woocommerce_custobar_customer_sync', array( __CLASS__, 'throttle_single_update' ), 10, 1 );
 	}
 
 	public static function schedule_single_update( $user_id ) {
@@ -47,11 +47,6 @@ class Customer_Sync extends Data_Sync {
 				'#' . $user_id . ' NEW/UPDATE CUSTOMER, SYNC SCHEDULED',
 				array( 'source' => 'custobar' )
 			);
-		} else {
-			wc_get_logger()->info(
-				'#' . $user_id . ' NEW/UPDATE CUSTOMER, sync was already scheduled',
-				array( 'source' => 'custobar' )
-			);
 		}
 	}
 
@@ -70,8 +65,9 @@ class Customer_Sync extends Data_Sync {
 
 		$customer = new \WC_Customer( $user_id );
 
-		if ( in_array( $customer->get_role(), self::get_allowed_roles(), true ) ) {
-			$properties = self::format_single_item( $customer );
+		if ( in_array( $customer->get_role(), self::get_allowed_roles() ) ) {
+
+			$properties     = self::format_single_item( $customer );
 			$initial_export = false;
 
 			// Have initial marketing permissions been exported?
@@ -79,22 +75,34 @@ class Customer_Sync extends Data_Sync {
 				// Push initial marketing permissions with customer object
 				$initial_export = true;
 
-				if ('yes' === get_option('custobar_initial_can_email')) {
+				if ( 'yes' === get_option( 'custobar_initial_can_email' ) ) {
 					$properties['can_email'] = true;
 				}
 
-				if ('yes' === get_option('custobar_initial_can_sms')) {
+				if ( 'yes' === get_option( 'custobar_initial_can_sms' ) ) {
 					$properties['can_sms'] = true;
 				}
 			}
 
 			$response = self::upload_data_type_data( $properties, true );
 
-			if ( in_array( $response->code, array( 200, 201 ) ) && $initial_export) {
+			if ( ! is_wp_error( $response ) && in_array( $response->code, array( 200, 201 ) ) && $initial_export ) {
 				// Initial export done
-				update_user_meta( $user_id, '_custobar_permissions_export', gmdate('c') );
+				update_user_meta( $user_id, '_custobar_permissions_export', gmdate( 'c' ) );
 			}
+
+			return $response;
+
+		} else {
+
+			wc_get_logger()->warning(
+				'#' . $user_id . ' tried to sync customer, but user role was not allowed',
+				array( 'source' => 'custobar' )
+			);
+
 		}
+
+		return false;
 	}
 
 	/**
@@ -106,13 +114,11 @@ class Customer_Sync extends Data_Sync {
 		$response = new \stdClass();
 		$tracker  = self::tracker_fetch();
 		$offset   = $tracker['offset'];
-
-		$limit = 500;
+		$limit    = 500;
 
 		/*
 		* Fetch users
 		*/
-
 		$query = new \WP_User_Query(
 			array(
 				'role__in' => self::get_allowed_roles(),
@@ -135,8 +141,8 @@ class Customer_Sync extends Data_Sync {
 		$can_email = ! empty( $_POST['can_email'] );
 		$can_sms   = ! empty( $_POST['can_sms'] );
 
-		// loop over orders to find unique customers
-		// customer data organized into $data
+		// Loop over orders to find unique customers
+		// Customer data organized into $data
 		$customers = array();
 		foreach ( $users as $user_id ) {
 			$customer   = new \WC_Customer( $user_id );
@@ -154,7 +160,7 @@ class Customer_Sync extends Data_Sync {
 			$customers[] = $properties;
 		}
 
-		// no data
+		// No data
 		if ( empty( $customers ) ) {
 			$response->code = 221;
 			return $response;
@@ -162,17 +168,24 @@ class Customer_Sync extends Data_Sync {
 
 		$count = count( $customers );
 
-		// track the export
+		// Track the export
 		self::tracker_save( $offset + $count );
 
-		// do upload to custobar API
+		// Do upload to Custobar API
 		$api_response = self::upload_data_type_data( $customers );
+
+		if ( is_wp_error( $api_response ) ) {
+			// Request was invalid
+			$response->code = 444;
+			$response->body = $api_response->get_error_message();
+			return $response;
+		}
 
 		if ( in_array( $api_response->code, array( 200, 201 ) ) ) {
 			if ( $can_email || $can_sms ) {
 				// We have exported marketing permissions for these users
 				foreach ( $users as $user_id ) {
-					update_user_meta( $user_id, '_custobar_permissions_export', gmdate('c') );
+					update_user_meta( $user_id, '_custobar_permissions_export', gmdate( 'c' ) );
 				}
 			}
 		}
@@ -183,7 +196,6 @@ class Customer_Sync extends Data_Sync {
 		$response->tracker = self::tracker_fetch();
 		$response->count   = $count;
 		return $response;
-
 	}
 
 	/**
@@ -237,10 +249,10 @@ class Customer_Sync extends Data_Sync {
 	}
 
 	protected static function upload_data_type_data( $data, $single = false ) {
-
 		$formatted_data = array(
 			'customers' => array(),
 		);
+
 		if ( $single ) {
 			$formatted_data['customers'][] = $data;
 		} else {
@@ -248,6 +260,5 @@ class Customer_Sync extends Data_Sync {
 		}
 
 		return self::upload_custobar_data( $formatted_data );
-
 	}
 }

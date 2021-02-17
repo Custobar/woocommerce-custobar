@@ -16,7 +16,7 @@ class Sale_Sync extends Data_Sync {
 
 
 	protected static $endpoint = '/sales/upload/';
-	protected static $child = __CLASS__;
+	protected static $child    = __CLASS__;
 
 	public static function add_hooks() {
 		// Schedule actions
@@ -27,7 +27,7 @@ class Sale_Sync extends Data_Sync {
 
 		// Hook into scheduled actions
 		// Call parent method to consider request limit
-		add_action( 'woocommerce_custobar_sale_sync', array( __CLASS__, 'call_single_update' ), 10, 1 );
+		add_action( 'woocommerce_custobar_sale_sync', array( __CLASS__, 'throttle_single_update' ), 10, 1 );
 
 		add_filter( 'woocommerce_custobar_sale_properties', array( __CLASS__, 'add_subscription_fields' ), 10, 3 );
 	}
@@ -39,6 +39,10 @@ class Sale_Sync extends Data_Sync {
 	 * @return void
 	 */
 	public static function schedule_single_update( $order_id ) {
+		if ( ! $order_id ) {
+			return;
+		}
+
 		// Allow 3rd parties to decide if order should be synced
 		if ( ! apply_filters( 'woocommerce_custobar_order_should_sync', true, $order_id ) ) {
 			return;
@@ -61,11 +65,6 @@ class Sale_Sync extends Data_Sync {
 				'#' . $order_id . ' NEW/UPDATE ORDER, SYNC SCHEDULED',
 				array( 'source' => 'custobar' )
 			);
-		} else {
-			wc_get_logger()->info(
-				'#' . $order_id . ' NEW/UPDATE ORDER, sync was already scheduled',
-				array( 'source' => 'custobar' )
-			);
 		}
 	}
 
@@ -80,7 +79,7 @@ class Sale_Sync extends Data_Sync {
 	 */
 	public static function schedule_subscription_renewal_payment_complete( $subscription, $order ) {
 		// Allow 3rd parties to decide if order should be synced
-		if ( ! apply_filters( 'woocommerce_custobar_subscription_renewal_parent_should_sync', true, $subscription, $order ) ) {
+		if ( ! apply_filters( 'woocommerce_custobar_subscription_renewal_should_sync', true, $subscription, $order ) ) {
 			return;
 		}
 
@@ -94,11 +93,6 @@ class Sale_Sync extends Data_Sync {
 
 			wc_get_logger()->info(
 				'#' . $order->get_id() . ' RENEWAL PAYMENT COMPLETE, SYNC SCHEDULED',
-				array( 'source' => 'custobar' )
-			);
-		} else {
-			wc_get_logger()->info(
-				'#' . $order->get_id() . ' RENEWAL payment complete, sync was already scheduled',
 				array( 'source' => 'custobar' )
 			);
 		}
@@ -132,11 +126,6 @@ class Sale_Sync extends Data_Sync {
 				'#' . $subscription->get_id() . " SUBSCRIPTION STATUS UPDATE, $old_status -> $new_status, PARENT ORDER SYNC SCHEDULED (#{$args['order_id']})",
 				array( 'source' => 'custobar' )
 			);
-		} else {
-			wc_get_logger()->info(
-				'#' . $subscription->get_id() . " SUBSCRIPTION STATUS UPDATE, $old_status -> $new_status, parent order sync was already scheduled (#{$args['order_id']})",
-				array( 'source' => 'custobar' )
-			);
 		}
 	}
 
@@ -145,6 +134,7 @@ class Sale_Sync extends Data_Sync {
 		$order = wc_get_order( $order_id );
 
 		if ( $order ) {
+
 			wc_get_logger()->info(
 				'#' . $order_id . ' ORDER SYNC, UPLOADING TO CUSTOBAR',
 				array( 'source' => 'custobar' )
@@ -159,14 +149,19 @@ class Sale_Sync extends Data_Sync {
 					)
 				);
 			}
-			self::upload_data_type_data( $data );
+
+			return self::upload_data_type_data( $data );
+
 		} else {
+
 			wc_get_logger()->warning(
 				'#' . $order_id . ' tried to sync order, but order was not found',
 				array( 'source' => 'custobar' )
 			);
+
 		}
 
+		return false;
 	}
 
 	public static function batch_update() {
@@ -177,7 +172,7 @@ class Sale_Sync extends Data_Sync {
 
 		// Logging
 		$time_start = microtime( true );
-		$log = "Sale_Sync batch update: limit {$limit}, offset {$offset}. ";
+		$log        = "Sale_Sync batch update: limit {$limit}, offset {$offset}. ";
 
 		// Get orders by offset and limit
 		$args = array(
@@ -194,8 +189,8 @@ class Sale_Sync extends Data_Sync {
 		$orders = wc_get_orders( $args );
 
 		// Logging
-		$e1 = microtime( true );
-		$et = number_format( ( $e1 - $time_start ), 5 );
+		$e1   = microtime( true );
+		$et   = number_format( ( $e1 - $time_start ), 5 );
 		$log .= "wc_get_orders: {$et}s. ";
 
 		$order_rows = array();
@@ -215,8 +210,8 @@ class Sale_Sync extends Data_Sync {
 		}
 
 		// Logging
-		$e2 = microtime( true );
-		$et = number_format( ( $e2 - $e1 ), 5 );
+		$e2   = microtime( true );
+		$et   = number_format( ( $e2 - $e1 ), 5 );
 		$log .= "Format items: {$et}s. ";
 
 		// No rows to export
@@ -229,9 +224,16 @@ class Sale_Sync extends Data_Sync {
 
 		$api_response = self::upload_data_type_data( $order_rows );
 
+		if ( is_wp_error( $api_response ) ) {
+			// Request was invalid
+			$response->code = 444;
+			$response->body = $api_response->get_error_message();
+			return $response;
+		}
+
 		// Logging
-		$e3 = microtime( true );
-		$et = number_format( ( $e3 - $e2 ), 5 );
+		$e3   = microtime( true );
+		$et   = number_format( ( $e3 - $e2 ), 5 );
 		$log .= "Custobar upload: {$et}s. ";
 
 		self::tracker_save( $offset + $count );
@@ -242,7 +244,7 @@ class Sale_Sync extends Data_Sync {
 		$response->count   = $count;
 
 		// Logging
-		$et = number_format( ( microtime(true) - $time_start ), 5 );
+		$et   = number_format( ( microtime( true ) - $time_start ), 5 );
 		$log .= "Returning, total time: {$et}s.";
 		wc_get_logger()->info( $log, array( 'source' => 'custobar-batch-update' ) );
 
