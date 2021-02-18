@@ -38,7 +38,7 @@ class Sale_Sync extends Data_Sync {
 	 * @param int/string $order_id
 	 * @return void
 	 */
-	public static function schedule_single_update( $order_id ) {
+	public static function schedule_single_update( $order_id, $force = false ) {
 		if ( ! $order_id ) {
 			return;
 		}
@@ -56,6 +56,17 @@ class Sale_Sync extends Data_Sync {
 		$hook  = 'woocommerce_custobar_sale_sync';
 		$args  = array( 'order_id' => $order_id );
 		$group = 'custobar';
+
+		// Force schedule
+		// For example reschedule when action still in progress
+		if ( $force ) {
+			as_schedule_single_action( time(), $hook, $args, $group );
+
+			wc_get_logger()->info(
+				'#' . $order_id . ' NEW/UPDATE ORDER, SYNC SCHEDULED (FORCE)',
+				array( 'source' => 'custobar' )
+			);
+		}
 
 		// We need only one action scheduled
 		if ( ! as_next_scheduled_action( $hook, $args, $group ) ) {

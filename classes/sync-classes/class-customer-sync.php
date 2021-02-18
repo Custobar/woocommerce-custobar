@@ -29,7 +29,7 @@ class Customer_Sync extends Data_Sync {
 		add_action( 'woocommerce_custobar_customer_sync', array( __CLASS__, 'throttle_single_update' ), 10, 1 );
 	}
 
-	public static function schedule_single_update( $user_id ) {
+	public static function schedule_single_update( $user_id, $force = false ) {
 		// Allow 3rd parties to decide if customer should be synced
 		if ( ! apply_filters( 'woocommerce_custobar_customer_should_sync', true, $user_id ) ) {
 			return;
@@ -38,6 +38,17 @@ class Customer_Sync extends Data_Sync {
 		$hook  = 'woocommerce_custobar_customer_sync';
 		$args  = array( 'user_id' => $user_id );
 		$group = 'custobar';
+
+		// Force schedule
+		// For example reschedule when action still in progress
+		if ( $force ) {
+			as_schedule_single_action( time(), $hook, $args, $group );
+
+			wc_get_logger()->info(
+				'#' . $user_id . ' NEW/UPDATE CUSTOMER, SYNC SCHEDULED (FORCE)',
+				array( 'source' => 'custobar' )
+			);
+		}
 
 		// We need only one action scheduled
 		if ( ! as_next_scheduled_action( $hook, $args, $group ) ) {

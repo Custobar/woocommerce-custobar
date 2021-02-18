@@ -14,7 +14,7 @@ use WooCommerceCustobar\DataSource\Custobar_Data_Source;
  */
 abstract class Data_Sync {
 
-	abstract public static function schedule_single_update( $item_id );
+	abstract public static function schedule_single_update( $item_id, $force );
 	abstract public static function single_update( $item_id );
 	abstract public static function batch_update();
 	abstract protected static function format_single_item( $item );
@@ -81,7 +81,9 @@ abstract class Data_Sync {
 				"#{$id} $child upload, response code 429 (TOO MANY REQUESTS), RESCHEDULING",
 				array( 'source' => 'custobar' )
 			);
-			$child::schedule_single_update( $id );
+
+			// Force the schedule, since this action still exists
+			$child::schedule_single_update( $id, true );
 
 			return null;
 		}

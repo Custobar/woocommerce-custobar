@@ -27,7 +27,7 @@ class Product_Sync extends Data_Sync {
 		add_action( 'woocommerce_custobar_product_sync', array( __CLASS__, 'throttle_single_update' ), 10, 1 );
 	}
 
-	public static function schedule_single_update( $product_id ) {
+	public static function schedule_single_update( $product_id, $force = false ) {
 		// Allow 3rd parties to decide if product should be synced
 		if ( ! apply_filters( 'woocommerce_custobar_product_should_sync', true, $product_id ) ) {
 			return;
@@ -36,6 +36,17 @@ class Product_Sync extends Data_Sync {
 		$hook  = 'woocommerce_custobar_product_sync';
 		$args  = array( 'product_id' => $product_id );
 		$group = 'custobar';
+
+		// Force schedule
+		// For example reschedule when action still in progress
+		if ( $force ) {
+			as_schedule_single_action( time(), $hook, $args, $group );
+
+			wc_get_logger()->info(
+				'#' . $product_id . ' NEW/UPDATE PRODUCT, SYNC SCHEDULED (FORCE)',
+				array( 'source' => 'custobar' )
+			);
+		}
 
 		// We need only one action scheduled
 		if ( ! as_next_scheduled_action( $hook, $args, $group ) ) {
