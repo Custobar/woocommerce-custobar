@@ -174,18 +174,6 @@ class WC_Settings_Custobar extends WC_Settings_Page {
 				'desc' => '',
 				'id'   => 'custobar_marketing_settings',
 			),
-			'custobar_initial_can_email'  => array(
-				'name' => __( 'Initial email permission', 'woocommerce-custobar' ),
-				'type' => 'checkbox',
-				'desc' => __( 'Set can_email to "true" when exporting a new customer.', 'woocommerce-custobar' ),
-				'id'   => 'custobar_initial_can_email',
-			),
-			'custobar_initial_can_sms'    => array(
-				'name' => __( 'Initial SMS permission', 'woocommerce-custobar' ),
-				'type' => 'checkbox',
-				'desc' => __( 'Set can_sms to "true" when exporting a new customer.', 'woocommerce-custobar' ),
-				'id'   => 'custobar_initial_can_sms',
-			),
 			'section_end'                 => array(
 				'type' => 'sectionend',
 				'id'   => 'custobar_section_end',

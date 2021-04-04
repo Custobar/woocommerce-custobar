@@ -81,26 +81,7 @@ class Customer_Sync extends Data_Sync {
 			$properties     = self::format_single_item( $customer );
 			$initial_export = false;
 
-			// Have initial marketing permissions been exported?
-			if ( ! get_user_meta( $user_id, '_custobar_permissions_export', true ) ) {
-				// Push initial marketing permissions with customer object
-				$initial_export = true;
-
-				if ( 'yes' === get_option( 'custobar_initial_can_email' ) ) {
-					$properties['can_email'] = true;
-				}
-
-				if ( 'yes' === get_option( 'custobar_initial_can_sms' ) ) {
-					$properties['can_sms'] = true;
-				}
-			}
-
 			$response = self::upload_data_type_data( $properties, true );
-
-			if ( ! is_wp_error( $response ) && in_array( $response->code, array( 200, 201 ) ) && $initial_export ) {
-				// Initial export done
-				update_user_meta( $user_id, '_custobar_permissions_export', gmdate( 'c' ) );
-			}
 
 			return $response;
 
