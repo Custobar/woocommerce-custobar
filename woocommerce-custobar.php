@@ -26,6 +26,8 @@ if ( ! defined( 'WOOCOMMERCE_CUSTOBAR_VERSION' ) ) {
 }
 
 require_once WOOCOMMERCE_CUSTOBAR_PATH . '/includes/functions.php';
+require_once WOOCOMMERCE_CUSTOBAR_PATH . '/includes/checkout.php';
+require_once WOOCOMMERCE_CUSTOBAR_PATH . '/includes/my-account.php';
 require_once WOOCOMMERCE_CUSTOBAR_PATH . '/classes/class-plugin.php';
 require_once WOOCOMMERCE_CUSTOBAR_PATH . '/classes/class-data-upload.php';
 require_once WOOCOMMERCE_CUSTOBAR_PATH . '/classes/data-types/abstract-custobar-data-type.php';

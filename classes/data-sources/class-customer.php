@@ -83,10 +83,7 @@ class Customer extends Abstract_Data_Source {
 		if ( $can_email ) {
 			return true;
 		}
-
-		// Never return false as it would override the current value in
-		// Custobar. We don't offer functionality to remove the permission.
-		return null;
+		return false;
 	}
 
 	public function get_can_sms() {
@@ -94,10 +91,7 @@ class Customer extends Abstract_Data_Source {
 		if ( $can_sms ) {
 			return true;
 		}
-
-		// Never return false as it would override the current value in
-		// Custobar. We don't offer functionality to remove the permission.
-		return null;
+		return false;
 	}
 
 	public function get_street_address() {
