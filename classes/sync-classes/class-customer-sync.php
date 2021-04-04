@@ -173,15 +173,6 @@ class Customer_Sync extends Data_Sync {
 			return $response;
 		}
 
-		if ( in_array( $api_response->code, array( 200, 201 ) ) ) {
-			if ( $can_email || $can_sms ) {
-				// We have exported marketing permissions for these users
-				foreach ( $users as $user_id ) {
-					update_user_meta( $user_id, '_custobar_permissions_export', gmdate( 'c' ) );
-				}
-			}
-		}
-
 		// return response
 		$response->code    = $api_response->code;
 		$response->body    = $api_response->body;
