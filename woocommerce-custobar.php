@@ -48,6 +48,7 @@ require_once WOOCOMMERCE_CUSTOBAR_PATH . '/classes/data-sources/class-product.ph
 require_once WOOCOMMERCE_CUSTOBAR_PATH . '/classes/data-sources/class-customer.php';
 require_once WOOCOMMERCE_CUSTOBAR_PATH . '/classes/data-sources/class-sale.php';
 require_once WOOCOMMERCE_CUSTOBAR_PATH . '/classes/data-sources/class-custobar-data-source.php';
+require_once WOOCOMMERCE_CUSTOBAR_PATH . '/classes/rest-api/class-rest-marketing-permissions.php';
 
 // Add settings page
 add_filter(
@@ -65,6 +66,8 @@ register_deactivation_hook( __FILE__, array( 'WooCommerceCustobar\Plugin', 'deac
 // Initialize plugin after WooCommerce is loaded
 add_action( 'plugins_loaded', array( 'WooCommerceCustobar\Plugin', 'initialize' ) );
 
+// Initialize Rest API endpoint
+add_action( 'init', array( new \WooCommerceCustobar\RestAPI\REST_Marketing_Permissions(), 'init' ) );
+
 // Load translations
 add_action( 'init', 'WooCommerceCustobar\load_textdomain' );
-
