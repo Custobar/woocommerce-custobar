@@ -19,7 +19,7 @@ function woocommerce_edit_account_form_marketing_permissions() {
 		<span class="woocommerce-input-wrapper">
 			<label for="custobar_can_email" class="checkbox">
 				<input type="checkbox" class="input-checkbox" name="custobar_can_email" id="custobar_can_email" <?php checked( $allow_email_marketing_checked, true, true ); ?>>
-				<?php esc_html_e( 'Allow email marketing', 'woocommerce-custobar' ); ?>
+				<?php esc_html_e( 'I would like to receive marketing messages via Email', 'woocommerce-custobar' ); ?>
 			</label>
 		</span> 
 	</p>
@@ -29,7 +29,7 @@ function woocommerce_edit_account_form_marketing_permissions() {
 		<span class="woocommerce-input-wrapper">
 			<label for="custobar_can_sms" class="checkbox">
 				<input type="checkbox" class="input-checkbox" name="custobar_can_sms" id="custobar_can_sms" <?php checked( $allow_sms_marketing_checked, true, true ); ?>>
-				<?php esc_html_e( 'Allow SMS marketing', 'woocommerce-custobar' ); ?>
+				<?php esc_html_e( 'I would like to receive marketing messages via SMS', 'woocommerce-custobar' ); ?>
 			</label>
 		</span> 
 	</p>

@@ -16,7 +16,7 @@ function woocommerce_checkout_fields( $checkout_fields = array() ) {
 		$checkout_fields['order']['custobar_can_email'] = array(
 			'type'     => 'checkbox',
 			'class'    => array( 'my-field-class form-row-wide' ),
-			'label'    => __( 'Allow email marketing', 'woocommerce-custobar' ),
+			'label'    => __( 'I would like to receive marketing messages via email', 'woocommerce-custobar' ),
 			'required' => false,
 			'default'  => true,
 		);
@@ -25,7 +25,7 @@ function woocommerce_checkout_fields( $checkout_fields = array() ) {
 		$checkout_fields['order']['custobar_can_sms'] = array(
 			'type'     => 'checkbox',
 			'class'    => array( 'my-field-class form-row-wide' ),
-			'label'    => __( 'Allow SMS marketing', 'woocommerce-custobar' ),
+			'label'    => __( 'I would like to receive marketing messages via SMS', 'woocommerce-custobar' ),
 			'required' => false,
 			'default'  => true,
 		);
