@@ -34,6 +34,4 @@ Installation for the Custobar WooCommerce Plugin is the same as any other WordPr
 
 - Order totals include VAT but order items do not (this is the default functionality of WooCommerce)
 
-- Permission for marketing is asked in the checkout phase only for unauthenticated users. Usually customer do not register before the first order so practically this is rarely a problem. Permission is not given if it's not asked. This functionality might have to be changed if you offer a path to registration without purchase.
-
-- Permission for marketing sets _email_ and _sms_ permissions if selected. No functionality to edit this through filters at this point.
+- This plugin adds support for Custobar marketing permissions. The plugin also adds a Rest API endpoint that allows syncing marketing permissions from Custobar to WooCommerce. Please contact Custobar for further information on how to configure the needed webhook in Custobar.
