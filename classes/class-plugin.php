@@ -33,35 +33,6 @@ class Plugin {
 			Sale_Sync::add_hooks();
 			Data_Upload::add_hooks();
 
-			// Marketing permission
-			// add_action('woocommerce_after_checkout_registration_form', [__CLASS__, 'ask_permission_for_marketing']);
-			// add_action('woocommerce_checkout_update_order_meta', [__CLASS__, 'save_permission_for_marketing']);
-		}
-	}
-
-	/**
-	 * Adds a checkbox field to the checkout asking for permissions for
-	 * marketing.
-	 */
-	public static function ask_permission_for_marketing( $checkout ) {
-		woocommerce_form_field(
-			'marketing_permission',
-			array(
-				'type'  => 'checkbox',
-				'class' => array( 'input-checkbox' ),
-				'label' => apply_filters(
-					'woocommerce_custobar_marketing_permission_text',
-					__( 'I would like to receive marketing messages', 'woocommerce-custobar' )
-				),
-			),
-			$checkout->get_value( 'marketing_permission' )
-		);
-	}
-
-	public static function save_permission_for_marketing( $order_id ) {
-		if ( isset( $_POST['marketing_permission'] ) && $_POST['marketing_permission'] ) {
-			update_post_meta( $order_id, '_woocommerce_custobar_can_email', esc_attr( $_POST['marketing_permission'] ) );
-			update_post_meta( $order_id, '_woocommerce_custobar_can_sms', esc_attr( $_POST['marketing_permission'] ) );
 		}
 	}
 
