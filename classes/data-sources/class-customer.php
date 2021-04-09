@@ -79,25 +79,25 @@ class Customer extends Abstract_Data_Source {
 	}
 
 	public function get_can_email() {
+		if ( ! metadata_exists( 'user', $this->customer->get_id(), '_woocommerce_custobar_can_email' ) ) {
+			return null;
+		}
 		$can_email = get_user_meta( $this->customer->get_id(), '_woocommerce_custobar_can_email', true );
 		if ( $can_email ) {
 			return true;
 		}
-
-		// Never return false as it would override the current value in
-		// Custobar. We don't offer functionality to remove the permission.
-		return null;
+		return false;
 	}
 
 	public function get_can_sms() {
+		if ( ! metadata_exists( 'user', $this->customer->get_id(), '_woocommerce_custobar_can_sms' ) ) {
+			return null;
+		}
 		$can_sms = get_user_meta( $this->customer->get_id(), '_woocommerce_custobar_can_sms', true );
 		if ( $can_sms ) {
 			return true;
 		}
-
-		// Never return false as it would override the current value in
-		// Custobar. We don't offer functionality to remove the permission.
-		return null;
+		return false;
 	}
 
 	public function get_street_address() {
