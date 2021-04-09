@@ -48,7 +48,7 @@ function woocommerce_checkout_update_user_meta( $customer_id, $posted ) {
 		update_user_meta( $customer_id, '_woocommerce_custobar_can_email', $can_email );
 	}
 	if ( apply_filters( 'woocommerce_custobar_show_sms_permission_setting_checkout', true ) ) {
-		$can_sms = ( isset( $posted['custobar_can_email'] ) && $posted['custobar_can_sms'] ) ? true : false;
+		$can_sms = ( isset( $posted['custobar_can_sms'] ) && $posted['custobar_can_sms'] ) ? true : false;
 		update_user_meta( $customer_id, '_woocommerce_custobar_can_sms', $can_sms );
 	}
 
