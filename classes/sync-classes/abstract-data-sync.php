@@ -20,6 +20,26 @@ abstract class Data_Sync {
 	abstract protected static function format_single_item( $item );
 	abstract protected static function upload_data_type_data( $data );
 
+	public static function add_hooks() {
+		// Hook export related actions
+		add_action( 'admin_init', array( __CLASS__, 'maybe_launch_export' ), 10 );
+	}
+
+	public static function maybe_launch_export() {
+		if ( isset( $_GET['page'] ) && 'wc-settings' === $_GET['page'] && ! empty( $_GET['launch_custobar_export'] ) ) { // WPCS: input var ok.
+			$data_type = $_GET['launch_custobar_export'] ?? '';
+			check_admin_referer( 'woocommerce_custobar_' . $data_type . '_export', 'woocommerce_custobar_' . $data_type . '_export_nonce' );
+			if ( $data_type ) {
+				
+				// Check if we already have an export queued
+				if ( ! as_next_scheduled_action( 'woocommerce_custobar_' . $data_type . '_export' ) ) {
+					as_schedule_single_action( time(), 'woocommerce_custobar_' . $data_type . '_export', array( 'offset' => 0 ), 'custobar' );
+					self::reset_export_data( $data_type );
+				}
+			}
+		}
+	}
+
 	/**
 	 * Handle single update timing
 	 * consider Custobar's default request limit of 180 per minute,
@@ -133,4 +153,92 @@ abstract class Data_Sync {
 
 		return Data_Upload::upload_custobar_data( $endpoint, $data );
 	}
+
+	/**
+	 * A helper method to handle Custobar response to a mass export request.
+	 * 
+	 * Updates export related options
+	 *
+	 * @param string $data_type       Data type
+	 * @param int    $offset          Current offset
+	 * @param int    $limit           Query limit
+	 * @param int    $batch_count     Current batch count
+	 * @param int    $total_count     Total count
+	 * @param object $api_response    Response from Custobar API
+	 * @return void
+	 */
+	public static function handle_export_response( $data_type, $offset, $limit, $batch_count, $total_count, $api_response ) {
+		wc_get_logger()->notice(
+			"Handling response for " . $data_type . '. With total count: '. $total_count . '. Offset: '. $offset . '. Limit: '. $limit . '. Batch count: '. $batch_count,
+			array( 'source' => 'custobar' )
+		);
+		if ( is_object( $api_response ) && property_exists( $api_response, 'code') ) {
+			switch ( $api_response->code ) :
+				case 200:
+					// Consider scheduling new action
+					if ( ( $offset + $limit ) < $total_count ) {
+						as_schedule_single_action( time(), 'woocommerce_custobar_' . $data_type . '_export', array( 'offset' => $offset + $limit ), 'custobar');
+						update_option( 'woocommerce_custobar_export_' . $data_type . '_exported_count', $offset + $batch_count);
+					} else {
+						wc_get_logger()->notice(
+							"Handling response for " . $data_type . ' and concluding that we are done!',
+							array( 'source' => 'custobar' )
+						);
+						update_option( 'woocommerce_custobar_export_' . $data_type . '_status', 'completed' );
+						update_option( 'woocommerce_custobar_export_' . $data_type . '_completed_time', time() );
+						update_option( 'woocommerce_custobar_export_' . $data_type . '_exported_count', $offset + $batch_count);
+					}
+					break;
+				case 429:
+					// Retry after 60 seconds
+					as_schedule_single_action( time() + 60, 'woocommerce_custobar_' . $data_type . '_export', array( 'offset' => $offset ), 'custobar');
+					break;
+				case 404:
+					update_option( 'woocommerce_custobar_export_' . $data_type . '_status', 'failed' );
+					break;
+				case 400:
+					update_option( 'woocommerce_custobar_export_' . $data_type . '_status', 'failed: '. $api_response->body );
+					break;
+			endswitch;
+		} else {
+			update_option( 'woocommerce_custobar_export_' . $data_type . '_status', 'failed' );
+		}
+	}
+
+	public static function get_export_data_option_keys( $data_type ) {
+		$data_preposition = 'woocommerce_custobar_export_';		
+		$data_keys = array(
+			'status' => $data_preposition . $data_type . '_status',
+			'completed_time' => $data_preposition . $data_type . '_completed_time',
+			'exported_count' => $data_preposition . $data_type . '_exported_count',
+			'start_time' => $data_preposition . $data_type . '_start_time',
+		);
+		return $data_keys;
+	}
+
+	public static function get_data_type_export_data( $data_type ) {
+		$option_keys = self::get_export_data_option_keys( $data_type );
+		$export_data = array();
+		foreach ( $option_keys as $name => $option_key ) {
+			$value = get_option( $option_key );
+			$export_data[$name]	= $value;
+		}
+		return $export_data;
+	}
+
+	public static function get_data_types() {
+		return array( 
+			'customer',
+			'product',
+			'sale'
+		);
+	}
+
+	public static function reset_export_data( $data_type ) {
+		update_option( 'woocommerce_custobar_export_' . $data_type . '_status', 'in_progress' );
+		update_option( 'woocommerce_custobar_export_' . $data_type . '_start_time', time() );
+		update_option( 'woocommerce_custobar_export_' . $data_type . '_exported_count', '' );
+		update_option( 'woocommerce_custobar_export_' . $data_type . '_completed_time', '' );
+	}
+	
 }

@@ -30,6 +30,53 @@ class Sale_Sync extends Data_Sync {
 		add_action( 'woocommerce_custobar_sale_sync', array( __CLASS__, 'throttle_single_update' ), 10, 1 );
 
 		add_filter( 'woocommerce_custobar_sale_properties', array( __CLASS__, 'add_subscription_fields' ), 10, 3 );
+		add_action( 'woocommerce_custobar_sale_export', array( __CLASS__, 'export_batch' ), 10, 1 );
+	}
+
+
+	public static function export_batch( $offset ) {
+		$response = new \stdClass();
+		$limit    = 100;
+
+		// Get orders by offset and limit
+		$args = array(
+			'type'    => 'shop_order', // skip shop_order_refund
+			'limit'   => $limit,
+			'offset'  => $offset,
+			'orderby' => 'ID',
+			'order'   => 'ASC',
+			'paginate' => true,
+		);
+
+		// Allow 3rd parties to modify args
+		$args = apply_filters( 'woocommerce_custobar_batch_update_orders_args', $args );
+
+		$results = wc_get_orders( $args );
+
+		$orders = $results->orders;
+
+		foreach ( $orders as $order ) {
+
+			foreach ( $order->get_items() as $order_item ) {
+
+				$order_rows[] = self::format_single_item(
+					array(
+						'order'      => $order,
+						'order_item' => $order_item,
+					)
+				);
+
+			}
+		}
+
+		$current_batch_count = count( $orders );
+		$total_count = $results->total;
+
+		// Upload data
+		$api_response = self::upload_data_type_data( $order_rows );
+		
+		// Handle response and possibly schedule next round
+		self::handle_export_response( 'sale', $offset, $limit, $current_batch_count, $total_count, $api_response );
 	}
 
 	/**

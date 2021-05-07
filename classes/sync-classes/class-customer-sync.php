@@ -14,8 +14,9 @@ use WooCommerceCustobar\DataType\Custobar_Customer;
 class Customer_Sync extends Data_Sync {
 
 
-	protected static $endpoint = '/customers/upload/';
-	protected static $child    = __CLASS__;
+	protected static $endpoint  = '/customers/upload/';
+	protected static $child     = __CLASS__;
+	protected static $data_type = 'customer';
 
 	public static function add_hooks() {
 		// Schedule actions
@@ -27,8 +28,65 @@ class Customer_Sync extends Data_Sync {
 		// Hook into scheduled actions
 		// Call parent method to consider request limit
 		add_action( 'woocommerce_custobar_customer_sync', array( __CLASS__, 'throttle_single_update' ), 10, 1 );
+
+		// Hook export related actions
+		add_action( 'woocommerce_custobar_customer_export', array( __CLASS__, 'export_batch' ), 10, 1 );
 	}
 
+
+	public static function export_batch( $offset ) {
+		$response = new \stdClass();
+		$limit    = 100;
+
+		/*
+		* Fetch users
+		*/
+		$query = new \WP_User_Query(
+			array(
+				'role__in' => self::get_allowed_roles(),
+				'fields'   => 'ID',
+				'orderby'  => 'ID',
+				'order'    => 'ASC',
+				'number'   => $limit,
+				'offset'   => $offset,
+			)
+		);
+		
+		// Todo: send these as arguments
+		$can_email = ! empty( $_POST['can_email'] );
+		$can_sms   = ! empty( $_POST['can_sms'] );
+
+		$users = $query->get_results();
+		
+
+		$customers = array();
+		
+		foreach ( $users as $user_id ) {
+			$customer   = new \WC_Customer( $user_id );
+			$properties = self::format_single_item( $customer );
+
+			// Check settings for exporting marketing permissions
+			if ( $can_email ) {
+				$properties['can_email'] = true;
+			}
+
+			if ( $can_sms ) {
+				$properties['can_sms'] = true;
+			}
+
+			$customers[] = $properties;
+		}
+
+		$processed_count = count( $customers );
+		$total_count = $query->get_total();
+
+		// Upload data
+		$api_response = self::upload_data_type_data( $customers );
+		
+		// Handle response and possibly schedule next round
+		self::handle_export_response( 'customer', $offset, $limit, $processed_count, $total_count, $api_response );
+	}
+	
 	public static function schedule_single_update( $user_id, $force = false ) {
 		// Allow 3rd parties to decide if customer should be synced
 		if ( ! apply_filters( 'woocommerce_custobar_customer_should_sync', true, $user_id ) ) {
