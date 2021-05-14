@@ -1,53 +1,72 @@
-<div id="custobar-export-wrap">
-	<h2>Custobar Sync Status</h2>
-	<table class="custobar-sync-report">
-	<thead>
-	<tr>
-		<th>Record Type</th>
-		<th class="custobar-center">Total Records</th>
-		<th class="custobar-center">Synced Records</th>
-		<th class="custobar-center">Sync %</th>
-		<th>Last Export</th>
-		<th>Reset</th>
-		<th colspan="2">Set marketing permissions</th>
-		<th>&nbsp;</th>
-	</tr>
-	</thead>
-	<tbody>
-		<tr class="sync-report-product">
-			<td>Products</td>
-			<td class="custobar-center"><?php echo esc_html($product_stat->total); ?> / <?php echo esc_html($product_stat->variant_total); ?></td>
-			<td class="custobar-center"><?php echo esc_html($product_stat->synced); ?> / <?php echo esc_html($product_stat->variant_synced); ?></td>
-			<td class="custobar-center"><?php echo esc_html($product_stat->synced_percent); ?></td>
-			<td><?php echo esc_html($product_stat->last_updated); ?></td>
-			<td><input name="reset-product" type="checkbox" value="1"></td>
-			<td></td>
-			<td></td>
-			<td><button class="custobar-export button button-alt" data-record-type="product">Run Exporter</button></td>
-		</tr>
-		<tr class="sync-report-customer">
-			<td>Customers</td>
-			<td class="custobar-center"><?php echo esc_html($customer_stat->total); ?></td>
-			<td class="custobar-center"><?php echo esc_html($customer_stat->synced); ?></td>
-			<td class="custobar-center"><?php echo esc_html($customer_stat->synced_percent); ?></td>
-			<td><?php echo esc_html($customer_stat->last_updated); ?></td>
-			<td><input name="reset-customer" type="checkbox" value="1"></td>
-			<td><input name="can-email-customer" type="checkbox" value="1">can_email</td>
-			<td><input name="can-sms-customer" type="checkbox" value="1">can_sms</td>
-			<td><button class="custobar-export button button-alt" data-record-type="customer">Run Exporter</button></td>
-		</tr>
-		<tr class="sync-report-sale">
-			<td>Sales</td>
-			<td class="custobar-center"><?php echo esc_html($sale_stat->total); ?></td>
-			<td class="custobar-center"><?php echo esc_html($sale_stat->synced); ?></td>
-			<td class="custobar-center"><?php echo esc_html($sale_stat->synced_percent); ?></td>
-			<td><?php echo esc_html($sale_stat->last_updated); ?></td>
-			<td><input name="reset-sale" type="checkbox" value="1"></td>
-			<td></td>
-			<td></td>
-			<td><button class="custobar-export button button-alt" data-record-type="sale">Run Exporter</button></td>
-		</tr>
-	<tbody>
-	</table>
+<?php
+namespace WooCommerceCustobar\Synchronization;
+?>
+<div class="custobar-admin-table">
+	<div class="custobar-admin-table__item custobar-admin-table__item--heading">
+		<?php _e( 'Data type', 'woocommerce-custobar' ); ?>
+	</div>
+	<div class="custobar-admin-table__item custobar-admin-table__item--heading">
+		<?php _e( 'Status', 'woocommerce-custobar' ); ?>
+	</div>
+	<div class="custobar-admin-table__item custobar-admin-table__item--heading">
+		<?php _e( 'Export started', 'woocommerce-custobar' ); ?>
+	</div>
+	<div class="custobar-admin-table__item custobar-admin-table__item--heading">
+		<?php _e( 'Completed', 'woocommerce-custobar' ); ?>
+	</div>
+	<div class="custobar-admin-table__item custobar-admin-table__item--heading">
+		<?php _e( 'Uploaded records', 'woocommerce-custobar' ); ?>
+	</div>
+	<div class="custobar-admin-table__item custobar-admin-table__item--heading">
+		<?php _e( 'Action', 'woocommerce-custobar' ); ?>
+	</div>
+	<!-- Loop through each data type -->
+	<?php
+	$data_types = Data_Sync::get_data_types();
+	foreach ( $data_types as $data_type ) {
+		$export_data = Data_Sync::get_data_type_export_data( $data_type );
+		$launch_export_url = wp_nonce_url(
+			add_query_arg( 'launch_custobar_export', $data_type, admin_url( 'admin.php?page=wc-settings&tab=checkout&tab=custobar' ) ),
+			'woocommerce_custobar_' . $data_type . '_export',
+			'woocommerce_custobar_' . $data_type . '_export_nonce'
+		);
+		$launch_export_url = add_query_arg( 'woocommerce_custobar_export_id', uniqid(), $launch_export_url );
+		?>
+			<div class="custobar-admin-table__item">
+				<strong><?php echo ucfirst( $data_type.'s' ); ?></strong>
+			</div>
+			<div class="custobar-admin-table__item">
+
+				<?php
+				$status = $export_data['status'] ?? '';
+				switch ( $export_data['status'] ) {
+					case 'in_progress':
+						_e( 'In progress', 'woommerce-custobar' );
+					break;
+					case 'completed':
+						_e( 'Completed', 'woommerce-custobar' );
+					break;
+					case 'failed':
+						_e( 'Failed', 'woommerce-custobar' );
+					break;
+					default: 
+						_e( 'Not started', 'woommerce-custobar' );
+				}
+			?>
+			</div>
+			<div class="custobar-admin-table__item">
+				<?php echo !empty( $export_data['start_time'] ) ? date_i18n( get_option('date_format') . ' ' . get_option('time_format'), $export_data['start_time'] ) : ''; ?>
+			</div>
+			<div class="custobar-admin-table__item">
+				<?php echo !empty( $export_data['completed_time'] ) ? date_i18n( get_option('date_format') . ' ' . get_option('time_format'), $export_data['completed_time'] ) : ''; ?>
+			</div>
+			<div class="custobar-admin-table__item">
+				<?php echo $export_data['exported_count'] ?? ''; ?>
+			</div>
+			<div class="custobar-admin-table__item">
+				<a href="<?php echo $launch_export_url; ?>" class="button-primary"><?php _e( 'Start export', 'woocommerce-custobar' ); ?></a>
+			</div>
+		<?php
+	}
+	?>
 </div>
-<hr />

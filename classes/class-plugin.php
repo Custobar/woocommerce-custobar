@@ -7,6 +7,7 @@ defined( 'ABSPATH' ) || exit;
 use WooCommerceCustobar\Synchronization\Product_Sync;
 use WooCommerceCustobar\Synchronization\Customer_Sync;
 use WooCommerceCustobar\Synchronization\Sale_Sync;
+use WooCommerceCustobar\Synchronization\Data_Sync;
 
 /**
  * Class Plugin
@@ -31,8 +32,8 @@ class Plugin {
 			Product_Sync::add_hooks();
 			Customer_Sync::add_hooks();
 			Sale_Sync::add_hooks();
+			Data_Sync::add_hooks();
 			Data_Upload::add_hooks();
-
 		}
 	}
 
