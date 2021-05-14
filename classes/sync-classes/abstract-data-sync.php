@@ -28,13 +28,20 @@ abstract class Data_Sync {
 	public static function maybe_launch_export() {
 		if ( isset( $_GET['page'] ) && 'wc-settings' === $_GET['page'] && ! empty( $_GET['launch_custobar_export'] ) ) { // WPCS: input var ok.
 			$data_type = $_GET['launch_custobar_export'] ?? '';
+			$id = $_GET['woocommerce_custobar_export_id'] ?? '';
+
+			// Check nonce
 			check_admin_referer( 'woocommerce_custobar_' . $data_type . '_export', 'woocommerce_custobar_' . $data_type . '_export_nonce' );
-			if ( $data_type ) {
-				
+			
+			/*
+			* Check that we haven't initiated an export with the same id. This prevents a new export starting if the user simply keeps reloading the page. 
+			* Might need to consider a more elegant solution later.
+			*/
+			if ( $data_type && $id != get_option( 'woocommerce_custobar_export_' . $data_type . '_id' ) ) {
 				// Check if we already have an export queued
 				if ( ! as_next_scheduled_action( 'woocommerce_custobar_' . $data_type . '_export' ) ) {
 					as_schedule_single_action( time(), 'woocommerce_custobar_' . $data_type . '_export', array( 'offset' => 0 ), 'custobar' );
-					self::reset_export_data( $data_type );
+					self::reset_export_data( $data_type, $id );
 				}
 			}
 		}
@@ -234,7 +241,8 @@ abstract class Data_Sync {
 		);
 	}
 
-	public static function reset_export_data( $data_type ) {
+	public static function reset_export_data( $data_type, $id ) {
+		update_option( 'woocommerce_custobar_export_' . $data_type . '_id', $id );
 		update_option( 'woocommerce_custobar_export_' . $data_type . '_status', 'in_progress' );
 		update_option( 'woocommerce_custobar_export_' . $data_type . '_start_time', time() );
 		update_option( 'woocommerce_custobar_export_' . $data_type . '_exported_count', '' );
