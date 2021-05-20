@@ -65,8 +65,6 @@ class Product_Sync extends Data_Sync {
 
 		$product_ids = $query->get_posts();
 
-		echo 'Count: ' . count( $product_ids );
-
 		foreach ( $product_ids as $product_id ) {
 			$product_object = wc_get_product( $product_id );
 			if ( $product_object->get_parent_id() ) {

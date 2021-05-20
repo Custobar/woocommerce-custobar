@@ -18,14 +18,6 @@ class Export_Completed {
 	 */
 	const NOTE_NAME = 'woocommerce-custobar-export-completed-note';
 
-	// WooCommerce update notice works so that it updates the existing notice data based on the update status...
-	// What we could do is set this up based on actions...
-	// By default WooCommerce cretes only
-
-	// Let's add a different note for each content type separately.
-
-	// Also todo force actions
-
 	/**
 	 * Get the note.
 	 *
