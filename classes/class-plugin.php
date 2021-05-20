@@ -34,6 +34,9 @@ class Plugin {
 			Sale_Sync::add_hooks();
 			Data_Sync::add_hooks();
 			Data_Upload::add_hooks();
+
+			require_once WOOCOMMERCE_CUSTOBAR_PATH . '/classes/admin-notes/class-export-in-progress.php';
+			require_once WOOCOMMERCE_CUSTOBAR_PATH . '/classes/admin-notes/class-export-completed.php';	
 		}
 	}
 
