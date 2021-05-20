@@ -49,6 +49,8 @@ require_once WOOCOMMERCE_CUSTOBAR_PATH . '/classes/data-sources/class-customer.p
 require_once WOOCOMMERCE_CUSTOBAR_PATH . '/classes/data-sources/class-sale.php';
 require_once WOOCOMMERCE_CUSTOBAR_PATH . '/classes/data-sources/class-custobar-data-source.php';
 require_once WOOCOMMERCE_CUSTOBAR_PATH . '/classes/rest-api/class-rest-marketing-permissions.php';
+require_once WOOCOMMERCE_CUSTOBAR_PATH . '/classes/admin-notes/class-export-in-progress.php';
+require_once WOOCOMMERCE_CUSTOBAR_PATH . '/classes/admin-notes/class-export-completed.php';
 
 // Add settings page
 add_filter(

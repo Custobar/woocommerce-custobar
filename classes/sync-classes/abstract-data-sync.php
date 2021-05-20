@@ -40,6 +40,7 @@ abstract class Data_Sync {
 			if ( $data_type && $id != get_option( 'woocommerce_custobar_export_' . $data_type . '_id' ) ) {
 				// Check if we already have an export queued
 				if ( ! as_next_scheduled_action( 'woocommerce_custobar_' . $data_type . '_export' ) ) {
+					\WooCommerceCustobar\Admin\Notes\Export_In_progress::possibly_add_note();
 					as_schedule_single_action( time(), 'woocommerce_custobar_' . $data_type . '_export', array( 'offset' => 0 ), 'custobar' );
 					self::reset_export_data( $data_type, $id );
 				}
@@ -194,6 +195,11 @@ abstract class Data_Sync {
 						update_option( 'woocommerce_custobar_export_' . $data_type . '_status', 'completed' );
 						update_option( 'woocommerce_custobar_export_' . $data_type . '_completed_time', time() );
 						update_option( 'woocommerce_custobar_export_' . $data_type . '_exported_count', $offset + $batch_count);
+						// Check if we have any other exports in progress. If not, show "Competed" note
+						if ( self::is_export_in_progress() ) {
+							\WooCommerceCustobar\Admin\Notes\Export_In_progress::possibly_delete_note();
+							\WooCommerceCustobar\Admin\Notes\Export_Completed::possibly_add_note();
+						}
 					}
 					break;
 				case 429:
@@ -248,5 +254,23 @@ abstract class Data_Sync {
 		update_option( 'woocommerce_custobar_export_' . $data_type . '_exported_count', '' );
 		update_option( 'woocommerce_custobar_export_' . $data_type . '_completed_time', '' );
 	}
+
+	/** 
+	 * Check if we have an export in progress.
+	 */
+	public static function is_export_in_progress( $data_types=array() ) {
+		if ( ! $data_types ) {
+			$data_types = self::get_data_types();
+		}
+		foreach ( $data_types as $data_type ) {
+			$is_in_progress = get_option( 'woocommerce_custobar_export_' . $data_type . '_status' );
+			if ( $is_in_progress ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	
 	
 }
