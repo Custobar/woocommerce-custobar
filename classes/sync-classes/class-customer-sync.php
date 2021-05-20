@@ -53,8 +53,8 @@ class Customer_Sync extends Data_Sync {
 		);
 		
 		// Todo: send these as arguments
-		$can_email = ! empty( $_POST['can_email'] );
-		$can_sms   = ! empty( $_POST['can_sms'] );
+		$can_email = get_option( 'custobar_export_force_can_email' );
+		$can_sms   = get_option( 'custobar_export_force_can_sms' );
 
 		$users = $query->get_results();
 		
@@ -66,11 +66,11 @@ class Customer_Sync extends Data_Sync {
 			$properties = self::format_single_item( $customer );
 
 			// Check settings for exporting marketing permissions
-			if ( $can_email ) {
+			if ( 'yes' === $can_email ) {
 				$properties['can_email'] = true;
 			}
 
-			if ( $can_sms ) {
+			if ( 'yes' === $can_sms ) {
 				$properties['can_sms'] = true;
 			}
 

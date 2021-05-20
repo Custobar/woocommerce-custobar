@@ -72,9 +72,19 @@ class WC_Settings_Custobar extends WC_Settings_Page {
 			unset( $data['custobar_wc_rest_api_secret_reset'] );
 		}
 
-		woocommerce_update_options( $this->get_settings_api(), $data );
-		woocommerce_update_options( $this->get_settings_fields(), $data );
-		woocommerce_update_options( $this->get_settings_marketing(), $data );
+		global $current_section;
+
+		if ( 'api' == $current_section ) {
+			woocommerce_update_options( $this->get_settings_api(), $data );
+			woocommerce_update_options( $this->get_settings_marketing(), $data );
+			return;
+		}
+		if ( 'fields' == $current_section) {
+			woocommerce_update_options( $this->get_settings_fields(), $data );
+			return;
+		} else {
+			woocommerce_update_options( $this->get_settings_export(), $data );
+		}
 	}
 
 	/**
@@ -211,6 +221,43 @@ class WC_Settings_Custobar extends WC_Settings_Page {
 
 	}
 
+	/**
+	 * Get export settings
+	 *
+	 * @see woocommerce_admin_fields() function.
+	 * @return array Array of settings
+	 */
+	public function get_settings_export() {
+
+		$settings = array(
+			'custobar_export_settings' => array(
+				'name' => __( 'Export Settings', 'woocommerce-custobar' ),
+				'type' => 'title',
+				'desc' => '',
+				'id'   => 'custobar_export_settings',
+			),
+			'custobar_export_force_can_sms' => array(
+				'name' => __( 'Allow sms marketing for all customers.', 'woocommerce-custobar' ),
+				'type' => 'checkbox',
+				'desc' => __( 'By checking this box sms marketing will be allowed for all customers exported via the export tool above.', 'woocommerce-custobar' ),
+				'id'   => 'custobar_export_force_can_sms',
+			),
+			'custobar_export_force_can_email' => array(
+				'name' => __( 'Allow email marketing for all customers.', 'woocommerce-custobar' ),
+				'type' => 'checkbox',
+				'desc' => __( 'By checking this box email marketing will be allowed for all customers exported via the export tool above.', 'woocommerce-custobar' ),
+				'id'   => 'custobar_export_force_can_email',
+			),
+			'section_end'                 => array(
+				'type' => 'sectionend',
+				'id'   => 'custobar_section_end',
+			),
+		);
+
+		return $settings;
+
+	}
+
 	public function output() {
 
 		global $current_section, $hide_save_button;
@@ -219,23 +266,13 @@ class WC_Settings_Custobar extends WC_Settings_Page {
 
 		if ( '' === $current_section ) {
 
-			$hide_save_button = true;
-
 			$data_upload = new Data_Upload();
 			$template    = new Template();
 
-			$product_stat  = $data_upload->fetch_sync_stat_products();
-			$sale_stat     = $data_upload->fetch_sync_stat_sales();
-			$customer_stat = $data_upload->fetch_sync_stat_customers();
-
-			$template       = new Template();
 			$template->name = 'sync-report';
-			$template->data = array(
-				'product_stat'  => $product_stat,
-				'sale_stat'     => $sale_stat,
-				'customer_stat' => $customer_stat,
-			);
 			print $template->get();  // @codingStandardsIgnoreLine
+
+			WC_Admin_Settings::output_fields( $this->get_settings_export() );
 
 		} elseif ( 'api' === $current_section ) {
 
