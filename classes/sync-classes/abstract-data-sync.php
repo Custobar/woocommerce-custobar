@@ -16,7 +16,6 @@ abstract class Data_Sync {
 
 	abstract public static function schedule_single_update( $item_id, $force );
 	abstract public static function single_update( $item_id );
-	abstract public static function batch_update();
 	abstract protected static function format_single_item( $item );
 	abstract protected static function upload_data_type_data( $data );
 
