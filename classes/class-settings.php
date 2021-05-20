@@ -79,7 +79,7 @@ class WC_Settings_Custobar extends WC_Settings_Page {
 			woocommerce_update_options( $this->get_settings_marketing(), $data );
 			return;
 		}
-		if ( 'fields' == $current_section) {
+		if ( 'fields' == $current_section ) {
 			woocommerce_update_options( $this->get_settings_fields(), $data );
 			return;
 		} else {
@@ -230,13 +230,13 @@ class WC_Settings_Custobar extends WC_Settings_Page {
 	public function get_settings_export() {
 
 		$settings = array(
-			'custobar_export_settings' => array(
+			'custobar_export_settings'        => array(
 				'name' => __( 'Export Settings', 'woocommerce-custobar' ),
 				'type' => 'title',
 				'desc' => '',
 				'id'   => 'custobar_export_settings',
 			),
-			'custobar_export_force_can_sms' => array(
+			'custobar_export_force_can_sms'   => array(
 				'name' => __( 'Allow sms marketing for all customers.', 'woocommerce-custobar' ),
 				'type' => 'checkbox',
 				'desc' => __( 'By checking this box sms marketing will be allowed for all customers exported via the export tool above.', 'woocommerce-custobar' ),
@@ -248,7 +248,7 @@ class WC_Settings_Custobar extends WC_Settings_Page {
 				'desc' => __( 'By checking this box email marketing will be allowed for all customers exported via the export tool above.', 'woocommerce-custobar' ),
 				'id'   => 'custobar_export_force_can_email',
 			),
-			'section_end'                 => array(
+			'section_end'                     => array(
 				'type' => 'sectionend',
 				'id'   => 'custobar_section_end',
 			),

@@ -36,7 +36,7 @@ class Plugin {
 			Data_Upload::add_hooks();
 
 			require_once WOOCOMMERCE_CUSTOBAR_PATH . '/classes/admin-notes/class-export-in-progress.php';
-			require_once WOOCOMMERCE_CUSTOBAR_PATH . '/classes/admin-notes/class-export-completed.php';	
+			require_once WOOCOMMERCE_CUSTOBAR_PATH . '/classes/admin-notes/class-export-completed.php';
 		}
 	}
 

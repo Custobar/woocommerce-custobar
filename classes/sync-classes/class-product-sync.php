@@ -25,11 +25,11 @@ class Product_Sync extends Data_Sync {
 		// Hook into scheduled actions
 		// Call parent method to consider request limit
 		add_action( 'woocommerce_custobar_product_sync', array( __CLASS__, 'throttle_single_update' ), 10, 1 );
-	
+
 		// Hook export related actions
 		add_action( 'admin_init', array( __CLASS__, 'maybe_launch_export' ), 10 );
 		add_action( 'woocommerce_custobar_product_export', array( __CLASS__, 'export_batch' ), 10, 1 );
-		
+
 	}
 
 	public static function maybe_launch_export() {
@@ -37,10 +37,10 @@ class Product_Sync extends Data_Sync {
 			// Todo: check admin referer. Use wc_db_update as an example
 			// Check that we don't have an export in progress
 			// Reset export options
-			
+
 			self::reset_export_data( 'product' );
 
-			as_schedule_single_action( time(), 'woocommerce_custobar_product_export', array( 'offset' => 0 ), 'custobar');
+			as_schedule_single_action( time(), 'woocommerce_custobar_product_export', array( 'offset' => 0 ), 'custobar' );
 		}
 	}
 
@@ -49,23 +49,23 @@ class Product_Sync extends Data_Sync {
 		$limit    = 100;
 
 		/*
-		* Use normal WP_Query to get products. 
+		* Use normal WP_Query to get products.
 		* This allows us to query for parent products and product variations in a single query.
 		*/
 		$query = new \WP_Query(
 			array(
-				'post_type' => array( 'product_variation', 'product' ),
-				'fields'   => 'ids',
-				'orderby'  => 'ID',
-				'order'    => 'ASC',
-				'posts_per_page'   => $limit,
-				'offset'   => $offset,
+				'post_type'      => array( 'product_variation', 'product' ),
+				'fields'         => 'ids',
+				'orderby'        => 'ID',
+				'order'          => 'ASC',
+				'posts_per_page' => $limit,
+				'offset'         => $offset,
 			)
-		);	
+		);
 
 		$product_ids = $query->get_posts();
 
-		echo 'Count: '.count( $product_ids );
+		echo 'Count: ' . count( $product_ids );
 
 		foreach ( $product_ids as $product_id ) {
 			$product_object = wc_get_product( $product_id );
@@ -77,7 +77,7 @@ class Product_Sync extends Data_Sync {
 		}
 
 		$current_batch_count = count( $product_list );
-		$total_count = $query->found_posts;
+		$total_count         = $query->found_posts;
 
 		// Upload data
 		$api_response = self::upload_data_type_data( $product_list );

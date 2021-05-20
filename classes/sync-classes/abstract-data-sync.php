@@ -27,13 +27,13 @@ abstract class Data_Sync {
 	public static function maybe_launch_export() {
 		if ( isset( $_GET['page'] ) && 'wc-settings' === $_GET['page'] && ! empty( $_GET['launch_custobar_export'] ) ) { // WPCS: input var ok.
 			$data_type = $_GET['launch_custobar_export'] ?? '';
-			$id = $_GET['woocommerce_custobar_export_id'] ?? '';
+			$id        = $_GET['woocommerce_custobar_export_id'] ?? '';
 
 			// Check nonce
 			check_admin_referer( 'woocommerce_custobar_' . $data_type . '_export', 'woocommerce_custobar_' . $data_type . '_export_nonce' );
-			
+
 			/*
-			* Check that we haven't initiated an export with the same id. This prevents a new export starting if the user simply keeps reloading the page. 
+			* Check that we haven't initiated an export with the same id. This prevents a new export starting if the user simply keeps reloading the page.
 			* Might need to consider a more elegant solution later.
 			*/
 			if ( $data_type && $id != get_option( 'woocommerce_custobar_export_' . $data_type . '_id' ) ) {
@@ -163,7 +163,7 @@ abstract class Data_Sync {
 
 	/**
 	 * A helper method to handle Custobar response to a mass export request.
-	 * 
+	 *
 	 * Updates export related options
 	 *
 	 * @param string $data_type       Data type
@@ -176,24 +176,24 @@ abstract class Data_Sync {
 	 */
 	public static function handle_export_response( $data_type, $offset, $limit, $batch_count, $total_count, $api_response ) {
 		wc_get_logger()->notice(
-			"Handling response for " . $data_type . '. With total count: '. $total_count . '. Offset: '. $offset . '. Limit: '. $limit . '. Batch count: '. $batch_count,
+			'Handling response for ' . $data_type . '. With total count: ' . $total_count . '. Offset: ' . $offset . '. Limit: ' . $limit . '. Batch count: ' . $batch_count,
 			array( 'source' => 'custobar' )
 		);
-		if ( is_object( $api_response ) && property_exists( $api_response, 'code') ) {
+		if ( is_object( $api_response ) && property_exists( $api_response, 'code' ) ) {
 			switch ( $api_response->code ) :
 				case 200:
 					// Consider scheduling new action
 					if ( ( $offset + $limit ) < $total_count ) {
-						as_schedule_single_action( time(), 'woocommerce_custobar_' . $data_type . '_export', array( 'offset' => $offset + $limit ), 'custobar');
-						update_option( 'woocommerce_custobar_export_' . $data_type . '_exported_count', $offset + $batch_count);
+						as_schedule_single_action( time(), 'woocommerce_custobar_' . $data_type . '_export', array( 'offset' => $offset + $limit ), 'custobar' );
+						update_option( 'woocommerce_custobar_export_' . $data_type . '_exported_count', $offset + $batch_count );
 					} else {
 						wc_get_logger()->notice(
-							"Handling response for " . $data_type . ' and concluding that we are done!',
+							'Handling response for ' . $data_type . ' and concluding that we are done!',
 							array( 'source' => 'custobar' )
 						);
 						update_option( 'woocommerce_custobar_export_' . $data_type . '_status', 'completed' );
 						update_option( 'woocommerce_custobar_export_' . $data_type . '_completed_time', time() );
-						update_option( 'woocommerce_custobar_export_' . $data_type . '_exported_count', $offset + $batch_count);
+						update_option( 'woocommerce_custobar_export_' . $data_type . '_exported_count', $offset + $batch_count );
 						// Check if we have any other exports in progress. If not, show "Competed" note
 						if ( self::is_export_in_progress() ) {
 							\WooCommerceCustobar\Admin\Notes\Export_In_progress::possibly_delete_note();
@@ -203,13 +203,13 @@ abstract class Data_Sync {
 					break;
 				case 429:
 					// Retry after 60 seconds
-					as_schedule_single_action( time() + 60, 'woocommerce_custobar_' . $data_type . '_export', array( 'offset' => $offset ), 'custobar');
+					as_schedule_single_action( time() + 60, 'woocommerce_custobar_' . $data_type . '_export', array( 'offset' => $offset ), 'custobar' );
 					break;
 				case 404:
 					update_option( 'woocommerce_custobar_export_' . $data_type . '_status', 'failed' );
 					break;
 				case 400:
-					update_option( 'woocommerce_custobar_export_' . $data_type . '_status', 'failed: '. $api_response->body );
+					update_option( 'woocommerce_custobar_export_' . $data_type . '_status', 'failed: ' . $api_response->body );
 					break;
 			endswitch;
 		} else {
@@ -218,12 +218,12 @@ abstract class Data_Sync {
 	}
 
 	public static function get_export_data_option_keys( $data_type ) {
-		$data_preposition = 'woocommerce_custobar_export_';		
-		$data_keys = array(
-			'status' => $data_preposition . $data_type . '_status',
+		$data_preposition = 'woocommerce_custobar_export_';
+		$data_keys        = array(
+			'status'         => $data_preposition . $data_type . '_status',
 			'completed_time' => $data_preposition . $data_type . '_completed_time',
 			'exported_count' => $data_preposition . $data_type . '_exported_count',
-			'start_time' => $data_preposition . $data_type . '_start_time',
+			'start_time'     => $data_preposition . $data_type . '_start_time',
 		);
 		return $data_keys;
 	}
@@ -232,17 +232,17 @@ abstract class Data_Sync {
 		$option_keys = self::get_export_data_option_keys( $data_type );
 		$export_data = array();
 		foreach ( $option_keys as $name => $option_key ) {
-			$value = get_option( $option_key );
-			$export_data[$name]	= $value;
+			$value                = get_option( $option_key );
+			$export_data[ $name ] = $value;
 		}
 		return $export_data;
 	}
 
 	public static function get_data_types() {
-		return array( 
+		return array(
 			'customer',
 			'product',
-			'sale'
+			'sale',
 		);
 	}
 
@@ -254,10 +254,10 @@ abstract class Data_Sync {
 		update_option( 'woocommerce_custobar_export_' . $data_type . '_completed_time', '' );
 	}
 
-	/** 
+	/**
 	 * Check if we have an export in progress.
 	 */
-	public static function is_export_in_progress( $data_types=array() ) {
+	public static function is_export_in_progress( $data_types = array() ) {
 		if ( ! $data_types ) {
 			$data_types = self::get_data_types();
 		}
@@ -270,6 +270,6 @@ abstract class Data_Sync {
 		return false;
 	}
 
-	
-	
+
+
 }

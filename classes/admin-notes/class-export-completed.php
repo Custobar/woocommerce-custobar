@@ -17,26 +17,26 @@ class Export_Completed {
 	 * Name of the note for use in the database.
 	 */
 	const NOTE_NAME = 'woocommerce-custobar-export-completed-note';
-    
-    // WooCommerce update notice works so that it updates the existing notice data based on the update status...
-    // What we could do is set this up based on actions... 
-    // By default WooCommerce cretes only 
 
-    // Let's add a different note for each content type separately.
-    
-    // Also todo force actions
+	// WooCommerce update notice works so that it updates the existing notice data based on the update status...
+	// What we could do is set this up based on actions...
+	// By default WooCommerce cretes only
 
-    /**
+	// Let's add a different note for each content type separately.
+
+	// Also todo force actions
+
+	/**
 	 * Get the note.
 	 *
 	 * @return Note
 	 */
-    public static function get_note() {
-        $note = new Note();
+	public static function get_note() {
+		$note = new Note();
 		$note->set_title( __( 'Custobar export completed', 'woocommerce-custobar' ) );
 		$note->set_content( __( 'All Custobar exports that were in progress are now completed.', 'woocommerce-custobar' ) );
-        $note->set_type( Note::E_WC_ADMIN_NOTE_UPDATE );
-        // This is called automatically by possibly_add_notes if note with same name does not exist.
+		$note->set_type( Note::E_WC_ADMIN_NOTE_UPDATE );
+		// This is called automatically by possibly_add_notes if note with same name does not exist.
 		$note->set_name( self::NOTE_NAME );
 		$note->set_content_data( (object) array() );
 		$note->set_source( 'woocommerce-custobar' );
@@ -47,8 +47,8 @@ class Export_Completed {
 			'actioned',
 			true
 		);
-        // Allow hide only once complete and link to status page
-        return $note;
+		// Allow hide only once complete and link to status page
+		return $note;
 	}
 
 	/**
@@ -65,5 +65,5 @@ class Export_Completed {
 
 		return true;
 	}
-	
+
 }

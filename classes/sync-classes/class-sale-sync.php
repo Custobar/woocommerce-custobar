@@ -40,11 +40,11 @@ class Sale_Sync extends Data_Sync {
 
 		// Get orders by offset and limit
 		$args = array(
-			'type'    => 'shop_order', // skip shop_order_refund
-			'limit'   => $limit,
-			'offset'  => $offset,
-			'orderby' => 'ID',
-			'order'   => 'ASC',
+			'type'     => 'shop_order', // skip shop_order_refund
+			'limit'    => $limit,
+			'offset'   => $offset,
+			'orderby'  => 'ID',
+			'order'    => 'ASC',
 			'paginate' => true,
 		);
 
@@ -70,11 +70,11 @@ class Sale_Sync extends Data_Sync {
 		}
 
 		$current_batch_count = count( $orders );
-		$total_count = $results->total;
+		$total_count         = $results->total;
 
 		// Upload data
 		$api_response = self::upload_data_type_data( $order_rows );
-		
+
 		// Handle response and possibly schedule next round
 		self::handle_export_response( 'sale', $offset, $limit, $current_batch_count, $total_count, $api_response );
 	}
