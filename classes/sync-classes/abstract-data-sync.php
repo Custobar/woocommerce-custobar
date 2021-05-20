@@ -211,6 +211,8 @@ abstract class Data_Sync {
 				case 400:
 					update_option( 'woocommerce_custobar_export_' . $data_type . '_status', 'failed: ' . $api_response->body );
 					break;
+				default:
+					update_option( 'woocommerce_custobar_export_' . $data_type . '_status', 'Unknown error' );
 			endswitch;
 		} else {
 			update_option( 'woocommerce_custobar_export_' . $data_type . '_status', 'failed' );
