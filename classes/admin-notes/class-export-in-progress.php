@@ -49,7 +49,7 @@ class Export_In_Progress {
 		);
 		$note->add_action(
 			'woocommerce-custobar-in-progress-note-hide',
-			__( 'Hide', 'woocommerce' ),
+			__( 'Hide', 'woocommerce-custobar' ),
 			'',
 			'actioned',
 			false
