@@ -9,15 +9,15 @@ defined( 'ABSPATH' ) || exit;
 /**
  * The initial Storefront inbox Message.
  */
-class Export_In_Progress {
+class Export_Failed {
 
 	use NoteTraits;
 
 	/**
 	 * Name of the note for use in the database.
 	 */
-	const NOTE_NAME = 'woocommerce-custobar-export-in-progress-notice';
-
+	const NOTE_NAME = 'woocommerce-custobar-export-failed';
+	
 	/**
 	 * Get the note.
 	 *
@@ -25,22 +25,21 @@ class Export_In_Progress {
 	 */
 	public static function get_note() {
 		$note                = new Note();
-		$pending_actions_url = admin_url( 'admin.php?page=wc-status&tab=action-scheduler&s=woocommerce_run_update&status=pending' );
-		$note->set_title( __( 'Custobar export in progress', 'woocommerce-custobar' ) );
-		$note->set_content( __( 'We are currently uploading information to Custobar in the background. A separate notification will be shown once the upload is complete. ', 'woocommerce-custobar' ) );
-		$note->set_type( Note::E_WC_ADMIN_NOTE_UPDATE );
+		$note->set_title( __( 'Custobar export failed', 'woocommerce-custobar' ) );
+		$note->set_content( __( 'A custobar export process has failed. Please make sure that you have entered Custobar API credentials.', 'woocommerce-custobar' ) );
+		$note->set_type( Note::E_WC_ADMIN_NOTE_ERROR );
 		$note->set_name( self::NOTE_NAME );
 		$note->set_content_data( (object) array() );
 		$note->set_source( 'woocommerce-custobar' );
 		$note->add_action(
-			'woocommerce-custobar-see-progress',
-			__( 'Check progress', 'woocommerce-custobar' ),
+			'woocommerce-custobar-failed-note-see-progress',
+			__( 'Check status', 'woocommerce-custobar' ),
 			admin_url( 'admin.php?page=wc-settings&tab=checkout&tab=custobar' ),
-			'unactioned',
+			'actioned',
 			true
 		);
 		$note->add_action(
-			'woocommerce-custobar-in-progress-note-hide',
+			'woocommerce-custobar-failed-note-hide',
 			__( 'Hide', 'woocommerce-custobar' ),
 			'',
 			'actioned',
@@ -49,6 +48,21 @@ class Export_In_Progress {
 
 		// Allow hide only once complete and link to status page
 		return $note;
+	}
+
+	/**
+	 * In comparison to other notes, this note can be added multiple times.
+	 *
+	 * @return bool
+	 */
+	public static function can_be_added() {
+		$note = self::get_note();
+
+		if ( ! $note instanceof Note && ! $note instanceof WC_Admin_Note ) {
+			return;
+		}
+
+		return true;
 	}
 
 }

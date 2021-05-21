@@ -207,15 +207,31 @@ abstract class Data_Sync {
 					break;
 				case 404:
 					update_option( 'woocommerce_custobar_export_' . $data_type . '_status', 'failed' );
+					if ( ! self::is_export_in_progress() ) {
+						\WooCommerceCustobar\Admin\Notes\Export_In_progress::possibly_delete_note();
+					}
+					\WooCommerceCustobar\Admin\Notes\Export_Failed::possibly_add_note();
 					break;
 				case 400:
 					update_option( 'woocommerce_custobar_export_' . $data_type . '_status', 'failed: ' . $api_response->body );
+					if ( ! self::is_export_in_progress() ) {
+						\WooCommerceCustobar\Admin\Notes\Export_In_progress::possibly_delete_note();
+					}
+					\WooCommerceCustobar\Admin\Notes\Export_Failed::possibly_add_note();
 					break;
 				default:
 					update_option( 'woocommerce_custobar_export_' . $data_type . '_status', 'Unknown error' );
+					if ( ! self::is_export_in_progress() ) {
+						\WooCommerceCustobar\Admin\Notes\Export_In_progress::possibly_delete_note();
+					}
+					\WooCommerceCustobar\Admin\Notes\Export_Failed::possibly_add_note();
 			endswitch;
 		} else {
 			update_option( 'woocommerce_custobar_export_' . $data_type . '_status', 'failed' );
+			if ( ! self::is_export_in_progress() ) {
+				\WooCommerceCustobar\Admin\Notes\Export_In_progress::possibly_delete_note();
+			}
+			\WooCommerceCustobar\Admin\Notes\Export_Failed::possibly_add_note();
 		}
 	}
 
