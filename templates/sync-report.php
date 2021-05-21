@@ -64,7 +64,11 @@ namespace WooCommerceCustobar\Synchronization;
 				<?php echo $export_data['exported_count'] ?? ''; ?>
 			</div>
 			<div class="custobar-admin-table__item">
-				<a href="<?php echo $launch_export_url; ?>" class="button-primary"><?php _e( 'Start export', 'woocommerce-custobar' ); ?></a>
+				<?php if ( ! Data_Sync::is_export_in_progress() ) : ?>
+					<a href="<?php echo $launch_export_url; ?>" class="button-primary"><?php _e( 'Start export', 'woocommerce-custobar' ); ?></a>
+				<?php else : ?>
+					<button disabled class="button-primary" title="<?php _e( 'Exports need to be run one at a time. Please wait for the export in progress to complete.', 'woocommerce-custobar' ); ?>"><?php _e( 'Start export', 'woocommerce-custobar' ); ?></button>
+				<?php endif; ?>
 			</div>
 		<?php
 	}
