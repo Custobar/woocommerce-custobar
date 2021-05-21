@@ -195,7 +195,7 @@ abstract class Data_Sync {
 						update_option( 'woocommerce_custobar_export_' . $data_type . '_completed_time', time() );
 						update_option( 'woocommerce_custobar_export_' . $data_type . '_exported_count', $offset + $batch_count );
 						// Check if we have any other exports in progress. If not, show "Competed" note
-						if ( self::is_export_in_progress() ) {
+						if ( ! self::is_export_in_progress() ) {
 							\WooCommerceCustobar\Admin\Notes\Export_In_progress::possibly_delete_note();
 							\WooCommerceCustobar\Admin\Notes\Export_Completed::possibly_add_note();
 						}
@@ -264,8 +264,8 @@ abstract class Data_Sync {
 			$data_types = self::get_data_types();
 		}
 		foreach ( $data_types as $data_type ) {
-			$is_in_progress = get_option( 'woocommerce_custobar_export_' . $data_type . '_status' );
-			if ( $is_in_progress ) {
+			$status = get_option( 'woocommerce_custobar_export_' . $data_type . '_status' );
+			if ( "in_progress" === $status ) {
 				return true;
 			}
 		}
