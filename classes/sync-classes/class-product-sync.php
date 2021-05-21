@@ -25,6 +25,63 @@ class Product_Sync extends Data_Sync {
 		// Hook into scheduled actions
 		// Call parent method to consider request limit
 		add_action( 'woocommerce_custobar_product_sync', array( __CLASS__, 'throttle_single_update' ), 10, 1 );
+
+		// Hook export related actions
+		add_action( 'admin_init', array( __CLASS__, 'maybe_launch_export' ), 10 );
+		add_action( 'woocommerce_custobar_product_export', array( __CLASS__, 'export_batch' ), 10, 1 );
+
+	}
+
+	public static function maybe_launch_export() {
+		if ( isset( $_GET['page'] ) && 'wc-settings' === $_GET['page'] && ! empty( $_GET['launch_custobar_product_export'] ) ) { // WPCS: input var ok.
+			// Todo: check admin referer. Use wc_db_update as an example
+			// Check that we don't have an export in progress
+			// Reset export options
+
+			self::reset_export_data( 'product' );
+
+			as_schedule_single_action( time(), 'woocommerce_custobar_product_export', array( 'offset' => 0 ), 'custobar' );
+		}
+	}
+
+	public static function export_batch( $offset ) {
+		$response = new \stdClass();
+		$limit    = 100;
+
+		/*
+		* Use normal WP_Query to get products.
+		* This allows us to query for parent products and product variations in a single query.
+		*/
+		$query = new \WP_Query(
+			array(
+				'post_type'      => array( 'product_variation', 'product' ),
+				'fields'         => 'ids',
+				'orderby'        => 'ID',
+				'order'          => 'ASC',
+				'posts_per_page' => $limit,
+				'offset'         => $offset,
+			)
+		);
+
+		$product_ids = $query->get_posts();
+
+		foreach ( $product_ids as $product_id ) {
+			$product_object = wc_get_product( $product_id );
+			if ( $product_object->get_parent_id() ) {
+				$product_list[] = self::format_single_variant( $product_object );
+			} else {
+				$product_list[] = self::format_single_item( $product_object );
+			}
+		}
+
+		$current_batch_count = count( $product_list );
+		$total_count         = $query->found_posts;
+
+		// Upload data
+		$api_response = self::upload_data_type_data( $product_list );
+
+		// Handle response and possibly schedule next round
+		self::handle_export_response( 'product', $offset, $limit, $current_batch_count, $total_count, $api_response );
 	}
 
 	public static function schedule_single_update( $product_id, $force = false ) {
@@ -82,113 +139,6 @@ class Product_Sync extends Data_Sync {
 		}
 
 		return false;
-	}
-
-	public static function batch_update() {
-		$response       = new \stdClass();
-		$limit          = 500;
-		$tracker        = self::tracker_fetch();
-		$offset         = $tracker['offset'];
-		$variant_offset = $tracker['variant_offset'];
-		$product_list   = array();
-		$variant_list   = array();
-
-		if ( 0 == $variant_offset ) {
-
-			$products = wc_get_products(
-				array(
-					'limit'   => $limit,
-					'offset'  => $offset,
-					'orderby' => 'ID',
-					'order'   => 'ASC',
-				)
-			);
-
-			foreach ( $products as $product ) {
-				$product_list[] = self::format_single_item( $product );
-			}
-		}
-
-		$count   = count( $product_list );
-		$offset += $count;
-
-		// Fetch variants
-		if ( $count < $limit ) {
-
-			$variants = wc_get_products(
-				array(
-					'type'    => 'variation',
-					'limit'   => $limit,
-					'offset'  => $variant_offset,
-					'orderby' => 'ID',
-					'order'   => 'ASC',
-				)
-			);
-
-			foreach ( $variants as $variant ) {
-				$variant_list[] = self::format_single_variant( $variant );
-			}
-
-			$count           = count( $variant_list );
-			$variant_offset += $count;
-
-			$product_list = array_merge( $product_list, $variant_list );
-		}
-
-		// no products
-		if ( empty( $product_list ) ) {
-			$response->code = 220;
-			return $response;
-		}
-
-		$api_response = self::upload_data_type_data( $product_list );
-
-		if ( is_wp_error( $api_response ) ) {
-			// Request was invalid
-			$response->code = 444;
-			$response->body = $api_response->get_error_message();
-			return $response;
-		}
-
-		self::tracker_save( $offset, $variant_offset );
-
-		// return response
-		$response->code    = $api_response->code;
-		$response->body    = $api_response->body;
-		$response->tracker = self::tracker_fetch();
-		$response->count   = $count;
-		return $response;
-	}
-
-	public static function tracker_fetch() {
-		$tracker = get_option( 'custobar_export_product' );
-		if ( ! is_array( $tracker ) ) {
-			$tracker = array();
-		}
-		if ( ! isset( $tracker['offset'] ) ) {
-			$tracker['offset'] = 0;
-		}
-		if ( ! isset( $tracker['variant_offset'] ) ) {
-			$tracker['variant_offset'] = 0;
-		}
-		if ( ! isset( $tracker['updated'] ) ) {
-			$tracker['updated'] = false;
-		}
-		return $tracker;
-	}
-
-	public static function tracker_save( $offset, $variant_offset, $total = null, $variant_total = null ) {
-		$tracker = self::tracker_fetch();
-		if ( isset( $offset ) && isset( $variant_offset ) ) {
-			$tracker['offset']         = $offset;
-			$tracker['variant_offset'] = $variant_offset;
-			$tracker['updated']        = time();
-		}
-		if ( isset( $total ) && isset( $variant_total ) ) {
-			$tracker['total']         = $total;
-			$tracker['variant_total'] = $variant_total;
-		}
-		update_option( 'custobar_export_product', $tracker );
 	}
 
 	protected static function format_single_item( $product ) {

@@ -21,17 +21,16 @@ Installation for the Custobar WooCommerce Plugin is the same as any other WordPr
 
 2. Unzip the plugin file. If needed change the name of the parent directory to "custobar-woocommerce-plugin".
 
-3. Visit the plugins page in the WP admin, activate the plugin. 
+3. Visit the plugins page in the WP admin, activate the plugin.
+
+4. Set API credentials via Plugin settings at WooCommerce -> Settings -> Custobar
 
 ## Requires
 
-- WooCommerce 3.x
+- WooCommerce >5.0
 - Tested up to PHP 7.4 and WordPress 5.4
 
 ## Notices
 
 - This plugin supports WooCommerce Subscriptions by adding custom fields for some basic information
-
-- Order totals include VAT but order items do not (this is the default functionality of WooCommerce)
-
 - This plugin adds support for Custobar marketing permissions. The plugin also adds a Rest API endpoint that allows syncing marketing permissions from Custobar to WooCommerce. Please contact Custobar for further information on how to configure the needed webhook in Custobar.

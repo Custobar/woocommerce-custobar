@@ -14,8 +14,9 @@ use WooCommerceCustobar\DataType\Custobar_Customer;
 class Customer_Sync extends Data_Sync {
 
 
-	protected static $endpoint = '/customers/upload/';
-	protected static $child    = __CLASS__;
+	protected static $endpoint  = '/customers/upload/';
+	protected static $child     = __CLASS__;
+	protected static $data_type = 'customer';
 
 	public static function add_hooks() {
 		// Schedule actions
@@ -27,6 +28,62 @@ class Customer_Sync extends Data_Sync {
 		// Hook into scheduled actions
 		// Call parent method to consider request limit
 		add_action( 'woocommerce_custobar_customer_sync', array( __CLASS__, 'throttle_single_update' ), 10, 1 );
+
+		// Hook export related actions
+		add_action( 'woocommerce_custobar_customer_export', array( __CLASS__, 'export_batch' ), 10, 1 );
+	}
+
+
+	public static function export_batch( $offset ) {
+		$response = new \stdClass();
+		$limit    = 100;
+
+		/*
+		* Fetch users
+		*/
+		$query = new \WP_User_Query(
+			array(
+				'role__in' => self::get_allowed_roles(),
+				'fields'   => 'ID',
+				'orderby'  => 'ID',
+				'order'    => 'ASC',
+				'number'   => $limit,
+				'offset'   => $offset,
+			)
+		);
+
+		// Todo: send these as arguments
+		$can_email = get_option( 'custobar_export_force_can_email' );
+		$can_sms   = get_option( 'custobar_export_force_can_sms' );
+
+		$users = $query->get_results();
+
+		$customers = array();
+
+		foreach ( $users as $user_id ) {
+			$customer   = new \WC_Customer( $user_id );
+			$properties = self::format_single_item( $customer );
+
+			// Check settings for exporting marketing permissions
+			if ( 'yes' === $can_email ) {
+				$properties['can_email'] = true;
+			}
+
+			if ( 'yes' === $can_sms ) {
+				$properties['can_sms'] = true;
+			}
+
+			$customers[] = $properties;
+		}
+
+		$processed_count = count( $customers );
+		$total_count     = $query->get_total();
+
+		// Upload data
+		$api_response = self::upload_data_type_data( $customers );
+
+		// Handle response and possibly schedule next round
+		self::handle_export_response( 'customer', $offset, $limit, $processed_count, $total_count, $api_response );
 	}
 
 	public static function schedule_single_update( $user_id, $force = false ) {
@@ -98,90 +155,6 @@ class Customer_Sync extends Data_Sync {
 	}
 
 	/**
-	 * Batch update customers, launched from admin
-	 *
-	 * @return $response
-	 */
-	public static function batch_update() {
-		$response = new \stdClass();
-		$tracker  = self::tracker_fetch();
-		$offset   = $tracker['offset'];
-		$limit    = 500;
-
-		/*
-		* Fetch users
-		*/
-		$query = new \WP_User_Query(
-			array(
-				'role__in' => self::get_allowed_roles(),
-				'fields'   => 'ID',
-				'orderby'  => 'ID',
-				'order'    => 'ASC',
-				'number'   => $limit,
-				'offset'   => $offset,
-			)
-		);
-
-		$users = $query->get_results();
-
-		if ( empty( $users ) ) {
-			$response->code = 220;
-			return $response;
-		}
-
-		// Override marketing permissions?
-		$can_email = ! empty( $_POST['can_email'] );
-		$can_sms   = ! empty( $_POST['can_sms'] );
-
-		// Loop over orders to find unique customers
-		// Customer data organized into $data
-		$customers = array();
-		foreach ( $users as $user_id ) {
-			$customer   = new \WC_Customer( $user_id );
-			$properties = self::format_single_item( $customer );
-
-			// Check settings for exporting marketing permissions
-			if ( $can_email ) {
-				$properties['can_email'] = true;
-			}
-
-			if ( $can_sms ) {
-				$properties['can_sms'] = true;
-			}
-
-			$customers[] = $properties;
-		}
-
-		// No data
-		if ( empty( $customers ) ) {
-			$response->code = 221;
-			return $response;
-		}
-
-		$count = count( $customers );
-
-		// Track the export
-		self::tracker_save( $offset + $count );
-
-		// Do upload to Custobar API
-		$api_response = self::upload_data_type_data( $customers );
-
-		if ( is_wp_error( $api_response ) ) {
-			// Request was invalid
-			$response->code = 444;
-			$response->body = $api_response->get_error_message();
-			return $response;
-		}
-
-		// return response
-		$response->code    = $api_response->code;
-		$response->body    = $api_response->body;
-		$response->tracker = self::tracker_fetch();
-		$response->count   = $count;
-		return $response;
-	}
-
-	/**
 	 * Get allowed user roles that will be synced
 	 * By default only users with the role 'customer' are synced
 	 *
@@ -191,32 +164,6 @@ class Customer_Sync extends Data_Sync {
 		// Allow 3rd parties filter roles to be synced
 		$roles = apply_filters( 'woocommerce_custobar_customer_sync_roles', array( 'customer' ) );
 		return array_filter( array_unique( $roles ) );
-	}
-
-	public static function tracker_fetch() {
-		$tracker = get_option( 'custobar_export_customer' );
-		if ( ! is_array( $tracker ) ) {
-			$tracker = array();
-		}
-		if ( ! isset( $tracker['offset'] ) ) {
-			$tracker['offset'] = 0;
-		}
-		if ( ! isset( $tracker['updated'] ) ) {
-			$tracker['updated'] = false;
-		}
-		return $tracker;
-	}
-
-	public static function tracker_save( $offset, $total = null ) {
-		$tracker = self::tracker_fetch();
-		if ( isset( $offset ) ) {
-			$tracker['offset']  = $offset;
-			$tracker['updated'] = time();
-		}
-		if ( isset( $total ) ) {
-			$tracker['total'] = $total;
-		}
-		update_option( 'custobar_export_customer', $tracker );
 	}
 
 	/**
