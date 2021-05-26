@@ -15,65 +15,102 @@ class Customer_Sync extends Data_Sync {
 
 
 	protected static $endpoint = '/customers/upload/';
+	protected static $child    = __CLASS__;
 
 	public static function add_hooks() {
 		// Schedule actions
 		add_action( 'user_register', array( __CLASS__, 'schedule_single_update' ), 10, 1 );
 		add_action( 'profile_update', array( __CLASS__, 'schedule_single_update' ), 10, 1 );
 		add_action( 'woocommerce_new_customer', array( __CLASS__, 'schedule_single_update', 10, 1 ) );
-		add_action( 'woocommerce_created_customer', array( __CLASS__, 'schedule_single_update' ), 10, 1 );
 		add_action( 'woocommerce_update_customer', array( __CLASS__, 'schedule_single_update' ), 10, 1 );
 
 		// Hook into scheduled actions
-		add_action( 'woocommerce_custobar_customer_sync', array( __CLASS__, 'single_update' ), 10, 1 );
+		// Call parent method to consider request limit
+		add_action( 'woocommerce_custobar_customer_sync', array( __CLASS__, 'throttle_single_update' ), 10, 1 );
 	}
 
-	public static function schedule_single_update( $user_id ) {
-		wc_get_logger()->info(
-			'Customer_Sync schedule_single_update called with $user_id: ' . $user_id,
-			array(
-				'source' => 'custobar',
-			)
-		);
+	public static function schedule_single_update( $user_id, $force = false ) {
+		// Allow 3rd parties to decide if customer should be synced
+		if ( ! apply_filters( 'woocommerce_custobar_customer_should_sync', true, $user_id ) ) {
+			return;
+		}
 
 		$hook  = 'woocommerce_custobar_customer_sync';
 		$args  = array( 'user_id' => $user_id );
 		$group = 'custobar';
 
+		// Force schedule
+		// For example reschedule when action still in progress
+		if ( $force ) {
+			as_schedule_single_action( time(), $hook, $args, $group );
+
+			wc_get_logger()->info(
+				'#' . $user_id . ' NEW/UPDATE CUSTOMER, SYNC SCHEDULED (FORCE)',
+				array( 'source' => 'custobar' )
+			);
+		}
+
 		// We need only one action scheduled
 		if ( ! as_next_scheduled_action( $hook, $args, $group ) ) {
-			as_enqueue_async_action( $hook, $args, $group );
+			as_schedule_single_action( time(), $hook, $args, $group );
+
+			wc_get_logger()->info(
+				'#' . $user_id . ' NEW/UPDATE CUSTOMER, SYNC SCHEDULED',
+				array( 'source' => 'custobar' )
+			);
 		}
 	}
 
+	/**
+	 * Customer sync
+	 *
+	 * @param int $user_id
+	 * @return void
+	 */
 	public static function single_update( $user_id ) {
 
 		wc_get_logger()->info(
-			'Customer_Sync single update called with $user_id: ' . $user_id,
-			array(
-				'source' => 'custobar',
-			)
+			'#' . $user_id . ' CUSTOMER SYNC, UPLOADING TO CUSTOBAR',
+			array( 'source' => 'custobar' )
 		);
 
 		$customer = new \WC_Customer( $user_id );
 
-		if ( in_array( $customer->get_role(), self::get_allowed_roles(), true ) ) {
-			$properties = self::format_single_item( $customer );
-			self::upload_data_type_data( $properties, true );
+		if ( in_array( $customer->get_role(), self::get_allowed_roles() ) ) {
+
+			$properties     = self::format_single_item( $customer );
+			$initial_export = false;
+
+			$response = self::upload_data_type_data( $properties, true );
+
+			return $response;
+
+		} else {
+
+			wc_get_logger()->warning(
+				'#' . $user_id . ' tried to sync customer, but user role was not allowed',
+				array( 'source' => 'custobar' )
+			);
+
 		}
+
+		return false;
 	}
 
+	/**
+	 * Batch update customers, launched from admin
+	 *
+	 * @return $response
+	 */
 	public static function batch_update() {
 		$response = new \stdClass();
 		$tracker  = self::tracker_fetch();
 		$offset   = $tracker['offset'];
-
-		$limit = 500;
+		$limit    = 500;
 
 		/*
 		* Fetch users
 		*/
-
 		$query = new \WP_User_Query(
 			array(
 				'role__in' => self::get_allowed_roles(),
@@ -92,15 +129,30 @@ class Customer_Sync extends Data_Sync {
 			return $response;
 		}
 
-		// loop over orders to find unique customers
-		// customer data organized into $data
+		// Override marketing permissions?
+		$can_email = ! empty( $_POST['can_email'] );
+		$can_sms   = ! empty( $_POST['can_sms'] );
+
+		// Loop over orders to find unique customers
+		// Customer data organized into $data
 		$customers = array();
 		foreach ( $users as $user_id ) {
-			$customer    = new \WC_Customer( $user_id );
-			$customers[] = self::format_single_item( $customer );
+			$customer   = new \WC_Customer( $user_id );
+			$properties = self::format_single_item( $customer );
+
+			// Check settings for exporting marketing permissions
+			if ( $can_email ) {
+				$properties['can_email'] = true;
+			}
+
+			if ( $can_sms ) {
+				$properties['can_sms'] = true;
+			}
+
+			$customers[] = $properties;
 		}
 
-		// no data
+		// No data
 		if ( empty( $customers ) ) {
 			$response->code = 221;
 			return $response;
@@ -108,11 +160,18 @@ class Customer_Sync extends Data_Sync {
 
 		$count = count( $customers );
 
-		// track the export
+		// Track the export
 		self::tracker_save( $offset + $count );
 
-		// do upload to custobar API
+		// Do upload to Custobar API
 		$api_response = self::upload_data_type_data( $customers );
+
+		if ( is_wp_error( $api_response ) ) {
+			// Request was invalid
+			$response->code = 444;
+			$response->body = $api_response->get_error_message();
+			return $response;
+		}
 
 		// return response
 		$response->code    = $api_response->code;
@@ -120,7 +179,6 @@ class Customer_Sync extends Data_Sync {
 		$response->tracker = self::tracker_fetch();
 		$response->count   = $count;
 		return $response;
-
 	}
 
 	/**
@@ -174,10 +232,10 @@ class Customer_Sync extends Data_Sync {
 	}
 
 	protected static function upload_data_type_data( $data, $single = false ) {
-
 		$formatted_data = array(
 			'customers' => array(),
 		);
+
 		if ( $single ) {
 			$formatted_data['customers'][] = $data;
 		} else {
@@ -185,6 +243,5 @@ class Customer_Sync extends Data_Sync {
 		}
 
 		return self::upload_custobar_data( $formatted_data );
-
 	}
 }

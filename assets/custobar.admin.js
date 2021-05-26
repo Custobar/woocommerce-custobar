@@ -56,7 +56,7 @@
 
 		if (!responseCell.length) {
 			$("#custobar-export-wrap table").append(
-				'<tr class="response"><td colspan="7">' + message + "</td></tr>"
+				'<tr class="response"><td colspan="9">' + message + "</td></tr>"
 			);
 		} else {
 			responseCell.html(message);
@@ -64,6 +64,12 @@
 
 		var _post = function () {
 			var resetCheck = $('input[name="reset-' + recordType + '"]');
+			var emailPermissionCheck = $(
+				'input[name="can-email-' + recordType + '"]'
+			);
+			var smsPermissionCheck = $(
+				'input[name="can-sms-' + recordType + '"]'
+			);
 
 			data = {
 				action: "custobar_export",
@@ -74,6 +80,14 @@
 			if (resetCheck.is(":checked")) {
 				data["reset"] = 1;
 				resetCheck.prop("checked", false);
+			}
+
+			if (emailPermissionCheck.is(":checked")) {
+				data["can_email"] = 1;
+			}
+
+			if (smsPermissionCheck.is(":checked")) {
+				data["can_sms"] = 1;
 			}
 
 			$.post(ajaxurl, data, function (response) {
@@ -110,7 +124,14 @@
 				}
 				if (response.code == 420) {
 					message +=
-						"Either WooCommerce is uninstalled or other configuration conditions were not met. Check that you have a valid API key set for Custobar. Response code " +
+						"Either WooCommerce is uninstalled or other configuration conditions were not met. " +
+						"Check that you have a valid API key set for Custobar. Response code " +
+						response.code +
+						", no records were exported.";
+				}
+				if (response.code == 429) {
+					message +=
+						"Too many requests. Response code " +
 						response.code +
 						", no records were exported.";
 				}
@@ -119,6 +140,10 @@
 						"No more records available to export. Response code " +
 						response.code +
 						", no records were exported.";
+				}
+				if (response.code == 444) {
+					message +=
+						"Error connecting to Custobar API: " + response.body;
 				}
 
 				$("#custobar-export-wrap table tr.response td").html(message);

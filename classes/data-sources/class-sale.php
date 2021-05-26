@@ -48,7 +48,8 @@ class Sale extends Abstract_Data_Source {
 	}
 
 	public function get_total() {
-		return Utilities::get_price_in_cents( $this->order_item->get_total() );
+		$line_total_with_tax = $this->order->get_line_total( $this->order_item, true );
+		return Utilities::get_price_in_cents( $line_total_with_tax );
 	}
 
 	public function get_order_total() {
@@ -82,7 +83,8 @@ class Sale extends Abstract_Data_Source {
 	}
 
 	public function get_price() {
-		return Utilities::get_price_in_cents( $this->order_item->get_total() / $this->order_item->get_quantity() );
+		$line_total_with_tax = $this->order->get_line_total( $this->order_item, true );
+		return Utilities::get_price_in_cents( $line_total_with_tax / $this->order_item->get_quantity() );
 	}
 
 	public function get_total_discount() {

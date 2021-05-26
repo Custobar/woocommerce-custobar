@@ -15,6 +15,7 @@ class Product_Sync extends Data_Sync {
 
 
 	protected static $endpoint = '/products/upload/';
+	protected static $child    = __CLASS__;
 
 	public static function add_hooks() {
 		// Schedule actions
@@ -22,34 +23,65 @@ class Product_Sync extends Data_Sync {
 		add_action( 'woocommerce_update_product', array( __CLASS__, 'schedule_single_update' ), 10, 1 );
 
 		// Hook into scheduled actions
-		add_action( 'woocommerce_custobar_product_sync', array( __CLASS__, 'single_update' ), 10, 1 );
+		// Call parent method to consider request limit
+		add_action( 'woocommerce_custobar_product_sync', array( __CLASS__, 'throttle_single_update' ), 10, 1 );
 	}
 
-	public static function schedule_single_update( $product_id ) {
-		wc_get_logger()->info(
-			'Product_Sync schedule_single_update called with $product_id: ' . $product_id,
-			array( 'source' => 'custobar' )
-		);
+	public static function schedule_single_update( $product_id, $force = false ) {
+		// Allow 3rd parties to decide if product should be synced
+		if ( ! apply_filters( 'woocommerce_custobar_product_should_sync', true, $product_id ) ) {
+			return;
+		}
 
 		$hook  = 'woocommerce_custobar_product_sync';
 		$args  = array( 'product_id' => $product_id );
 		$group = 'custobar';
 
+		// Force schedule
+		// For example reschedule when action still in progress
+		if ( $force ) {
+			as_schedule_single_action( time(), $hook, $args, $group );
+
+			wc_get_logger()->info(
+				'#' . $product_id . ' NEW/UPDATE PRODUCT, SYNC SCHEDULED (FORCE)',
+				array( 'source' => 'custobar' )
+			);
+		}
+
 		// We need only one action scheduled
 		if ( ! as_next_scheduled_action( $hook, $args, $group ) ) {
-			as_enqueue_async_action( $hook, $args, $group );
+			as_schedule_single_action( time(), $hook, $args, $group );
+
+			wc_get_logger()->info(
+				'#' . $product_id . ' NEW/UPDATE PRODUCT, SYNC SCHEDULED',
+				array( 'source' => 'custobar' )
+			);
 		}
 	}
 
 	public static function single_update( $product_id ) {
 		wc_get_logger()->info(
-			'Product_Sync single update called with $product_id: ' . $product_id,
+			'#' . $product_id . ' PRODUCT SYNC, UPLOADING TO CUSTOBAR',
 			array( 'source' => 'custobar' )
 		);
 
-		$product    = wc_get_product( $product_id );
-		$properties = self::format_single_item( $product );
-		self::upload_data_type_data( $properties, true );
+		$product = wc_get_product( $product_id );
+
+		if ( $product ) {
+
+			$properties = self::format_single_item( $product );
+			return self::upload_data_type_data( $properties, true );
+
+		} else {
+
+			wc_get_logger()->warning(
+				'#' . $product_id . ' tried to sync product, but product was not found',
+				array( 'source' => 'custobar' )
+			);
+
+		}
+
+		return false;
 	}
 
 	public static function batch_update() {
@@ -110,6 +142,13 @@ class Product_Sync extends Data_Sync {
 		}
 
 		$api_response = self::upload_data_type_data( $product_list );
+
+		if ( is_wp_error( $api_response ) ) {
+			// Request was invalid
+			$response->code = 444;
+			$response->body = $api_response->get_error_message();
+			return $response;
+		}
 
 		self::tracker_save( $offset, $variant_offset );
 

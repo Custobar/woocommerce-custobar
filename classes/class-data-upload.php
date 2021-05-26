@@ -16,9 +16,14 @@ use WooCommerceCustobar\Synchronization\Sale_Sync;
 class Data_Upload {
 
 
+	/**
+	 * Do the request to Custobar API
+	 *
+	 * @param string $endpoint
+	 * @param array $data
+	 * @return mixed response object or WP_Error
+	 */
 	public static function upload_custobar_data( $endpoint, $data ) {
-
-		$response_data = new \stdClass();
 
 		$body           = wp_json_encode( $data );
 		$api_token      = \WC_Admin_Settings::get_option( 'custobar_api_setting_token', false );
@@ -37,27 +42,33 @@ class Data_Upload {
 			)
 		);
 
-		$response_code = wp_remote_retrieve_response_code( $response );
-		$response_body = wp_remote_retrieve_body( $response );
-
-		// form response data
-		$response_data->code = $response_code;
-		$response_data->body = $response_body;
-
-		// do wc logging
-		if ( ! in_array( $response_code, array( 200, 201 ) ) || is_wp_error( $response_body ) ) {
+		// Failed request, do logging and return error object
+		if ( is_wp_error( $response ) ) {
+			$message = $response->get_error_message();
 
 			wc_get_logger()->warning(
-				"Custobar data upload failed. code: $response_code",
-				array(
-					'source' => 'custobar',
-				)
+				"Custobar data upload failed: $message",
+				array( 'source' => 'custobar' )
+			);
+
+			return $response;
+		}
+
+		// Create a simpler response object
+		$response_data       = new \stdClass();
+		$response_data->code = wp_remote_retrieve_response_code( $response );
+		$response_data->body = wp_remote_retrieve_body( $response );
+
+		// Unexpected response code, do logging
+		if ( ! in_array( $response_data->code, array( 200, 201 ) ) ) {
+
+			wc_get_logger()->warning(
+				"Custobar data upload: Unexpected response code: {$response_data->code}",
+				array( 'source' => 'custobar' )
 			);
 		}
 
-		// return response
 		return $response_data;
-
 	}
 
 	public static function add_hooks() {
@@ -65,6 +76,11 @@ class Data_Upload {
 		add_action( 'wp_ajax_custobar_api_test', __CLASS__ . '::api_test' );
 	}
 
+	/**
+	 * Historical data sync callback
+	 *
+	 * @return void
+	 */
 	public static function jx_export() {
 		// environment checks
 		$plugin = new Plugin();
