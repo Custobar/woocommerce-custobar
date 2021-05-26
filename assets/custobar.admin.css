@@ -1,67 +1,22 @@
-.custobar-sync-report {
-  border-collapse: collapse;
+.custobar-admin-table {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  margin: 20px 0px;
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
 }
 
-.custobar-sync-report th,
-.custobar-sync-report td {
-  font-size: 14px;
-  padding: 12px 10px;
-  margin: 0;
-}
-
-.custobar-sync-report thead tr {
-  background: #D1D1D1;
-}
-
-#custobar-export-wrap {
-  margin: 25px 0 45px;
-}
-
-#custobar-export-wrap table tbody tr {
-  background: #DFDFDF;
-}
-
-#custobar-export-wrap table thead th {
-  padding: 16px 10px;
-}
-
-#custobar-export-wrap table td.custobar-center,
-#custobar-export-wrap table th.custobar-center {
-  text-align: center;
-}
-
-/*
- *
- * API Test
- *
- */
-#custobar-api-connection-test-wrap {
-  margin: 25px 0 45px;
-}
-#custobar-api-connection-test-wrap hr {
-  margin: 30px 0 30px;
+.custobar-admin-table__item--heading {
+  border-bottom: 1px solid #ccc;
+  font-weight: bold;
 }
 
 
-#custobar-export-wrap table tr.response {
-  background: #75C46B;
-  color: #FFFFFF;
+.custobar-admin-table__item {
+  padding: 20px;
 }
 
-#fields-action {
-  display: none;
-}
-
-.submit .woocommerce-save-button {
-  margin-right: 125px;
-}
-
-.submit .button-restore {
-  margin-left: 10px;
-}
-
-.submit .button-restore,
-.submit .button-lock {
-  line-height: 1;
-  vertical-align: top !important;
+.custobar-admin-table__body {
+  padding: 20px;
+  display: grid;
 }
