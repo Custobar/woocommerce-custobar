@@ -129,7 +129,12 @@ class WC_Settings_Custobar extends WC_Settings_Page {
 				'desc' => __( 'Check this box to reset webhook secret key.', 'woocommerce-custobar' ),
 				'id'   => 'custobar_wc_rest_api_secret_reset',
 			),
-
+			'custobar_api_extended_logging' => array(
+				'name' => __( 'Enable extended logging', 'woocommerce-custobar' ),
+				'type' => 'checkbox',
+				'desc' => __( 'Check this box to enable extended logging. The extended logging should be only enabled for debugging purposes.', 'woocommerce-custobar' ),
+				'id'   => 'custobar_wc_api_extended_logging',
+			),
 			'section_end'                    => array(
 				'type' => 'sectionend',
 				'id'   => 'custobar_section_end',
