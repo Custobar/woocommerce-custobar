@@ -66,6 +66,14 @@ class Data_Upload {
 				"Custobar data upload: Unexpected response code: {$response_data->code}",
 				array( 'source' => 'custobar' )
 			);
+
+		} else {
+			if ( get_option( 'custobar_wc_api_extended_logging' ) ) {
+				wc_get_logger()->notice(
+					'Successful request to endpoint: ' . $endpoint . "\nRequest body:\n" . wp_json_encode( json_decode( $body ), JSON_PRETTY_PRINT ) . "\nResponse body:\n" . json_encode( json_decode( $response_data->body ), JSON_PRETTY_PRINT ),
+					array( 'source' => 'custobar-requests' )
+				);
+			}
 		}
 
 		return $response_data;
