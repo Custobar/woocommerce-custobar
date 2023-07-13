@@ -80,4 +80,8 @@ class Utilities {
 			return new \WP_Error( $response_code, $error_reason );
 		}
 	}
+
+	public function get_assigned_properties() {
+		return $this->get_assigned_properties_base();
+	}
 }

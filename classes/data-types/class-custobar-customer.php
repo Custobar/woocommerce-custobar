@@ -54,4 +54,9 @@ class Custobar_Customer extends Custobar_Data_Type {
 	public static function get_fields_map() {
 		return Fields_Map::get_customer_fields();
 	}
+
+	public function get_assigned_properties() {
+		$wccustomer = new \WC_Customer( $this->data_source->get_id() );
+		return $this->get_assigned_properties_base( $wccustomer );
+	}
 }

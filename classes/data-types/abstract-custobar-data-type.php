@@ -27,20 +27,19 @@ abstract class Custobar_Data_Type {
 		 static::$default_keys = array_keys( static::get_fields_map() );
 	}
 
-	public function get_assigned_properties() {
+	public function get_assigned_properties_base( $param = null ) {
 		$data_source_fields = $this->data_source->get_fields();
 		$fields_map         = static::get_fields_map();
 		$properties         = array();
 
 		foreach ( $fields_map as $custobar_key => $source_key ) {
 			// Custom_data_source
-			if ( is_array( $data_source_fields[ $source_key ] ) && $data_source_fields[ $source_key ][0] === 'get_custom_data_source' ) {
-				$method_or_fn = $data_source_fields[ $source_key ];
-				if ( $this->data_source ) {
-					$wccustomer         = new WC_Customer( $this->data_source->get_id() );
+			if ( is_array( $data_source_fields[ $source_key ] ) && 'get_custom_data_source' === $data_source_fields[ $source_key ][0] && $param ) {
+
+				$method_or_fn           = $data_source_fields[ $source_key ];
 					$custom_data_source = Abstract_Data_Source::get_custom_data_source( $method_or_fn[1] );
-					$value              = call_user_func( $custom_data_source, $wccustomer );
-				}
+					$value              = call_user_func( $custom_data_source, $param );
+
 				if ( is_null( $value ) ) {
 					continue;
 				}
@@ -59,7 +58,6 @@ abstract class Custobar_Data_Type {
 			$method_or_fn = $data_source_fields[ $source_key ];
 
 			if ( ! is_callable( $method_or_fn ) && ! is_string( $method_or_fn ) ) {
-				error_log( wp_json_encode( $method_or_fn ) );
 				continue;
 			}
 
@@ -72,7 +70,6 @@ abstract class Custobar_Data_Type {
 			}
 			$properties[ $custobar_key ] = $value;
 		}
-
 		return $properties;
 	}
 
