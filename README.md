@@ -34,3 +34,64 @@ Installation for the Custobar WooCommerce Plugin is the same as any other WordPr
 
 - This plugin supports WooCommerce Subscriptions by adding custom fields for some basic information
 - This plugin adds support for Custobar marketing permissions. The plugin also adds a Rest API endpoint that allows syncing marketing permissions from Custobar to WooCommerce. Please contact Custobar for further information on how to configure the needed webhook in Custobar.
+
+## Add custom fields
+
+1.  Add custom field to the Custobar
+    https://www.custobar.com/docs/guides/data-schema-configuration/
+
+2.  Add custom field via plugin settings at WooCommerce -> Settings ->  Custobar -> Field Settings
+
+    ```
+    custobar_custom_field_name: data_source_field_name
+    ```
+
+
+## Add custom data sources
+
+
+1.  Create_custom_data_source with create_custom_data_source() function
+
+    Customer Field:
+    ```
+    Customer::create_custom_data_source('custom_data_source_field_name', function(\WC_Customer $wccustomer){})
+    ```
+    Product Field:
+    ```
+    Product::create_custom_data_source('custom_data_source_field_name', function(\WC_Product $wcproduct){})
+    ```
+    Sale Field:
+    ```
+    Sale::create_custom_data_source('custom_data_source_field_name', function(\WC_Order $wcorder){})
+    ```
+
+
+2.  Add custom data source via plugin settings at WooCommerce -> Settings ->  Custobar -> Field Settings
+
+    ```
+    custobar_field_name: custom_data_source_field_name
+    ```
+
+
+
+###### Examples:
+
+```
+use WooCommerceCustobar\DataSource\Customer;
+
+Customer::create_custom_data_source(
+	'shop_url',
+	function () {
+		$site_url = site_url();
+		return $site_url;
+	}
+);
+
+Customer::create_custom_data_source(
+	'customer_email',
+	function ( \WC_Customer $wccustomer ) {
+		$customer_email = $wccustomer->get_email();
+		return $customer_email;
+	}
+);
+```
