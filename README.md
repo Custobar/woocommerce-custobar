@@ -88,10 +88,12 @@ Customer::create_custom_data_source(
 );
 
 Customer::create_custom_data_source(
-	'customer_email',
+	'customer_name',
 	function ( \WC_Customer $wccustomer ) {
-		$customer_email = $wccustomer->get_email();
-		return $customer_email;
+		$first_name    = $wccustomer->get_first_name();
+		$last_name     = $wccustomer->get_last_name();
+		$customer_name = $first_name . ' ' . $last_name;
+		return $customer_name;
 	}
 );
 ```

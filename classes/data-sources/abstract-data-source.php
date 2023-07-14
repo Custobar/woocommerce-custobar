@@ -18,7 +18,7 @@ abstract class Abstract_Data_Source {
 
 
 	public function __construct() {
-		 $this->default_keys = static::get_default_keys();
+		$this->default_keys = static::get_default_keys();
 	}
 
 	protected static function get_default_keys() {
@@ -26,13 +26,55 @@ abstract class Abstract_Data_Source {
 		return array_values( $reflection->getConstants() );
 	}
 
-	public function get_custom_keys() {
-		 return array_keys( self::$custom_data_sources );
+	/**
+	 * Get all default keys from all extended classes
+	 */
+	protected static function get_all_default_keys() {
+		$all_default_keys = array();
+
+		$reflection = new \ReflectionClass( static::class );
+		$base_class = self::get_base_class( $reflection );
+
+		$child_classes = self::get_extended_classes( $base_class );
+
+		foreach ( $child_classes as $child_class ) {
+			$child_reflection = new \ReflectionClass( $child_class );
+
+			if ( $child_reflection->hasMethod( 'get_default_keys' ) ) {
+				$all_default_keys = array_merge( $all_default_keys, $child_reflection->getMethod( 'get_default_keys' )->invoke( null ) );
+			}
+		}
+
+		return $all_default_keys;
+	}
+
+	private static function get_base_class( \ReflectionClass $reflection ): string {
+		$parent = $reflection->getParentClass();
+		if ( false === $parent ) {
+			return $reflection->getName();
+		} else {
+			return self::get_base_class( $parent );
+		}
+	}
+
+	private static function get_extended_classes( string $class ): array {
+		$child_classes = array();
+		$all_classes   = get_declared_classes();
+
+		foreach ( $all_classes as $class_name ) {
+			$class_reflection = new \ReflectionClass( $class_name );
+			if ( $class_reflection->isSubclassOf( $class ) && ! $class_reflection->isAbstract() ) {
+				$child_classes[] = $class_name;
+				$child_classes   = array_merge( $child_classes, self::get_extended_classes( $class_name ) );
+			}
+		}
+
+		return $child_classes;
 	}
 
 	public function get_fields() {
 		$keys          = $this->default_keys;
-		$custom_keys   = static::get_custom_keys();
+		$custom_keys   = array_keys( self::$custom_data_sources );
 		$custom_fields = array();
 
 		$fields = array_reduce(
@@ -90,8 +132,16 @@ abstract class Abstract_Data_Source {
 	}
 
 	public static function create_custom_data_source( string $name, callable $callback ) {
-		self::$custom_data_sources[ $name ] = $callback;
+		$all_default_keys = self::get_all_default_keys();
+		$all_custom_keys  = array_keys( self::$custom_data_sources );
+
+		if ( in_array( $name, $all_default_keys ) || in_array( $name, $all_custom_keys ) ) {
+			throw new \Exception( 'Error: Custobar data source name "' . $name . '" is already in use.' );
+		} else {
+			self::$custom_data_sources[ $name ] = $callback;
+		}
 	}
+
 	public static function get_custom_data_source( $name ) {
 		if ( array_key_exists( $name, self::$custom_data_sources ) ) {
 			$custom_data_source = self::$custom_data_sources[ $name ];
