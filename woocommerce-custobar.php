@@ -71,3 +71,16 @@ add_action( 'init', array( new \WooCommerceCustobar\RestAPI\REST_Marketing_Permi
 
 // Load translations
 add_action( 'init', 'WooCommerceCustobar\load_textdomain' );
+
+
+/**
+ * Add custobar tracking script.
+ */
+function custobar_tracking_script() {
+	$script = get_option( 'custobar_api_tracking_script' );
+	if ( isset( $script ) ) {
+		echo( '<script>' . $script . '</script>' );
+	}
+}
+
+add_action( 'wp_head', 'custobar_tracking_script' );
