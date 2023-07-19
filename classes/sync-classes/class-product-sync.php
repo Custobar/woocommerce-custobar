@@ -14,8 +14,10 @@ use WooCommerceCustobar\DataType\Custobar_Product;
 class Product_Sync extends Data_Sync {
 
 
-	protected static $endpoint = '/products/upload/';
-	protected static $child    = __CLASS__;
+	protected static $endpoint  = '/products/upload/';
+	protected static $child     = __CLASS__;
+	protected static $data_type = 'product';
+
 
 	public static function add_hooks() {
 		// Schedule actions
@@ -164,6 +166,11 @@ class Product_Sync extends Data_Sync {
 		} else {
 			$formatted_data['products'] = $data;
 		}
+
 		return self::upload_custobar_data( $formatted_data );
+	}
+
+	protected static function get_data_type_from_subclass() {
+		return static::$data_type;
 	}
 }

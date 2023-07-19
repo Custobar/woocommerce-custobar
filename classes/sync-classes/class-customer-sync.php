@@ -301,4 +301,7 @@ class Customer_Sync extends Data_Sync {
 
 		return self::upload_custobar_data( $formatted_data );
 	}
+	protected static function get_data_type_from_subclass() {
+		return static::$data_type;
+	}
 }

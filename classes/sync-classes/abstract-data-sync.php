@@ -60,18 +60,22 @@ abstract class Data_Sync {
 		$start_time = hrtime( true );
 
 		// The child class that called this method
-		$child = static::$child;
+		$child     = static::$child;
+		$data_type = $child::get_data_type_from_subclass();
 
 		// Do the update
 		$response = $child::single_update( $id );
 
 		if ( false === $response ) {
 			// Return silently, the data was not meant to be uploaded in the first place
+			update_option( 'woocommerce_custobar_export_' . $data_type . '_status', 'failed' );
 			return null;
 		}
 
 		if ( is_wp_error( $response ) ) {
 			// Request was invalid, and has been logged already
+			update_option( 'woocommerce_custobar_export_' . $data_type . '_status', 'failed' );
+
 			return null;
 		}
 
@@ -81,6 +85,7 @@ abstract class Data_Sync {
 				"#{$id} $child upload, unexpected response code {$response->code}, FAILING",
 				array( 'source' => 'custobar' )
 			);
+			update_option( 'woocommerce_custobar_export_' . $data_type . '_status', 'failed' );
 
 			// Throw an exception to tell action scheduler to mark action as failed.
 			throw new \Exception( "Custobar upload failed: Unexpected response code '{$response->code}'" );
@@ -113,6 +118,8 @@ abstract class Data_Sync {
 			// Force the schedule, since this action still exists
 			$child::schedule_single_update( $id, true );
 
+			update_option( 'woocommerce_custobar_export_' . $data_type . '_status', 'failed' );
+
 			return null;
 		}
 
@@ -120,6 +127,8 @@ abstract class Data_Sync {
 			"#{$id} $child succesful upload, concurrent batches: $concurrent_batches, time to sleep: " . $time_to_sleep_in_microseconds / 1000000 . 's',
 			array( 'source' => 'custobar' )
 		);
+		update_option( 'woocommerce_custobar_export_' . $data_type . '_status', 'completed' );
+
 	}
 
 	protected static function upload_custobar_data( $data ) {
@@ -189,6 +198,8 @@ abstract class Data_Sync {
 					if ( ( $offset + $limit ) < $total_count ) {
 						as_schedule_single_action( time(), 'woocommerce_custobar_' . $data_type . '_export', array( 'offset' => $offset + $limit ), 'custobar' );
 						update_option( 'woocommerce_custobar_export_' . $data_type . '_exported_count', $offset + $batch_count );
+						update_option( 'woocommerce_custobar_export_' . $data_type . '_status', '' );
+
 					} else {
 						wc_get_logger()->notice(
 							'Handling response for ' . $data_type . ' and concluding that we are done!',
@@ -290,7 +301,5 @@ abstract class Data_Sync {
 		}
 		return false;
 	}
-
-
 
 }
