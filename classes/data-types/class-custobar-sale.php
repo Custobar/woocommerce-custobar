@@ -51,10 +51,4 @@ class Custobar_Sale extends Custobar_Data_Type {
 	public static function get_fields_map() {
 		return Fields_Map::get_sale_fields();
 	}
-
-	public function get_assigned_properties() {
-		$order_id = $this->data_source->get_order_number();
-		$wcorder  = wc_get_order( $order_id );
-		return $this->get_assigned_properties_base( $wcorder );
-	}
 }

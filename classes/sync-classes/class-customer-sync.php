@@ -20,7 +20,7 @@ class Customer_Sync extends Data_Sync {
 
 	public static function add_hooks() {
 		// Schedule actions
-		add_action( 'woocommerce_new_order', array( __CLASS__, 'schedule_single_update' ), 10, 1 );
+		add_action( 'woocommerce_new_order', array( __CLASS__, 'schedule_single_update' ), 100, 1 );
 		add_action( 'user_register', array( __CLASS__, 'schedule_single_update' ), 10, 1 );
 		add_action( 'profile_update', array( __CLASS__, 'schedule_single_update' ), 10, 1 );
 		add_action( 'woocommerce_new_customer', array( __CLASS__, 'schedule_single_update', 10, 1 ) );
@@ -279,13 +279,13 @@ class Customer_Sync extends Data_Sync {
 	/**
 	 * Format single item
 	 *
-	 * @param \WC_Customer $customer
+	 * @param \WC_Customer $wccustomer
 	 * @return array filtered properties
 	 */
-	protected static function format_single_item( $customer ) {
-		$custobar_customer = new Custobar_Customer( $customer );
-		$properties        = $custobar_customer->get_assigned_properties();
-		return apply_filters( 'woocommerce_custobar_customer_properties', $properties, $customer );
+	protected static function format_single_item( $wccustomer ) {
+		$custobar_customer = new Custobar_Customer( $wccustomer );
+		$properties        = $custobar_customer->get_assigned_properties( $wccustomer );
+		return apply_filters( 'woocommerce_custobar_customer_properties', $properties, $wccustomer );
 	}
 
 	protected static function upload_data_type_data( $data, $single = false ) {

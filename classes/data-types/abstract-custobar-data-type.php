@@ -27,7 +27,7 @@ abstract class Custobar_Data_Type {
 		 static::$default_keys = array_keys( static::get_fields_map() );
 	}
 
-	public function get_assigned_properties_base( $param = null ) {
+	public function get_assigned_properties( $param = null ) {
 		$data_source_fields = $this->data_source->get_fields();
 		$fields_map         = static::get_fields_map();
 		$properties         = array();

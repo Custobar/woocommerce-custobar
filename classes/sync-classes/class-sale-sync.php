@@ -235,7 +235,7 @@ class Sale_Sync extends Data_Sync {
 		$order         = $args['order'];
 		$order_item    = $args['order_item'];
 		$custobar_sale = new Custobar_Sale( $order, $order_item );
-		$properties    = $custobar_sale->get_assigned_properties();
+		$properties    = $custobar_sale->get_assigned_properties( $order );
 
 		return apply_filters( 'woocommerce_custobar_sale_properties', $properties, $order, $order_item );
 	}
