@@ -39,7 +39,7 @@ class Customer extends Abstract_Data_Source {
 	}
 
 	public function get_id() {
-		return (string) $this->customer->get_id();
+		return $this->customer->get_id() ? (string) $this->customer->get_id() : $this->customer->get_email();
 	}
 
 	public function get_first_name() {

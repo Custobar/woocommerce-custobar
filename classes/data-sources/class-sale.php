@@ -57,7 +57,7 @@ class Sale extends Abstract_Data_Source {
 	}
 
 	public function get_customer_id() {
-		return ( $this->order->get_user_id() ) ? (string) $this->order->get_user_id() : null;
+		return ( $this->order->get_user_id() ) ? (string) $this->order->get_user_id() : $this->order->get_billing_email();
 	}
 
 	public function get_customer_phone() {
