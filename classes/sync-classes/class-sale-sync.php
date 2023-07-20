@@ -6,6 +6,7 @@ defined( 'ABSPATH' ) || exit;
 
 use WooCommerceCustobar\DataType\Custobar_Sale;
 use WooCommerceCustobar\DataType\Utilities;
+use WooCommerceCustobar\Synchronization\Customer_Sync;
 
 /**
  * Class Sale_Sync
@@ -191,10 +192,10 @@ class Sale_Sync extends Data_Sync {
 
 	public static function single_update( $order_id ) {
 
-		$order = wc_get_order( $order_id );
-
+		$order    = wc_get_order( $order_id );
+		$response = Customer_Sync::single_update( $order_id );
+		sleep( 10 );
 		if ( $order ) {
-
 			wc_get_logger()->info(
 				'#' . $order_id . ' ORDER SYNC, UPLOADING TO CUSTOBAR',
 				array( 'source' => 'custobar' )
@@ -209,11 +210,8 @@ class Sale_Sync extends Data_Sync {
 					)
 				);
 			}
-
 			return self::upload_data_type_data( $data );
-
 		} else {
-
 			wc_get_logger()->warning(
 				'#' . $order_id . ' tried to sync order, but order was not found',
 				array( 'source' => 'custobar' )

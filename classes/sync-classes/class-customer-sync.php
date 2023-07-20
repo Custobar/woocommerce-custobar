@@ -20,7 +20,6 @@ class Customer_Sync extends Data_Sync {
 
 	public static function add_hooks() {
 		// Schedule actions
-		add_action( 'woocommerce_new_order', array( __CLASS__, 'schedule_single_update' ), 100, 1 );
 		add_action( 'user_register', array( __CLASS__, 'schedule_single_update' ), 10, 1 );
 		add_action( 'profile_update', array( __CLASS__, 'schedule_single_update' ), 10, 1 );
 		add_action( 'woocommerce_new_customer', array( __CLASS__, 'schedule_single_update', 10, 1 ) );
@@ -36,84 +35,84 @@ class Customer_Sync extends Data_Sync {
 
 
 	public static function export_batch( $offset ) {
-		$response = new \stdClass();
-		$limit    = 100;
+			$response = new \stdClass();
+			$limit    = 100;
 
-		// Get orders by offset and limit
-		$args = array(
-			'type'     => 'shop_order', // skip shop_order_refund
-			'limit'    => $limit,
-			'offset'   => $offset,
-			'orderby'  => 'ID',
-			'order'    => 'ASC',
-			'paginate' => true,
-		);
+			// Get orders by offset and limit
+			$args = array(
+				'type'     => 'shop_order', // skip shop_order_refund
+				'limit'    => $limit,
+				'offset'   => $offset,
+				'orderby'  => 'ID',
+				'order'    => 'ASC',
+				'paginate' => true,
+			);
 
-		// Allow 3rd parties to modify args
-		$args = apply_filters( 'woocommerce_custobar_batch_update_orders_args', $args );
+			// Allow 3rd parties to modify args
+			$args = apply_filters( 'woocommerce_custobar_batch_update_orders_args', $args );
 
-		$results = wc_get_orders( $args );
+			$results = wc_get_orders( $args );
 
-		$orders = $results->orders;
+			$orders = $results->orders;
 
-		// Create an array to store the newest order for each billing email
-		$newest_orders_by_email = array();
+			// Create an array to store the newest order for each billing email
+			$newest_orders_by_email = array();
 
-		foreach ( $orders as $order ) {
-			$billing_email = $order->get_billing_email();
+			foreach ( $orders as $order ) {
+				$billing_email = $order->get_billing_email();
 
-			// Check if this billing email already exists in the array
-			if ( isset( $newest_orders_by_email[ $billing_email ] ) ) {
-				$existing_order_date = $newest_orders_by_email[ $billing_email ]->get_date_created()->getTimestamp();
-				$current_order_date  = $order->get_date_created()->getTimestamp();
+				// Check if this billing email already exists in the array
+				if ( isset( $newest_orders_by_email[ $billing_email ] ) ) {
+					$existing_order_date = $newest_orders_by_email[ $billing_email ]->get_date_created()->getTimestamp();
+					$current_order_date  = $order->get_date_created()->getTimestamp();
 
-				// Compare the dates to keep only the newest order
-				if ( $current_order_date > $existing_order_date ) {
-					// Replace the existing order with the newer one
+					// Compare the dates to keep only the newest order
+					if ( $current_order_date > $existing_order_date ) {
+						// Replace the existing order with the newer one
+						$newest_orders_by_email[ $billing_email ] = $order;
+					}
+				} else {
+					// If billing email is not already in the array, add the order
 					$newest_orders_by_email[ $billing_email ] = $order;
 				}
-			} else {
-				// If billing email is not already in the array, add the order
-				$newest_orders_by_email[ $billing_email ] = $order;
 			}
-		}
 
-		// Todo: send these as arguments
-		$can_email = get_option( 'custobar_export_force_can_email' );
-		$can_sms   = get_option( 'custobar_export_force_can_sms' );
+			// Todo: send these as arguments
+			$can_email = get_option( 'custobar_export_force_can_email' );
+			$can_sms   = get_option( 'custobar_export_force_can_sms' );
 
-		$customers = array();
+			$customers = array();
 
-		foreach ( $newest_orders_by_email as $order ) {
-			$order_id = $order->get_id();
+			foreach ( $newest_orders_by_email as $order ) {
+				$order_id = $order->get_id();
 
-			// Get customer by order id
-			$customer = self::get_customer_by_order_id( $order_id );
+				// Get customer by order id
+				$customer = self::get_customer_by_order_id( $order_id );
 
-			if ( $customer ) {
-				$properties = self::format_single_item( $customer );
+				if ( $customer ) {
+					$properties = self::format_single_item( $customer );
 
-				// Check settings for exporting marketing permissions
-				if ( 'yes' === $can_email ) {
-					$properties['can_email'] = true;
+					// Check settings for exporting marketing permissions
+					if ( 'yes' === $can_email ) {
+						$properties['can_email'] = true;
+					}
+
+					if ( 'yes' === $can_sms ) {
+						$properties['can_sms'] = true;
+					}
+
+					$customers[] = $properties;
 				}
-
-				if ( 'yes' === $can_sms ) {
-					$properties['can_sms'] = true;
-				}
-
-				$customers[] = $properties;
 			}
-		}
 
-		$processed_count = count( $customers );
-		$total_count     = count( $newest_orders_by_email );
+			$processed_count = count( $customers );
+			$total_count     = count( $newest_orders_by_email );
 
-		// Upload data
-		$api_response = self::upload_data_type_data( $customers );
+			// Upload data
+			$api_response = self::upload_data_type_data( $customers );
 
-		// Handle response and possibly schedule next round
-		self::handle_export_response( 'customer', $offset, $limit, $processed_count, $total_count, $api_response );
+			// Handle response and possibly schedule next round
+			self::handle_export_response( 'customer', $offset, $limit, $processed_count, $total_count, $api_response );
 	}
 
 	public static function schedule_single_update( $id, $force = false ) {
