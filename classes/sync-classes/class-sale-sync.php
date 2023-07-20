@@ -6,6 +6,7 @@ defined( 'ABSPATH' ) || exit;
 
 use WooCommerceCustobar\DataType\Custobar_Sale;
 use WooCommerceCustobar\DataType\Utilities;
+use WooCommerceCustobar\Synchronization\Customer_Sync;
 
 /**
  * Class Sale_Sync
@@ -15,8 +16,10 @@ use WooCommerceCustobar\DataType\Utilities;
 class Sale_Sync extends Data_Sync {
 
 
-	protected static $endpoint = '/sales/upload/';
-	protected static $child    = __CLASS__;
+	protected static $endpoint  = '/sales/upload/';
+	protected static $child     = __CLASS__;
+	protected static $data_type = 'sale';
+
 
 	public static function add_hooks() {
 		// Schedule actions
@@ -189,10 +192,10 @@ class Sale_Sync extends Data_Sync {
 
 	public static function single_update( $order_id ) {
 
-		$order = wc_get_order( $order_id );
-
+		$order    = wc_get_order( $order_id );
+		$response = Customer_Sync::single_update( $order_id );
+		sleep( 10 );
 		if ( $order ) {
-
 			wc_get_logger()->info(
 				'#' . $order_id . ' ORDER SYNC, UPLOADING TO CUSTOBAR',
 				array( 'source' => 'custobar' )
@@ -207,11 +210,8 @@ class Sale_Sync extends Data_Sync {
 					)
 				);
 			}
-
 			return self::upload_data_type_data( $data );
-
 		} else {
-
 			wc_get_logger()->warning(
 				'#' . $order_id . ' tried to sync order, but order was not found',
 				array( 'source' => 'custobar' )
@@ -233,7 +233,7 @@ class Sale_Sync extends Data_Sync {
 		$order         = $args['order'];
 		$order_item    = $args['order_item'];
 		$custobar_sale = new Custobar_Sale( $order, $order_item );
-		$properties    = $custobar_sale->get_assigned_properties();
+		$properties    = $custobar_sale->get_assigned_properties( $order );
 
 		return apply_filters( 'woocommerce_custobar_sale_properties', $properties, $order, $order_item );
 	}
@@ -281,5 +281,9 @@ class Sale_Sync extends Data_Sync {
 			}
 		}
 		return $properties;
+	}
+
+	protected static function get_data_type_from_subclass() {
+		return static::$data_type;
 	}
 }

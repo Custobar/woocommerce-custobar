@@ -28,8 +28,4 @@ class Custobar_Event extends Custobar_Data_Type {
 	public static function get_fields_map() {
 		return array();
 	}
-
-	public function get_assigned_properties() {
-		return $this->get_assigned_properties_base();
-	}
 }

@@ -14,8 +14,10 @@ use WooCommerceCustobar\DataType\Custobar_Product;
 class Product_Sync extends Data_Sync {
 
 
-	protected static $endpoint = '/products/upload/';
-	protected static $child    = __CLASS__;
+	protected static $endpoint  = '/products/upload/';
+	protected static $child     = __CLASS__;
+	protected static $data_type = 'product';
+
 
 	public static function add_hooks() {
 		// Schedule actions
@@ -143,13 +145,13 @@ class Product_Sync extends Data_Sync {
 
 	protected static function format_single_item( $product ) {
 		$custobar_product = new Custobar_Product( $product );
-		$properties       = $custobar_product->get_assigned_properties();
+		$properties       = $custobar_product->get_assigned_properties( $product );
 		return apply_filters( 'woocommerce_custobar_product_properties', $properties, $product );
 	}
 
 	protected static function format_single_variant( $variant ) {
 		$custobar_product               = new Custobar_Product( $variant );
-		$properties                     = $custobar_product->get_assigned_properties();
+		$properties                     = $custobar_product->get_assigned_properties( $variant );
 		$properties['main_product_ids'] = array( $variant->get_parent_id() );
 		return apply_filters( 'woocommerce_custobar_product_properties', $properties, $variant );
 	}
@@ -164,6 +166,11 @@ class Product_Sync extends Data_Sync {
 		} else {
 			$formatted_data['products'] = $data;
 		}
+
 		return self::upload_custobar_data( $formatted_data );
+	}
+
+	protected static function get_data_type_from_subclass() {
+		return static::$data_type;
 	}
 }

@@ -4,6 +4,7 @@ namespace WooCommerceCustobar;
 
 defined( 'ABSPATH' ) || exit;
 
+use WooCommerceCustobar\Synchronization\Data_Sync;
 use WooCommerceCustobar\Synchronization\Product_Sync;
 use WooCommerceCustobar\Synchronization\Customer_Sync;
 use WooCommerceCustobar\Synchronization\Sale_Sync;
@@ -25,7 +26,11 @@ class Data_Upload {
 	 */
 	public static function upload_custobar_data( $endpoint, $data ) {
 
-		$body           = wp_json_encode( $data );
+		$data_type = key( $data );
+		update_option( 'woocommerce_custobar_export_' . $data_type . '_status', 'in_progress' );
+
+		$body = wp_json_encode( $data );
+
 		$api_token      = \WC_Admin_Settings::get_option( 'custobar_api_setting_token', false );
 		$company_domain = \WC_Admin_Settings::get_option( 'custobar_api_setting_company', false );
 		$url            = sprintf( 'https://%s.custobar.com/api', $company_domain ) . $endpoint;
@@ -50,7 +55,6 @@ class Data_Upload {
 				"Custobar data upload failed: $message",
 				array( 'source' => 'custobar' )
 			);
-
 			return $response;
 		}
 
@@ -75,7 +79,6 @@ class Data_Upload {
 				);
 			}
 		}
-
 		return $response_data;
 	}
 
@@ -310,5 +313,4 @@ class Data_Upload {
 
 		wp_send_json_success( $response );
 	}
-
 }

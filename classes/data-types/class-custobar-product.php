@@ -51,9 +51,4 @@ class Custobar_Product extends Custobar_Data_Type {
 	public static function get_fields_map() {
 		return Fields_Map::get_product_fields();
 	}
-
-	public function get_assigned_properties() {
-		$wcproduct = new \WC_Product( $this->data_source->get_product_id() );
-		return $this->get_assigned_properties_base( $wcproduct );
-	}
 }
