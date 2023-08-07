@@ -79,6 +79,7 @@ add_action( 'init', 'WooCommerceCustobar\load_textdomain' );
 function custobar_tracking_script() {
 	$script = get_option( 'custobar_api_tracking_script' );
 	if ( isset( $script ) ) {
+		// phpcs:ignore
 		echo( '<script>' . $script . '</script>' );
 	}
 }
