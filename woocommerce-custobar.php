@@ -5,10 +5,10 @@
  * Description: Syncs your WooCommerce data with Custobar.
  * Author: Custobar
  * Text Domain: woocommerce-custobar
- * Version: 2.5.0
+ * Version: 2.6.0
  * Domain Path: /languages
  * WC requires at least: 5.0
- * Requires PHP 7.2+
+ * Requires PHP 7.4+
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -22,7 +22,7 @@ if ( ! defined( 'WOOCOMMERCE_CUSTOBAR_URL' ) ) {
 }
 
 if ( ! defined( 'WOOCOMMERCE_CUSTOBAR_VERSION' ) ) {
-	define( 'WOOCOMMERCE_CUSTOBAR_VERSION', '2.2.0' );
+	define( 'WOOCOMMERCE_CUSTOBAR_VERSION', '2.6.0' );
 }
 
 require_once WOOCOMMERCE_CUSTOBAR_PATH . '/includes/functions.php';
@@ -71,3 +71,17 @@ add_action( 'init', array( new \WooCommerceCustobar\RestAPI\REST_Marketing_Permi
 
 // Load translations
 add_action( 'init', 'WooCommerceCustobar\load_textdomain' );
+
+
+/**
+ * Add custobar tracking script.
+ */
+function custobar_tracking_script() {
+	$script = get_option( 'custobar_api_tracking_script' );
+	if ( isset( $script ) ) {
+		// phpcs:ignore
+		echo( '<script>' . $script . '</script>' );
+	}
+}
+
+add_action( 'wp_head', 'custobar_tracking_script' );

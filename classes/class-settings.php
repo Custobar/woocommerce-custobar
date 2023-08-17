@@ -94,6 +94,15 @@ class WC_Settings_Custobar extends WC_Settings_Page {
 	 * @return array Array of settings
 	 */
 	public function get_settings_api() {
+		$company = get_option( 'custobar_api_setting_company' );
+		if ( isset( $company ) && $company ) {
+			  /* translators: %s: link to additional information about the tracking script */
+			$translation_string = __( 'Enter your tracking script. You can find the script <a href="https://%s.custobar.com/settings/tracking" target="_blank">here</a>.', 'woocommerce-custobar' );
+			$description        = sprintf( $translation_string, $company );
+		} else {
+			$description =
+			__( 'Enter your Custobar tracking script.', 'woocommerce-custobar' );
+		}
 
 		$settings = array(
 			'custobar_api_settings'          => array(
@@ -129,7 +138,13 @@ class WC_Settings_Custobar extends WC_Settings_Page {
 				'desc' => __( 'Check this box to reset webhook secret key.', 'woocommerce-custobar' ),
 				'id'   => 'custobar_wc_rest_api_secret_reset',
 			),
-			'custobar_api_extended_logging' => array(
+			'custobar_api_tracking_script'   => array(
+				'name' => __( 'Tracking Script', 'woocommerce-custobar' ),
+				'type' => 'textarea',
+				'desc' => $description,
+				'id'   => 'custobar_api_tracking_script',
+			),
+			'custobar_api_extended_logging'  => array(
 				'name' => __( 'Enable extended logging', 'woocommerce-custobar' ),
 				'type' => 'checkbox',
 				'desc' => __( 'Check this box to enable extended logging. The extended logging should be only enabled for debugging purposes.', 'woocommerce-custobar' ),
@@ -140,7 +155,6 @@ class WC_Settings_Custobar extends WC_Settings_Page {
 				'id'   => 'custobar_section_end',
 			),
 		);
-
 		return $settings;
 
 	}

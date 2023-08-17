@@ -14,10 +14,11 @@ use WooCommerceCustobar\DataSource\Custobar_Data_Source;
  */
 abstract class Data_Sync {
 
-	abstract public static function schedule_single_update( $item_id, $force );
-	abstract public static function single_update( $item_id );
-	abstract protected static function format_single_item( $item );
-	abstract protected static function upload_data_type_data( $data );
+
+	abstract public static function schedule_single_update( $item_id, $force);
+	abstract public static function single_update( $item_id);
+	abstract protected static function format_single_item( $item);
+	abstract protected static function upload_data_type_data( $data);
 
 	public static function add_hooks() {
 		// Hook export related actions
@@ -33,9 +34,9 @@ abstract class Data_Sync {
 			check_admin_referer( 'woocommerce_custobar_' . $data_type . '_export', 'woocommerce_custobar_' . $data_type . '_export_nonce' );
 
 			/*
-			* Check that we haven't initiated an export with the same id. This prevents a new export starting if the user simply keeps reloading the page.
-			* Might need to consider a more elegant solution later.
-			*/
+			 * Check that we haven't initiated an export with the same id. This prevents a new export starting if the user simply keeps reloading the page.
+			 * Might need to consider a more elegant solution later.
+			 */
 			if ( $data_type && $id != get_option( 'woocommerce_custobar_export_' . $data_type . '_id' ) ) {
 				// Check if we already have an export queued
 				if ( ! as_next_scheduled_action( 'woocommerce_custobar_' . $data_type . '_export' ) ) {
@@ -59,18 +60,22 @@ abstract class Data_Sync {
 		$start_time = hrtime( true );
 
 		// The child class that called this method
-		$child = static::$child;
+		$child     = static::$child;
+		$data_type = $child::get_data_type_from_subclass();
 
 		// Do the update
 		$response = $child::single_update( $id );
 
 		if ( false === $response ) {
 			// Return silently, the data was not meant to be uploaded in the first place
+			update_option( 'woocommerce_custobar_export_' . $data_type . '_status', 'failed' );
 			return null;
 		}
 
 		if ( is_wp_error( $response ) ) {
 			// Request was invalid, and has been logged already
+			update_option( 'woocommerce_custobar_export_' . $data_type . '_status', 'failed' );
+
 			return null;
 		}
 
@@ -80,6 +85,7 @@ abstract class Data_Sync {
 				"#{$id} $child upload, unexpected response code {$response->code}, FAILING",
 				array( 'source' => 'custobar' )
 			);
+			update_option( 'woocommerce_custobar_export_' . $data_type . '_status', 'failed' );
 
 			// Throw an exception to tell action scheduler to mark action as failed.
 			throw new \Exception( "Custobar upload failed: Unexpected response code '{$response->code}'" );
@@ -112,6 +118,8 @@ abstract class Data_Sync {
 			// Force the schedule, since this action still exists
 			$child::schedule_single_update( $id, true );
 
+			update_option( 'woocommerce_custobar_export_' . $data_type . '_status', 'failed' );
+
 			return null;
 		}
 
@@ -119,44 +127,48 @@ abstract class Data_Sync {
 			"#{$id} $child succesful upload, concurrent batches: $concurrent_batches, time to sleep: " . $time_to_sleep_in_microseconds / 1000000 . 's',
 			array( 'source' => 'custobar' )
 		);
+		update_option( 'woocommerce_custobar_export_' . $data_type . '_status', 'completed' );
+
 	}
 
 	protected static function upload_custobar_data( $data ) {
-		$endpoint       = static::$endpoint;
-		$cds            = new Custobar_Data_Source();
-		$integration_id = $cds->get_integration_id();
+		$endpoint = static::$endpoint;
+		//Commented out because no need for data source
 
-		if ( ! $integration_id ) {
-			$integration_id = $cds->create_integration();
-		}
+		/* 		$cds = new Custobar_Data_Source();
+					  $integration_id = $cds->get_integration_id();
 
-		if ( $integration_id ) {
+					  if (!$integration_id) {
+						  $integration_id = $cds->create_integration();
+					  }
 
-			switch ( $endpoint ) {
-				case '/customers/upload/':
-					$data_source_id = $cds->get_customer_data_source_id();
-					if ( ! $data_source_id ) {
-						$data_source_id = $cds->create_data_source( 'WooCommerce customers', 'customers' );
-					}
-					break;
-				case '/products/upload/':
-					$data_source_id = $cds->get_product_data_source_id();
-					if ( ! $data_source_id ) {
-						$data_source_id = $cds->create_data_source( 'WooCommerce products', 'products' );
-					}
-					break;
-				case '/sales/upload/':
-					$data_source_id = $cds->get_sale_data_source_id();
-					if ( ! $data_source_id ) {
-						$data_source_id = $cds->create_data_source( 'WooCommerce sales', 'sales' );
-					}
-					break;
-			}
+					  if ( $integration_id ) {
 
-			if ( $data_source_id ) {
-				$endpoint = '/datasources/' . $data_source_id . '/import/';
-			}
-		}
+						  switch ( $endpoint ) {
+							  case '/customers/upload/':
+								  $data_source_id = $cds->get_customer_data_source_id();
+								  if ( ! $data_source_id ) {
+									  $data_source_id = $cds->create_data_source( 'WooCommerce customers', 'customers' );
+								  }
+								  break;
+							  case '/products/upload/':
+								  $data_source_id = $cds->get_product_data_source_id();
+								  if ( ! $data_source_id ) {
+									  $data_source_id = $cds->create_data_source( 'WooCommerce products', 'products' );
+								  }
+								  break;
+							  case '/sales/upload/':
+								  $data_source_id = $cds->get_sale_data_source_id();
+								  if ( ! $data_source_id ) {
+									  $data_source_id = $cds->create_data_source( 'WooCommerce sales', 'sales' );
+								  }
+								  break;
+						  }
+
+						  if ( $data_source_id ) {
+							  $endpoint = '/datasources/' . $data_source_id . '/import/';
+						  }
+					  } */
 
 		return Data_Upload::upload_custobar_data( $endpoint, $data );
 	}
@@ -186,6 +198,8 @@ abstract class Data_Sync {
 					if ( ( $offset + $limit ) < $total_count ) {
 						as_schedule_single_action( time(), 'woocommerce_custobar_' . $data_type . '_export', array( 'offset' => $offset + $limit ), 'custobar' );
 						update_option( 'woocommerce_custobar_export_' . $data_type . '_exported_count', $offset + $batch_count );
+						update_option( 'woocommerce_custobar_export_' . $data_type . '_status', '' );
+
 					} else {
 						wc_get_logger()->notice(
 							'Handling response for ' . $data_type . ' and concluding that we are done!',
@@ -281,13 +295,11 @@ abstract class Data_Sync {
 		}
 		foreach ( $data_types as $data_type ) {
 			$status = get_option( 'woocommerce_custobar_export_' . $data_type . '_status' );
-			if ( "in_progress" === $status ) {
+			if ( 'in_progress' === $status ) {
 				return true;
 			}
 		}
 		return false;
 	}
-
-
 
 }

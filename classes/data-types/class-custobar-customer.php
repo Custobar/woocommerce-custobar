@@ -55,3 +55,4 @@ class Custobar_Customer extends Custobar_Data_Type {
 		return Fields_Map::get_customer_fields();
 	}
 }
+

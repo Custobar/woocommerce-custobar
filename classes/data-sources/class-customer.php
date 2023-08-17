@@ -39,7 +39,7 @@ class Customer extends Abstract_Data_Source {
 	}
 
 	public function get_id() {
-		return (string) $this->customer->get_id();
+		return $this->customer->get_id() ? (string) $this->customer->get_id() : $this->customer->get_email();
 	}
 
 	public function get_first_name() {
@@ -115,7 +115,12 @@ class Customer extends Abstract_Data_Source {
 	 * @return \DateTime
 	 */
 	public function get_date_joined() {
-		$date = get_userdata( $this->customer->get_id() )->user_registered;
-		return Utilities::format_datetime( new \DateTime( $date ) );
+		$userdata = get_userdata( $this->customer->get_id() );
+		if ( $userdata ) {
+			$date = $userdata->user_registered;
+			return Utilities::format_datetime( new \DateTime( $date ) );
+		} else {
+			return false;
+		}
 	}
 }
