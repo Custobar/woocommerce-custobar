@@ -126,11 +126,17 @@ class Product_Sync extends Data_Sync {
 
 		$product = wc_get_product( $product_id );
 
+		$formatted_products = array();
+
 		if ( $product ) {
+			$formatted_products[] = self::format_single_item( $product );
 
-			$properties = self::format_single_item( $product );
-			return self::upload_data_type_data( $properties, true );
-
+			if ( $product instanceof \WC_Product_Variable ) {
+				$variations = $product->get_available_variations( 'objects' );
+				foreach ( $variations as $variation ) {
+					$formatted_products[] = self::format_single_variant( $variation );
+				}
+			}
 		} else {
 
 			wc_get_logger()->warning(
@@ -138,6 +144,10 @@ class Product_Sync extends Data_Sync {
 				array( 'source' => 'custobar' )
 			);
 
+		}
+
+		if ( count( $formatted_products ) ) {
+			return self::upload_data_type_data( $formatted_products );
 		}
 
 		return false;

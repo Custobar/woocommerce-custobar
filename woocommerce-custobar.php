@@ -5,7 +5,7 @@
  * Description: Syncs your WooCommerce data with Custobar.
  * Author: Custobar
  * Text Domain: woocommerce-custobar
- * Version: 2.6.0
+ * Version: 2.7.0
  * Domain Path: /languages
  * WC requires at least: 5.0
  * Requires PHP 7.4+
