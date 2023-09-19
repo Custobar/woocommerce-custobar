@@ -132,7 +132,7 @@ class Product_Sync extends Data_Sync {
 			$formatted_products[] = self::format_single_item( $product );
 
 			if ( $product instanceof \WC_Product_Variable ) {
-				$variations = $product->get_available_variations();
+				$variations = $product->get_available_variations( 'objects' );
 				foreach ( $variations as $variation ) {
 					$formatted_products[] = self::format_single_variant( $variation );
 				}
