@@ -232,6 +232,7 @@ class Customer_Sync extends Data_Sync {
 		$billing_postcode   = $order->get_billing_postcode();
 		$billing_state      = $order->get_billing_state();
 		$billing_country    = $order->get_billing_country();
+		$meta_data          = $order->get_meta_data();
 		$billing_address    = self::get_street_address( $order );
 
 		// Check if customer exists
@@ -250,6 +251,10 @@ class Customer_Sync extends Data_Sync {
 		$customer->set_billing_state( $billing_state );
 		$customer->set_billing_country( $billing_country );
 		$customer->set_billing_address( $billing_address );
+
+		foreach ($meta_data as $data) {
+			$customer->update_meta_data($data->key, $data->value);
+		}
 
 		return $customer;
 	}
