@@ -106,7 +106,7 @@ class Customer_Sync extends Data_Sync {
 			}
 
 			$processed_count = count( $customers );
-			$total_count     = count( $newest_orders_by_email );
+			$total_count     = $results->total;
 
 			// Upload data
 			$api_response = self::upload_data_type_data( $customers );
