@@ -35,16 +35,28 @@ class Customer_Sync extends Data_Sync {
 
 
 	public static function export_batch( $offset ) {
+			global $wpdb;
 			$response = new \stdClass();
 			$limit    = 100;
 
+			$order_ids = array_map(function ($row) {
+				return $row->id;
+			},
+			$wpdb->get_results("
+				SELECT MAX(p.id) as id FROM {$wpdb->prefix}posts p
+				INNER JOIN {$wpdb->prefix}postmeta pm ON p.ID = pm.post_id
+				WHERE p.post_type = 'shop_order'
+				AND pm.meta_key = '_billing_email'
+				GROUP BY pm.meta_value
+				ORDER BY p.ID DESC LIMIT {$limit} OFFSET {$offset}
+			"));
+
 			// Get orders by offset and limit
 			$args = array(
+				'id'       => $order_ids,
 				'type'     => 'shop_order', // skip shop_order_refund
-				'limit'    => $limit,
-				'offset'   => $offset,
 				'orderby'  => 'ID',
-				'order'    => 'ASC',
+				'order'    => 'DESC',
 				'paginate' => true,
 			);
 
@@ -106,7 +118,13 @@ class Customer_Sync extends Data_Sync {
 			}
 
 			$processed_count = count( $customers );
-			$total_count     = $results->total;
+			$total_count     = (int)$wpdb->get_var("
+				SELECT COUNT(*) FROM (SELECT MAX(p.id) FROM wp_posts p
+				INNER JOIN wp_postmeta pm ON p.ID = pm.post_id
+				WHERE p.post_type = 'shop_order'
+				AND pm.meta_key = '_billing_email'
+				GROUP BY pm.meta_value) q
+			");
 
 			// Upload data
 			$api_response = self::upload_data_type_data( $customers );
