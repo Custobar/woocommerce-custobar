@@ -30,11 +30,14 @@ abstract class Custobar_Data_Type {
 	public function get_assigned_properties( $param = null ) {
 		$data_source_fields = $this->data_source->get_fields();
 		$fields_map         = static::get_fields_map();
+		$meta_data_fields   = $param ? array_map(function ($meta) {
+			return $meta->key;
+		}, $param->get_meta_data()) : [];
 		$properties         = array();
 
 		foreach ( $fields_map as $custobar_key => $source_key ) {
 			// Custom_data_source
-			if ( is_array( $data_source_fields[ $source_key ] ) && 'get_custom_data_source' === $data_source_fields[ $source_key ][0] && $param ) {
+			if (isset( $data_source_fields[ $source_key ] ) && is_array( $data_source_fields[ $source_key ] ) && 'get_custom_data_source' === $data_source_fields[ $source_key ][0] && $param ) {
 
 				$method_or_fn           = $data_source_fields[ $source_key ];
 					$custom_data_source = Abstract_Data_Source::get_custom_data_source( $method_or_fn[1] );
@@ -47,6 +50,11 @@ abstract class Custobar_Data_Type {
 				continue;
 			}
 			// Custom_data_source ends
+
+			if ($param && in_array($source_key, $meta_data_fields)) {
+				$properties[ $custobar_key ] = $param->get_meta($source_key);
+				continue;
+			}
 
 			if ( ! in_array( $custobar_key, static::$default_keys, true ) ) {
 				continue;
