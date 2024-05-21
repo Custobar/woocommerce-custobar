@@ -37,7 +37,7 @@ abstract class Custobar_Data_Type {
 
 		foreach ( $fields_map as $custobar_key => $source_key ) {
 			// Custom_data_source
-			if ( is_array( $data_source_fields[ $source_key ] ) && 'get_custom_data_source' === $data_source_fields[ $source_key ][0] && $param ) {
+			if (isset( $data_source_fields[ $source_key ] ) && is_array( $data_source_fields[ $source_key ] ) && 'get_custom_data_source' === $data_source_fields[ $source_key ][0] && $param ) {
 
 				$method_or_fn           = $data_source_fields[ $source_key ];
 					$custom_data_source = Abstract_Data_Source::get_custom_data_source( $method_or_fn[1] );
