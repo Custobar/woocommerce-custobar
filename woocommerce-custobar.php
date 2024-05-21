@@ -85,18 +85,3 @@ function custobar_tracking_script() {
 }
 
 add_action( 'wp_head', 'custobar_tracking_script' );
-
-function handle_custom_query_var($query, $query_vars) {
-	if (!empty($query_vars['id']) ) {
-		if (is_array($query_vars['id'])) {
-			$query['post__in'] = $query_vars['id'];
-		}
-		else {
-			$query['post'] = esc_attr($query_vars['id']);
-		}
-	}
-
-	return $query;
-}
-
-add_filter('woocommerce_order_data_store_cpt_get_orders_query', 'handle_custom_query_var', 10, 2);

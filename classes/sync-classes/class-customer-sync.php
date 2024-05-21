@@ -53,7 +53,7 @@ class Customer_Sync extends Data_Sync {
 
 			// Get orders by offset and limit
 			$args = array(
-				'id'       => $order_ids,
+				'post__in'       => $order_ids,
 				'type'     => 'shop_order', // skip shop_order_refund
 				'orderby'  => 'ID',
 				'order'    => 'DESC',
