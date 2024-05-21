@@ -48,8 +48,8 @@ class Customer_Sync extends Data_Sync {
 				WHERE p.post_type = 'shop_order'
 				AND pm.meta_key = '_billing_email'
 				GROUP BY pm.meta_value
-				ORDER BY p.ID DESC LIMIT {$limit} OFFSET {$offset}
-			")));
+				ORDER BY p.ID DESC LIMIT %d OFFSET %d
+			", [$limit, $offset])));
 
 			// Get orders by offset and limit
 			$args = array(
