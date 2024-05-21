@@ -35,16 +35,28 @@ class Customer_Sync extends Data_Sync {
 
 
 	public static function export_batch( $offset ) {
+			global $wpdb;
 			$response = new \stdClass();
 			$limit    = 100;
 
+			$order_ids = array_map(function ($row) {
+				return $row->id;
+			},
+			$wpdb->get_results($wpdb->prepare("
+				SELECT MAX(p.ID) as id FROM $wpdb->posts p
+				INNER JOIN $wpdb->postmeta pm ON p.ID = pm.post_id
+				WHERE p.post_type = 'shop_order'
+				AND pm.meta_key = '_billing_email'
+				GROUP BY pm.meta_value
+				ORDER BY p.ID DESC LIMIT %d OFFSET %d
+			", [$limit, $offset])));
+
 			// Get orders by offset and limit
 			$args = array(
+				'post__in' => $order_ids,
 				'type'     => 'shop_order', // skip shop_order_refund
-				'limit'    => $limit,
-				'offset'   => $offset,
 				'orderby'  => 'ID',
-				'order'    => 'ASC',
+				'order'    => 'DESC',
 				'paginate' => true,
 			);
 
@@ -105,8 +117,14 @@ class Customer_Sync extends Data_Sync {
 				}
 			}
 
-			$processed_count = count( $customers );
-			$total_count     = count( $newest_orders_by_email );
+			$processed_count = count( $orders );
+			$total_count     = (int) $wpdb->get_var("
+				SELECT COUNT(*) FROM (SELECT MAX(p.ID) FROM $wpdb->posts p
+				INNER JOIN $wpdb->postmeta pm ON p.ID = pm.post_id
+				WHERE p.post_type = 'shop_order'
+				AND pm.meta_key = '_billing_email'
+				GROUP BY pm.meta_value) q
+			");
 
 			// Upload data
 			$api_response = self::upload_data_type_data( $customers );
@@ -232,6 +250,7 @@ class Customer_Sync extends Data_Sync {
 		$billing_postcode   = $order->get_billing_postcode();
 		$billing_state      = $order->get_billing_state();
 		$billing_country    = $order->get_billing_country();
+		$meta_data          = $order->get_meta_data();
 		$billing_address    = self::get_street_address( $order );
 
 		// Check if customer exists
@@ -250,6 +269,10 @@ class Customer_Sync extends Data_Sync {
 		$customer->set_billing_state( $billing_state );
 		$customer->set_billing_country( $billing_country );
 		$customer->set_billing_address( $billing_address );
+
+		foreach ($meta_data as $data) {
+			$customer->update_meta_data($data->key, $data->value);
+		}
 
 		return $customer;
 	}
