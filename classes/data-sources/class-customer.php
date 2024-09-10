@@ -120,7 +120,10 @@ class Customer extends Abstract_Data_Source {
 			$date = $userdata->user_registered;
 			return Utilities::format_datetime( new \DateTime( $date ) );
 		} else {
-			return false;
+			$date_info = $this->customer->get_date_created();
+			$datetime = new \DateTime();
+			$datetime->setTimestamp($date_info->getTimestamp());
+			return Utilities::format_datetime( $datetime );
 		}
 	}
 }
