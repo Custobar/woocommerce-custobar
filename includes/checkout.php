@@ -18,7 +18,7 @@ function woocommerce_checkout_fields( $checkout_fields = array() ) {
 			'class'    => array( 'my-field-class form-row-wide' ),
 			'label'    => __( 'I would like to receive marketing messages via email', 'woocommerce-custobar' ),
 			'required' => false,
-			'default'  => true,
+			'default'  => false,
 		);
 	}
 	if ( apply_filters( 'woocommerce_custobar_show_sms_permission_setting_checkout', true ) ) {
@@ -27,7 +27,7 @@ function woocommerce_checkout_fields( $checkout_fields = array() ) {
 			'class'    => array( 'my-field-class form-row-wide' ),
 			'label'    => __( 'I would like to receive marketing messages via SMS', 'woocommerce-custobar' ),
 			'required' => false,
-			'default'  => true,
+			'default'  => false,
 		);
 	}
 
