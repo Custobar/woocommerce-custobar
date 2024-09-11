@@ -25,6 +25,10 @@ if ( ! defined( 'WOOCOMMERCE_CUSTOBAR_VERSION' ) ) {
 	define( 'WOOCOMMERCE_CUSTOBAR_VERSION', '2.6.0' );
 }
 
+if ( ! defined( 'WOOCOMMERCE_CUSTOBAR_LANGUAGES' ) ) {
+	define( 'WOOCOMMERCE_CUSTOBAR_LANGUAGES', dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+}
+
 require_once WOOCOMMERCE_CUSTOBAR_PATH . '/includes/functions.php';
 require_once WOOCOMMERCE_CUSTOBAR_PATH . '/includes/checkout.php';
 require_once WOOCOMMERCE_CUSTOBAR_PATH . '/includes/my-account.php';
