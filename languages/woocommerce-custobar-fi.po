@@ -209,7 +209,7 @@ msgstr "Haluan vastaannottaa markkinointiviestejä tekstiviestillä"
 
 #: includes/my-account.php:13
 msgid "I would like to receive marketing messages via Email"
-msgstr "Haluan vastaannottaa markkinointiviestejä sähköpostitse"
+msgstr ""
 
 #: templates/sync-report.php:6
 msgid "Data type"
