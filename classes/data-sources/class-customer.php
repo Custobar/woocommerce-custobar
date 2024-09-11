@@ -122,7 +122,7 @@ class Customer extends Abstract_Data_Source {
 		} else {
 			$date_info = $this->customer->get_date_created();
 			$datetime = new \DateTime();
-			$datetime->setTimestamp($date_info->getTimestamp());
+			$datetime->setTimestamp($date_info->getOffsetTimestamp());
 			return Utilities::format_datetime( $datetime );
 		}
 	}
