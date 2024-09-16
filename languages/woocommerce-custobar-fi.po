@@ -1,0 +1,258 @@
+# Copyright (C) 2017 woocommerce-custobar
+# This file is distributed under the same license as the woocommerce-custobar package.
+msgid ""
+msgstr ""
+"Project-Id-Version: woocommerce-custobar\n"
+"POT-Creation-Date: 2024-09-11 09:22+0300\n"
+"PO-Revision-Date: 2024-09-11 10:00+0300\n"
+"Last-Translator: \n"
+"Language-Team: Sofokus <support@sofokus.com>\n"
+"Language: fi_FI\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;"
+"_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"X-Generator: Poedit 3.5\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: *.js\n"
+
+#: classes/admin-notes/class-export-completed.php:28
+msgid "Custobar export completed"
+msgstr ""
+
+#: classes/admin-notes/class-export-completed.php:29
+msgid "All Custobar exports that were in progress are now completed."
+msgstr ""
+
+#: classes/admin-notes/class-export-completed.php:37
+msgid "See overview"
+msgstr ""
+
+#: classes/admin-notes/class-export-failed.php:28
+msgid "Custobar export failed"
+msgstr ""
+
+#: classes/admin-notes/class-export-failed.php:29
+msgid ""
+"A custobar export process has failed. Please make sure that you have entered "
+"Custobar API credentials."
+msgstr ""
+
+#: classes/admin-notes/class-export-failed.php:36
+msgid "Check status"
+msgstr ""
+
+#: classes/admin-notes/class-export-failed.php:43
+#: classes/admin-notes/class-export-in-progress.php:44
+msgid "Hide"
+msgstr ""
+
+#: classes/admin-notes/class-export-in-progress.php:29
+msgid "Custobar export in progress"
+msgstr ""
+
+#: classes/admin-notes/class-export-in-progress.php:30
+msgid ""
+"We are currently uploading information to Custobar in the background. A "
+"separate notification will be shown once the upload is complete. "
+msgstr ""
+
+#: classes/admin-notes/class-export-in-progress.php:37
+msgid "Check progress"
+msgstr ""
+
+#: classes/class-settings.php:40
+msgid "Custobar"
+msgstr ""
+
+#: classes/class-settings.php:49
+msgid "Data Syncronization"
+msgstr ""
+
+#: classes/class-settings.php:50
+msgid "Field Settings"
+msgstr ""
+
+#: classes/class-settings.php:51
+msgid "API Settings"
+msgstr ""
+
+#: classes/class-settings.php:100
+#, php-format
+msgid ""
+"Enter your tracking script. You can find the script <a href=\"https://%s."
+"custobar.com/settings/tracking\" target=\"_blank\">here</a>."
+msgstr ""
+
+#: classes/class-settings.php:104
+msgid "Enter your Custobar tracking script."
+msgstr ""
+
+#: classes/class-settings.php:109
+msgid "Custobar API Settings"
+msgstr ""
+
+#: classes/class-settings.php:115
+msgid "API Token"
+msgstr ""
+
+#: classes/class-settings.php:117
+msgid "Enter your Custobar API token."
+msgstr ""
+
+#: classes/class-settings.php:121
+msgid "Company Domain"
+msgstr ""
+
+#: classes/class-settings.php:123
+msgid ""
+"Enter the unique domain prefix for your Custobar account, for example if "
+"your Custobar account is at acme123.custobar.com then enter only acme123."
+msgstr ""
+
+#: classes/class-settings.php:127
+msgid "Webhook Secret Key"
+msgstr ""
+
+#: classes/class-settings.php:129
+msgid ""
+"Use this value for the Authorization header when configuring webhooks in "
+"Custobar."
+msgstr ""
+
+#: classes/class-settings.php:136
+msgid "Reset Secret Key"
+msgstr ""
+
+#: classes/class-settings.php:138
+msgid "Check this box to reset webhook secret key."
+msgstr ""
+
+#: classes/class-settings.php:142
+msgid "Tracking Script"
+msgstr ""
+
+#: classes/class-settings.php:148
+msgid "Enable extended logging"
+msgstr ""
+
+#: classes/class-settings.php:150
+msgid ""
+"Check this box to enable extended logging. The extended logging should be "
+"only enabled for debugging purposes."
+msgstr ""
+
+#: classes/class-settings.php:172
+msgid "Field Mapping"
+msgstr ""
+
+#: classes/class-settings.php:176
+msgid "Customer Field Map"
+msgstr ""
+
+#: classes/class-settings.php:187
+msgid "Product Field Map"
+msgstr ""
+
+#: classes/class-settings.php:198
+msgid "Sale Field Map"
+msgstr ""
+
+#: classes/class-settings.php:228
+msgid "Marketing Settings"
+msgstr ""
+
+#: classes/class-settings.php:253
+msgid "Export Settings"
+msgstr ""
+
+#: classes/class-settings.php:259
+msgid "Allow sms marketing for all customers."
+msgstr ""
+
+#: classes/class-settings.php:261
+msgid ""
+"By checking this box sms marketing will be allowed for all customers "
+"exported via the export tool above."
+msgstr ""
+
+#: classes/class-settings.php:265
+msgid "Allow email marketing for all customers."
+msgstr ""
+
+#: classes/class-settings.php:267
+msgid ""
+"By checking this box email marketing will be allowed for all customers "
+"exported via the export tool above."
+msgstr ""
+
+#: classes/class-settings.php:321
+msgid "Click here to edit fields map"
+msgstr ""
+
+#: classes/class-settings.php:322
+msgid "Restore to default fields map"
+msgstr ""
+
+#: includes/checkout.php:19
+msgid "I would like to receive marketing messages via email"
+msgstr "Haluan vastaannottaa markkinointiviestejä sähköpostitse"
+
+#: includes/checkout.php:28 includes/my-account.php:23
+msgid "I would like to receive marketing messages via SMS"
+msgstr "Haluan vastaannottaa markkinointiviestejä tekstiviestillä"
+
+#: includes/my-account.php:13
+msgid "I would like to receive marketing messages via Email"
+msgstr ""
+
+#: templates/sync-report.php:6
+msgid "Data type"
+msgstr ""
+
+#: templates/sync-report.php:9
+msgid "Status"
+msgstr ""
+
+#: templates/sync-report.php:12
+msgid "Export started"
+msgstr ""
+
+#: templates/sync-report.php:15 templates/sync-report.php:47
+msgid "Completed"
+msgstr ""
+
+#: templates/sync-report.php:18
+msgid "Uploaded records"
+msgstr ""
+
+#: templates/sync-report.php:21
+msgid "Action"
+msgstr ""
+
+#: templates/sync-report.php:44
+msgid "In progress"
+msgstr ""
+
+#: templates/sync-report.php:50
+msgid "Failed"
+msgstr ""
+
+#: templates/sync-report.php:53
+msgid "Not started"
+msgstr ""
+
+#: templates/sync-report.php:68 templates/sync-report.php:70
+msgid "Start export"
+msgstr ""
+
+#: templates/sync-report.php:70
+msgid ""
+"Exports need to be run one at a time. Please wait for the export in progress "
+"to complete."
+msgstr ""

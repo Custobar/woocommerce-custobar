@@ -35,6 +35,22 @@ function woocommerce_checkout_fields( $checkout_fields = array() ) {
 }
 add_filter( 'woocommerce_checkout_fields', __NAMESPACE__ . '\\woocommerce_checkout_fields' );
 
+function woocommerce_checkout_update_order_meta( $order_id, $posted ) {
+	$order = wc_get_order($order_id);
+
+	if ( apply_filters( 'woocommerce_custobar_show_email_permission_setting_checkout', true ) ) {
+		$can_email = ( isset( $posted['custobar_can_email'] ) && $posted['custobar_can_email'] ) ? true : false;
+		$order->update_meta_data( 'can_email', $can_email );
+	}
+	if ( apply_filters( 'woocommerce_custobar_show_sms_permission_setting_checkout', true ) ) {
+		$can_sms = ( isset( $posted['custobar_can_sms'] ) && $posted['custobar_can_sms'] ) ? true : false;
+		$order->update_meta_data( 'can_sms', $can_sms );
+	}
+
+	$order->save();
+}
+add_action( 'woocommerce_checkout_update_order_meta', __NAMESPACE__ . '\\woocommerce_checkout_update_order_meta', 10, 2 );
+
 /**
  * Save Custobar marketing permissions as user data
  *

@@ -21,5 +21,5 @@ function get_plugin_dir() {
  * Load plugin’s translated strings.
  */
 function load_textdomain() {
-	load_plugin_textdomain( 'woocommerce-custobar', false, dirname( plugin_basename( __FILE__ ) ) . '/languages' );
+	load_plugin_textdomain( 'woocommerce-custobar', false, WOOCOMMERCE_CUSTOBAR_LANGUAGES );
 }

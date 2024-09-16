@@ -252,6 +252,7 @@ class Customer_Sync extends Data_Sync {
 		$billing_country    = $order->get_billing_country();
 		$meta_data          = $order->get_meta_data();
 		$billing_address    = self::get_street_address( $order );
+		$date_joined        = $order->get_date_created();
 
 		// Check if customer exists
 		if ( get_user_by( 'email', $billing_email ) ) {
@@ -269,6 +270,7 @@ class Customer_Sync extends Data_Sync {
 		$customer->set_billing_state( $billing_state );
 		$customer->set_billing_country( $billing_country );
 		$customer->set_billing_address( $billing_address );
+		$customer->set_date_created( $date_joined );
 
 		foreach ($meta_data as $data) {
 			$customer->update_meta_data($data->key, $data->value);
