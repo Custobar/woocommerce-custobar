@@ -41,7 +41,9 @@ abstract class Abstract_Data_Source {
 			$child_reflection = new \ReflectionClass( $child_class );
 
 			if ( $child_reflection->hasMethod( 'get_default_keys' ) ) {
-				$all_default_keys = array_merge( $all_default_keys, $child_reflection->getMethod( 'get_default_keys' )->invoke( null ) );
+				$method = $child_reflection->getMethod( 'get_default_keys' );
+				$method->setAccessible(true);
+				$all_default_keys = array_merge( $all_default_keys, $method->invoke( null ) );
 			}
 		}
 
