@@ -12,7 +12,8 @@ defined( 'ABSPATH' ) || exit;
  */
 function woocommerce_checkout_fields( $checkout_fields = array() ) {
 
-	if ( apply_filters( 'woocommerce_custobar_show_email_permission_setting_checkout', true ) ) {
+	$show_email_permission = ( 'yes' === get_option( 'custobar_show_email_permission_at_checkout', 'yes' ) );
+	if ( apply_filters( 'woocommerce_custobar_show_email_permission_setting_checkout', $show_email_permission ) ) {
 		$checkout_fields['order']['custobar_can_email'] = array(
 			'type'     => 'checkbox',
 			'class'    => array( 'my-field-class form-row-wide' ),
@@ -21,7 +22,8 @@ function woocommerce_checkout_fields( $checkout_fields = array() ) {
 			'default'  => false,
 		);
 	}
-	if ( apply_filters( 'woocommerce_custobar_show_sms_permission_setting_checkout', true ) ) {
+	$show_sms_permission = ( 'yes' === get_option( 'custobar_show_sms_permission_at_checkout', 'yes' ) );
+	if ( apply_filters( 'woocommerce_custobar_show_sms_permission_setting_checkout', $show_sms_permission ) ) {
 		$checkout_fields['order']['custobar_can_sms'] = array(
 			'type'     => 'checkbox',
 			'class'    => array( 'my-field-class form-row-wide' ),
@@ -59,14 +61,17 @@ add_action( 'woocommerce_checkout_update_order_meta', __NAMESPACE__ . '\\woocomm
  * @return void
  */
 function woocommerce_checkout_update_user_meta( $customer_id, $posted ) {
-	if ( apply_filters( 'woocommerce_custobar_show_email_permission_setting_checkout', true ) ) {
+	$show_email_permission = ( 'yes' === get_option( 'custobar_show_email_permission_at_checkout', 'yes' ) );
+	if ( apply_filters( 'woocommerce_custobar_show_email_permission_setting_checkout', $show_email_permission ) ) {
 		$can_email = ( isset( $posted['custobar_can_email'] ) && $posted['custobar_can_email'] ) ? true : false;
 		update_user_meta( $customer_id, '_woocommerce_custobar_can_email', $can_email );
 	}
-	if ( apply_filters( 'woocommerce_custobar_show_sms_permission_setting_checkout', true ) ) {
+	$show_sms_permission = ( 'yes' === get_option( 'custobar_show_sms_permission_at_checkout', 'yes' ) );
+	if ( apply_filters( 'woocommerce_custobar_show_sms_permission_setting_checkout', $show_sms_permission ) ) {
 		$can_sms = ( isset( $posted['custobar_can_sms'] ) && $posted['custobar_can_sms'] ) ? true : false;
 		update_user_meta( $customer_id, '_woocommerce_custobar_can_sms', $can_sms );
 	}
 
 }
 add_action( 'woocommerce_checkout_update_user_meta', __NAMESPACE__ . '\\woocommerce_checkout_update_user_meta', 10, 2 );
+
