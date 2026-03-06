@@ -80,6 +80,7 @@ class WC_Settings_Custobar extends WC_Settings_Page {
 			return;
 		}
 		if ( 'fields' == $current_section ) {
+			woocommerce_update_options( $this->get_settings_marketing(), $data );
 			woocommerce_update_options( $this->get_settings_fields(), $data );
 			return;
 		} else {
@@ -224,13 +225,27 @@ class WC_Settings_Custobar extends WC_Settings_Page {
 	public function get_settings_marketing() {
 
 		$settings = array(
-			'custobar_marketing_settings' => array(
+			'custobar_marketing_settings'                => array(
 				'name' => __( 'Marketing Settings', 'woocommerce-custobar' ),
 				'type' => 'title',
 				'desc' => '',
 				'id'   => 'custobar_marketing_settings',
 			),
-			'section_end'                 => array(
+			'custobar_show_email_permission_at_checkout' => array(
+				'name'    => __( 'Show Email Permission at Checkout', 'woocommerce-custobar' ),
+				'type'    => 'checkbox',
+				'desc'    => __( 'Show email marketing permission checkbox on the checkout page.', 'woocommerce-custobar' ),
+				'id'      => 'custobar_show_email_permission_at_checkout',
+				'default' => 'yes',
+			),
+			'custobar_show_sms_permission_at_checkout'   => array(
+				'name'    => __( 'Show SMS Permission at Checkout', 'woocommerce-custobar' ),
+				'type'    => 'checkbox',
+				'desc'    => __( 'Show SMS marketing permission checkbox on the checkout page.', 'woocommerce-custobar' ),
+				'id'      => 'custobar_show_sms_permission_at_checkout',
+				'default' => 'yes',
+			),
+			'section_end'                                => array(
 				'type' => 'sectionend',
 				'id'   => 'custobar_section_end',
 			),
