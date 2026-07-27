@@ -354,6 +354,7 @@ class WC_Settings_Custobar extends WC_Settings_Page {
 			'Custobar',
 			array(
 				'fields_map' => Fields_Map::get_fields_map_for_front(),
+				'nonce'      => wp_create_nonce( 'custobar_admin' ),
 			)
 		);
 
