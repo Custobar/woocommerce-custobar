@@ -280,6 +280,12 @@ class Data_Upload {
 	}
 
 	public static function api_test() {
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_send_json_error( 'Forbidden', 403 );
+		}
+
+		check_ajax_referer( 'custobar_admin' );
+
 		$api_token      = \WC_Admin_Settings::get_option( 'custobar_api_setting_token', false );
 		$company_domain = \WC_Admin_Settings::get_option( 'custobar_api_setting_company', false );
 		$url            = sprintf( 'https://%s.custobar.com/api', $company_domain ) . '/data/customers/';
@@ -296,7 +302,6 @@ class Data_Upload {
 		);
 
 		$response_code = wp_remote_retrieve_response_code( $response );
-		$response_body = wp_remote_retrieve_body( $response );
 
 		if ( 200 === $response_code ) {
 			$message = 'Successful test, your site is connected to Custobar.';
@@ -307,7 +312,6 @@ class Data_Upload {
 		$response = array(
 			'url'     => $url,
 			'code'    => $response_code,
-			'body'    => $response_body,
 			'message' => $message,
 		);
 

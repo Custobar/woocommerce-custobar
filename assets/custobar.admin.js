@@ -190,6 +190,7 @@
 
 			data = {
 				action: "custobar_api_test",
+				_ajax_nonce: Custobar.nonce,
 			};
 			$.post(
 				ajaxurl,
